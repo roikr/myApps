@@ -1,0 +1,24 @@
+<settings>
+    <sink>
+        <position x="634" y="-160"></position>
+        <size width="1280" height="800"></size>
+        <orientation>0</orientation>
+        <name>raspberrypi</name>
+        <corner rx="0" ry="0" ox="7" oy="2"></corner>
+        <corner rx="0" ry="0" ox="0" oy="0"></corner>
+        <corner rx="0" ry="0" ox="0" oy="0"></corner>
+        <corner rx="0" ry="0" ox="0" oy="-1"></corner>
+        <osc host="localhost" port="3000"></osc>
+    </sink>
+    <sink>
+        <position x="-549" y="-92"></position>
+        <size width="1280" height="800"></size>
+        <orientation>0</orientation>
+        <name>raspberrypi</name>
+        <corner rx="0" ry="0" ox="42" oy="35"></corner>
+        <corner rx="0" ry="0" ox="-16" oy="12"></corner>
+        <corner rx="0" ry="0" ox="-30" oy="-16"></corner>
+        <corner rx="0" ry="0" ox="14" oy="-15"></corner>
+        <osc host="localhost" port="3001"></osc>
+    </sink>
+</settings>

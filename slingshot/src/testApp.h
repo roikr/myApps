@@ -25,5 +25,6 @@ class testApp : public ofBaseApp{
     
         
         Slingshot slingshot;
+        float lastTime;
         
 };

@@ -9,13 +9,15 @@ void testApp::setup(){
     
     slingshot.setup();
     
+    lastTime=ofGetElapsedTimef();
     
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
-    slingshot.update();
-    slingshot.updateScale((float)ofGetMouseY()/(float)ofGetHeight());
+    slingshot.update(ofGetElapsedTimef()-lastTime,5,1./300.);
+    lastTime=ofGetElapsedTimef();
+
 }
 
 //--------------------------------------------------------------
@@ -34,12 +36,18 @@ void testApp::keyPressed(int key){
         case 'l':
             slingshot.load();
             break;
-        case 'g':
-            slingshot.grab();
+        case 'u':
+//            slingshot.unload();
+            break;
+//        case 'g':
+//            slingshot.grab();
+//            break;
+        case 's':
+            slingshot.shoot();
             break;
         case 'r':
-            slingshot.release();
-            break;
+            slingshot.exitPhysics();
+            slingshot.initPhysics();
 
         default:
             break;
@@ -55,14 +63,12 @@ void testApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y){
-    
-       
-    
+    slingshot.slingshotRoated((float)x/(float)ofGetWidth(), (float)y/(float)ofGetHeight());
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-
+    slingshot.slingshotStreched((float)y/(float)ofGetHeight());
 }
 
 //--------------------------------------------------------------

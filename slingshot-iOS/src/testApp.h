@@ -41,6 +41,8 @@ class testApp : public ofxiPhoneApp{
     
     ofImage background;
     
+    float lastTime;
+    
 };
 
 

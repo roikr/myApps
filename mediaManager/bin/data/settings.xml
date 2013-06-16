@@ -1,24 +1,26 @@
 <settings>
     <sink>
-        <position x="634" y="-160"></position>
+        <position x="-1097" y="-732"></position>
         <size width="1280" height="800"></size>
         <orientation>0</orientation>
         <name>raspberrypi</name>
-        <corner rx="0" ry="0" ox="7" oy="2"></corner>
-        <corner rx="0" ry="0" ox="0" oy="0"></corner>
-        <corner rx="0" ry="0" ox="0" oy="0"></corner>
-        <corner rx="0" ry="0" ox="0" oy="-1"></corner>
-        <osc host="localhost" port="3000"></osc>
+        <inset left="253" top="168" right="383" bottom="114"></inset>
+        <corner dx="78" dy="41"></corner>
+        <corner dx="196" dy="-60"></corner>
+        <corner dx="191" dy="107"></corner>
+        <corner dx="14" dy="81"></corner>
+        <osc host="localhost" port="3001"></osc>
     </sink>
     <sink>
-        <position x="-549" y="-92"></position>
+        <position x="610" y="-220"></position>
         <size width="1280" height="800"></size>
         <orientation>0</orientation>
         <name>raspberrypi</name>
-        <corner rx="0" ry="0" ox="42" oy="35"></corner>
-        <corner rx="0" ry="0" ox="-16" oy="12"></corner>
-        <corner rx="0" ry="0" ox="-30" oy="-16"></corner>
-        <corner rx="0" ry="0" ox="14" oy="-15"></corner>
-        <osc host="localhost" port="3001"></osc>
+        <inset left="261" top="117" right="242" bottom="90"></inset>
+        <corner dx="194" dy="-117"></corner>
+        <corner dx="242" dy="-104"></corner>
+        <corner dx="242" dy="90"></corner>
+        <corner dx="194" dy="90"></corner>
+        <osc host="localhost" port="3000"></osc>
     </sink>
 </settings>

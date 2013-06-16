@@ -13,4 +13,5 @@
 void intRect(ofRectangle &rect);
 ofPoint getCorner(ofRectangle rect,int i);
 ofRectangle transformRect(ofRectangle rect,ofMatrix4x4 mat);
+ofPoint clampPoint(ofRectangle rect,ofPoint point);
 void findHomography(ofPoint src[4], ofPoint dst[4], float homography[16]);

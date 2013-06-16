@@ -19,6 +19,7 @@ void testApp::setup(){
     imat = mat.getInverse();
     bSelected = false;
     bCorner = false;
+    bEdge = false;
     
     ofEnableAlphaBlending();
 }
@@ -39,8 +40,36 @@ void testApp::loadPrefs() {
         
         s.name = xml.getValue("name", "default");
         
+        ofRectangle rect(0,0,s.width,s.height);
+        int left = xml.getAttribute("inset", "left", 0);
+        int top = xml.getAttribute("inset", "top", 0);
+        int right = xml.getAttribute("inset", "right", 0);
+        int bottom = xml.getAttribute("inset", "bottom", 0);
+        
         for (int j=0;j<xml.getNumTags("corner");j++) {
-            s.corners.push_back(make_pair(ofPoint(xml.getAttribute("corner", "rx", 0,j),xml.getAttribute("corner", "ry", 0,j)), ofPoint(xml.getAttribute("corner", "ox", 0,j),xml.getAttribute("corner", "oy", 0,j))));
+            corner c;
+            c.pos = getCorner(rect, j);
+            switch (j) {
+                case 0:
+                    c.pos+=ofPoint(left,top);
+                    break;
+                case 1:
+                    c.pos+=ofPoint(-right,top);
+                    break;
+                case 2:
+                    c.pos+=ofPoint(-right,-bottom);
+                    break;
+                case 3:
+                    c.pos+=ofPoint(left,-bottom);
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            
+            c.warp = c.pos+ofPoint(xml.getAttribute("corner", "dx", 0,j),xml.getAttribute("corner", "dy", 0,j));
+            s.corners.push_back(c);
         }
         
         s.host=xml.getAttribute("osc", "host", "localhost");
@@ -74,13 +103,19 @@ void testApp::savePrefs() {
         xml.addAttribute("size", "height",siter->height,0);
         xml.addValue("orientation", siter->orientation);
         xml.addValue("name", siter->name);
-        for (vector<pair<ofPoint,ofPoint> >::iterator citer=siter->corners.begin();citer!=siter->corners.end();citer++) {
+        xml.addTag("inset");
+        xml.addAttribute("inset", "left", (int)siter->corners[0].pos.x,0);
+        xml.addAttribute("inset", "top", (int)siter->corners[0].pos.y,0);
+        xml.addAttribute("inset", "right", (int)(siter->width-siter->corners[1].pos.x),0);
+        xml.addAttribute("inset", "bottom", (int)(siter->height-siter->corners[2].pos.y),0);
+        
+        for (vector<corner>::iterator citer=siter->corners.begin();citer!=siter->corners.end();citer++) {
             xml.addTag("corner");
-            xml.addAttribute("corner", "rx", (int)citer->first.x,distance(siter->corners.begin(),citer));
-            xml.addAttribute("corner", "ry", (int)citer->first.y,distance(siter->corners.begin(), citer));
-            xml.addAttribute("corner", "ox", (int)citer->second.x,distance(siter->corners.begin(),citer));
-            xml.addAttribute("corner", "oy", (int)citer->second.y,distance(siter->corners.begin(), citer));
+            xml.addAttribute("corner", "dx", (int)(citer->warp.x-citer->pos.x),distance(siter->corners.begin(),citer));
+            xml.addAttribute("corner", "dy", (int)(citer->warp.y-citer->pos.y),distance(siter->corners.begin(), citer));
         }
+        
+        
         
         xml.addTag("osc");
         xml.addAttribute("osc", "host", siter->host,0);
@@ -118,20 +153,31 @@ void testApp::draw(){
         ofSetColor(255, 0, 0);
         if (bSelected && iter==sinks.rend()-1) {
             ofSetColor(0, 0, 255);
+            sink &s=sinks.front();
+            
             
             if (bCorner) {
-                sink &s=sinks.front();
-                ofRectangle rect;
                 
-                rect.setFromCenter(s.mat.preMult(getCorner(ofRectangle(0,0,s.width,s.height),corner)+s.corners[corner].first+s.corners[corner].second), 10, 10);
+                ofRectangle rect;
+                rect.setFromCenter(s.mat.preMult(s.corners[selectedCorner].warp), 10, 10);
                 ofRect(rect);
             }
+            
+            
             
             ofSetColor(0, 255, 0);
             
         }
         ofRect(iter->rect);
         
+        ofSetColor(255, 0, 0);
+        ofRectangle rect(0,0,iter->width,iter->height);
+        ofBeginShape();
+        for (vector<corner>::iterator citer=iter->corners.begin(); citer!=iter->corners.end(); citer++) {
+            ofVec3f pos(iter->mat.preMult(citer->pos));
+            ofVertex(pos);
+        }
+        ofEndShape(true);
         ofPopStyle();
     }
     ofPopStyle();
@@ -174,12 +220,11 @@ void testApp::updateSinks() {
         
         vector<ofPoint> dst;
         vector<ofPoint> src;
-        ofRectangle rect(0,0,siter->width,siter->height);
         
-        for (vector<pair<ofPoint, ofPoint> >::iterator iter=siter->corners.begin();iter!=siter->corners.end();iter++) {
-            ofPoint p(getCorner(rect, distance(siter->corners.begin(), iter)));
-            src.push_back(p+iter->first);
-            dst.push_back(p+iter->first+iter->second);
+        
+        for (vector<corner >::iterator iter=siter->corners.begin();iter!=siter->corners.end();iter++) {
+            src.push_back(iter->pos);
+            dst.push_back(iter->warp);
             
         }
         
@@ -263,11 +308,26 @@ void testApp::mouseDragged(int x, int y, int button){
     ofPoint pos =imat.preMult(ofPoint(x,y));
     if (bSelected) {
         sink &s = sinks.front();
-        
+        ofPoint disp = (pos-lastPos).rotated(-s.orientation*90, ofVec3f(0,0,1));
         if (bCorner) {
-            s.corners[corner].second+=(pos-lastPos).rotated(-s.orientation*90, ofVec3f(0,0,1));
-        } else {
+            s.corners[selectedCorner].warp+=disp;
+        } else if (bEdge){
+            int nextCorner = (selectedCorner+1) % 4;
             
+            ofPoint diff(s.corners[nextCorner].pos-s.corners[selectedCorner].pos);
+            if (diff.y) {
+                s.corners[selectedCorner].pos+=ofPoint(disp.x,0);
+                s.corners[nextCorner].pos+=ofPoint(disp.x,0);
+            } else {
+                s.corners[selectedCorner].pos+=ofPoint(0,disp.y);
+                s.corners[nextCorner].pos+=ofPoint(0,disp.y);
+            }
+            
+            s.corners[selectedCorner].pos = clampPoint(ofRectangle(0,0,s.width,s.height), s.corners[selectedCorner].pos);
+            s.corners[nextCorner].pos = clampPoint(ofRectangle(0,0,s.width,s.height), s.corners[nextCorner].pos);
+            
+            
+        } else {
             s.position +=pos-lastPos;
         }
        
@@ -304,14 +364,16 @@ void testApp::mousePressed(int x, int y, int button){
     
     if (bSelected) {
         bCorner = false;
+        bEdge = false;
         sink &s = sinks.front();
+    
         //ofRectangle rect =transformRect(ofRectangle(ofPoint(0,0),s.width,s.height), s.mat);
-        for (vector<pair<ofPoint, ofPoint> >::iterator iter=s.corners.begin();iter!=s.corners.end();iter++) {
-            
-            if ((pos-s.mat.preMult(getCorner(ofRectangle(0,0,s.width,s.height),distance(s.corners.begin(), iter))+iter->first)).length()<50) {
+        for (vector<corner >::iterator iter=s.corners.begin();iter!=s.corners.end();iter++) {
+
+            if ((pos-s.mat.preMult(iter->pos)).length()<50) {
                  
                 bCorner = true;
-                corner = distance(s.corners.begin(), iter);
+                selectedCorner = distance(s.corners.begin(), iter);
                 bZoom = true;
                 float scale = mat.getScale().x*25;
                 
@@ -330,6 +392,42 @@ void testApp::mousePressed(int x, int y, int button){
         }
         
         if (!bCorner) {
+            ofPoint spos = s.imat.preMult(pos);
+            for (vector<corner>::iterator iter=s.corners.begin();iter!=s.corners.end();iter++) {
+                vector<corner>::iterator niter=iter+1;
+                if (niter==s.corners.end()) {
+                    niter=s.corners.begin();
+                }
+                
+                ofRectangle rect;
+                ofPoint center = (iter->pos+niter->pos)/2;
+                rect.setFromCenter(center, MAX(100,abs(niter->pos.x-iter->pos.x)), MAX(100,abs(niter->pos.y-iter->pos.y)));
+                
+                
+                
+                if (rect.inside(spos)) {
+                    
+                    bEdge = true;
+                    selectedCorner = distance(s.corners.begin(), iter);
+                    bZoom = true;
+                    float scale = mat.getScale().x*2;
+                    
+                    mat=ofMatrix4x4::newIdentityMatrix();
+                    
+                    //mat.translate(-rect.getCenter());
+                    mat.translate(-pos);
+                    mat.scale(0.75*scale, 0.75*scale, 1);
+                    //                    mat.translate(ofPoint(ofGetWidth(),ofGetHeight())/2);
+                    mat.translate(x, y,0);
+                    imat = mat.getInverse();
+                    lastPos = imat.preMult(ofPoint(x,y));
+                    break;
+                    
+                }
+            }
+        }
+        
+        if (!bEdge ) {
             for (vector<sink>::iterator iter=sinks.begin()+1;iter!=sinks.end();iter++) {
                 if (sinks.front().rect.intersects(iter->rect)) {
                     
@@ -362,6 +460,7 @@ void testApp::mouseReleased(int x, int y, int button){
     ofPoint pos =imat.preMult(ofPoint(x,y));
     bSelected = false;
     bCorner = false;
+    bEdge = false;
     if (bZoom) {
         mat = defMat;
         imat = mat.getInverse();

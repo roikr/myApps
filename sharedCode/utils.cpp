@@ -39,6 +39,7 @@ ofPoint getCorner(ofRectangle rect,int i) {
 }
 
 
+
 ofRectangle transformRect(ofRectangle rect,ofMatrix4x4 mat) {
     
    
@@ -64,6 +65,13 @@ ofRectangle transformRect(ofRectangle rect,ofMatrix4x4 mat) {
     return ofRectangle(minp, maxp);
 }
 
+ofPoint clampPoint(ofRectangle rect,ofPoint point) {
+    point.x = MAX(rect.x,point.x);
+    point.x = MIN(rect.x+rect.width,point.x);
+    point.y = MAX(rect.y,point.y);
+    point.y = MIN(rect.y+rect.height,point.y);
+    return point;
+}
 
 void gaussian_elimination(float *input, int n){
 	// arturo castro - 08/01/2010

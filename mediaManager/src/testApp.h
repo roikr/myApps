@@ -10,6 +10,11 @@ enum {
     MODE_CONTENT
 };
 
+struct corner {
+    ofPoint pos;
+    ofPoint warp;
+};
+
 struct sink {
     
     int width;
@@ -19,7 +24,7 @@ struct sink {
     
     string name;
     
-    vector<pair<ofPoint,ofPoint> > corners;
+    vector<corner> corners;
     
     
     ofxOscSender *sender;
@@ -59,8 +64,9 @@ class testApp : public ofBaseApp{
     vector<sink> sinks;
     bool bSelected;
     
+    bool bEdge;
     bool bCorner;
-    int corner;
+    int selectedCorner;
     
     ofPoint lastPos;
     

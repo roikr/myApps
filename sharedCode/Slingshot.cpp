@@ -17,72 +17,69 @@
 #include "Helper.h"
 #include "Render.h"
 
-#define BOX_DEPTH 0.5f
+#define BOX_DEPTH 1.f
+#define BOX_WIDTH 40.0f
+#define BOX_HEIGHT 40.0f
 #define SLING_RADIUS 20.0f
+#define BAND_WIDTH 100.0f
+#define SLINGSHOT_HEIGHT 60.f
 
-
-
-btRigidBody* Slingshot::addRigidBody(btCollisionShape* shape, const ofVec3f& pos, const ofVec3f& rot, float mass)
+btRigidBody*	Slingshot::localCreateRigidBody(float mass, const btTransform& startTransform,btCollisionShape* shape)
 {
-	btTransform t(btQuaternion(rot.x * DEG_TO_RAD, rot.y * DEG_TO_RAD, rot.z * DEG_TO_RAD), toBt(pos));
-	btDefaultMotionState* ms = new btDefaultMotionState(t);
-	
-	btVector3 inertia(0, 0, 0);
-	shape->calculateLocalInertia(mass, inertia);
-	shape->setMargin(0);
-	
-	btRigidBody::btRigidBodyConstructionInfo info(mass, ms, shape, inertia);
-	btRigidBody *rigid = new btRigidBody(info);
+	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
     
+	//rigidbody is dynamic if and only if mass is non zero, otherwise static
+	bool isDynamic = (mass != 0.f);
     
-	rigid->setMassProps(mass, inertia);
-    rigid->updateInertiaTensor();
+	btVector3 localInertia(0,0,0);
+	if (isDynamic)
+		shape->calculateLocalInertia(mass,localInertia);
     
-	assert(rigid);
+	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     
-//    rigid->setRestitution(0.4);
-//    rigid->setFriction(0.75);
-//    rigid->setDamping(0.25, 0.25);
+#define USE_MOTIONSTATE 1
+#ifdef USE_MOTIONSTATE
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
     
-    rigid->setRestitution(0.5);
-    rigid->setFriction(0.3);
-    rigid->setDamping(0.5, 0.5);
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass,myMotionState,shape,localInertia);
     
-	
-	m_world->addRigidBody(rigid);
-	rigidBodies.push_back(rigid);
-	
-	return rigid;
+	btRigidBody* body = new btRigidBody(cInfo);
+	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
+    
+#else
+	btRigidBody* body = new btRigidBody(mass,0,shape,localInertia);
+	body->setWorldTransform(startTransform);
+#endif//
+    
+	m_dynamicsWorld->addRigidBody(body);
+   
+    
+	return body;
 }
+
 
 btSoftBody* Slingshot::createPatch(ofRectangle &rect,float mass) {
     
     
     int resx = 2;
-    int resy = 20;
+    int resy = 4;
     
     btSoftBody *body = btSoftBodyHelpers::CreatePatch(m_softBodyWorldInfo, toBt(rect.getBottomLeft()),  toBt(rect.getTopLeft()), toBt(rect.getBottomRight()), toBt(rect.getTopRight()), resx,  resy,   0, true);
     
     
-    m_world->addSoftBody(body);
-	softBodies.push_back(body);
+    m_dynamicsWorld->addSoftBody(body);
     
     btVector3 inertia(0,0,0);
     body->getCollisionShape()->calculateLocalInertia(mass, inertia);
     body->setTotalMass(mass);
     
     body->m_materials[0]->m_kLST = 1;
-    body->m_materials[0]->m_kAST = 1;
-    body->m_materials[0]->m_kVST = 1;
+    body->m_materials[0]->m_kAST = 0;
+    body->m_materials[0]->m_kVST = 0;
     
-	body->m_cfg.piterations = 4;
+	body->m_cfg.piterations = 1;
 	
-	body->getCollisionShape()->setMargin(0.04 * m_worldScale * 2);
-    
-    
-    
-    
-    
+	//body->getCollisionShape()->setMargin(0.04 * m_worldScale * 2);
     
     return body;
 }
@@ -90,22 +87,26 @@ btSoftBody* Slingshot::createPatch(ofRectangle &rect,float mass) {
 
 
 //--------------------------------------------------------------
-void Slingshot::setup(){
-    
+void Slingshot::initPhysics() {
+
+
+    retinaScale=1;
+    m_sling=0;
+    m_slingConstraint=0;
     
     m_collisionConfiguration = new btSoftBodyRigidBodyCollisionConfiguration;
     m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
     m_broadphase = new btDbvtBroadphase;
     m_solver = new btSequentialImpulseConstraintSolver;
-    m_world = new btSoftRigidDynamicsWorld(m_dispatcher,m_broadphase,m_solver,m_collisionConfiguration,0);
+    m_dynamicsWorld = new btSoftRigidDynamicsWorld(m_dispatcher,m_broadphase,m_solver,m_collisionConfiguration,0);
     
     
-    m_world->getDispatchInfo().m_enableSPU = true;
-    m_world->setGravity(toBt(ofVec3f(0,-980,0)));
+    m_dynamicsWorld->getDispatchInfo().m_enableSPU = true;
+    m_dynamicsWorld->setGravity(toBt(ofVec3f(0,-980,0)));
     
     m_worldScale = 100;
-    m_world->setDebugDrawer(new Render(m_worldScale));
-    m_world->getDebugDrawer()->setDebugMode(btIDebugDraw:: DBG_MAX_DEBUG_DRAW_MODE);
+    m_dynamicsWorld->setDebugDrawer(new Render(m_worldScale));
+    m_dynamicsWorld->getDebugDrawer()->setDebugMode(btIDebugDraw:: DBG_MAX_DEBUG_DRAW_MODE);
     
     m_softBodyWorldInfo.air_density = 1.2;
     m_softBodyWorldInfo.water_density = 0;
@@ -114,85 +115,129 @@ void Slingshot::setup(){
     m_softBodyWorldInfo.m_dispatcher = m_dispatcher;
     m_softBodyWorldInfo.m_broadphase = m_broadphase;
     m_softBodyWorldInfo.m_sparsesdf.Initialize();
-    m_softBodyWorldInfo.m_gravity = m_world->getGravity();
+    m_softBodyWorldInfo.m_gravity = m_dynamicsWorld->getGravity();
+    
+    btTransform tr;
+    tr.setIdentity();
     
     btCollisionShape *plane_shape = new btStaticPlaneShape(toBt(ofVec3f(0,1,0)), 0);
-	walls.push_back(addRigidBody(plane_shape, ofVec3f(0,0,0), ofVec3f(0,0,0),0));
-    walls.push_back(addRigidBody(plane_shape, ofVec3f(0,0,-750), ofVec3f(0,90,0),0));
+	walls.push_back(localCreateRigidBody(0, tr, plane_shape));
+    tr.setOrigin(btVector3(btScalar(0), btScalar(0.), btScalar(-750.)));
+    tr.getBasis().setEulerZYX(SIMD_HALF_PI, 0,0 );
+//    walls.push_back(addRigidBody(plane_shape, ofVec3f(0,0,-750), ofVec3f(0,90,0),0));
+    walls.push_back(localCreateRigidBody(0, tr, plane_shape));
     
+//    center_pos = ofVec3f(0,50,0);
+//    float box_width = 50;
+//    float band_width = 100;
+//    float height = 25;
     
-    center_pos = ofVec3f(0,50,0);
-    float box_width = 50;
-    float band_width = 100;
-    float height = 25;
+    btCompoundShape *compound = new btCompoundShape();
     
+    btCollisionShape *shape = new btBoxShape(btVector3(BOX_WIDTH/2,BOX_HEIGHT/2,BOX_DEPTH));
     
-    ofRectangle rect;
-    rect.setFromCenter(center_pos, box_width, height);
-    btCollisionShape *shape = new btBoxShape(toBt(ofVec3f(box_width/2,height/2,BOX_DEPTH)));
-    btRigidBody *center_box;
-    center_box = addRigidBody(shape, rect.getCenter(), ofVec3f(0,0,0), 10);
+    tr.setIdentity();
+    tr.setOrigin(btVector3(btScalar(-BAND_WIDTH-BOX_WIDTH), btScalar(0.), btScalar(0.)));
+    //tr.getBasis().setEulerZYX(0,0,0);
+    compound->addChildShape(tr, shape);
+    tr.setOrigin(btVector3(btScalar(BAND_WIDTH+BOX_WIDTH), btScalar(0.), btScalar(0.)));
+    compound->addChildShape(tr, shape);
     
-    //center_box->setActivationState(DISABLE_DEACTIVATION);
-    btTransform frameB;
-    frameB.setIdentity();
-    btGeneric6DofConstraint* pGen6Dof = new btGeneric6DofConstraint( *center_box, frameB, false );
-    m_world->addConstraint(pGen6Dof);
-    pGen6Dof->setDbgDrawSize(btScalar(5.f));
+    m_collisionShapes.push_back(compound);
     
-    pGen6Dof->setAngularLowerLimit(btVector3(0,0,0));
-    pGen6Dof->setAngularUpperLimit(btVector3(0,0,0));
-    pGen6Dof->setLinearLowerLimit(btVector3(0, 0, 0.));
-    pGen6Dof->setLinearUpperLimit(btVector3(0, 0, 500.));
-    //pGen6Dof->setAxis(toBt(ofVec3f(1,0,0)), toBt(ofVec3f(0,1,0)));
+    tr.setOrigin(btVector3(btScalar(0.), btScalar(SLINGSHOT_HEIGHT), btScalar(0.)));
+    btRigidBody* pBodyA = localCreateRigidBody( 1.0, tr, compound);
+    pBodyA->setActivationState(DISABLE_DEACTIVATION);
     
+    btTransform frameInA;
+    frameInA = btTransform::getIdentity();
+    frameInA.setOrigin(btVector3(btScalar(0.), btScalar(0.), btScalar(0.)));
+    frameInA.getBasis().setEulerZYX(0,0,0);
     
+    //        btPoint2PointConstraint* p2p = new btPoint2PointConstraint(*pBodyA, btVector3(btScalar(0.), btScalar(0.), btScalar(0.)));
+    //        m_dynamicsWorld->addConstraint(p2p, false);
+    //        p2p->setDbgDrawSize(btScalar(5.f));
     
-    //    center_box->setCollisionFlags(center_box->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-    //    center_box->setActivationState(DISABLE_DEACTIVATION);
+    m_gen6Dof = new btGeneric6DofConstraint(*pBodyA, frameInA, true);
+    m_gen6Dof->setLinearUpperLimit(btVector3(0., 0., 0.));
+    m_gen6Dof->setLinearLowerLimit(btVector3(0., 0., 0.));
     
+    //		m_gen6Dof->setAngularLowerLimit(btVector3( -45*SIMD_RADS_PER_DEG,-45*SIMD_RADS_PER_DEG,0.f));
+    //		m_gen6Dof->setAngularUpperLimit(btVector3( 45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG,0.f));
+    m_gen6Dof->setAngularLowerLimit(btVector3( 0,0,0.f));
+    m_gen6Dof->setAngularUpperLimit(btVector3( 0, 0,0.f));
     
-    rect.setFromCenter(center_pos+ofVec3f(-box_width/2-band_width/2,0,0), band_width, height);
+    m_gen6Dof->getRotationalLimitMotor(0)->m_enableMotor = true;
+    m_gen6Dof->getRotationalLimitMotor(0)->m_targetVelocity=0;
+    m_gen6Dof->getRotationalLimitMotor(0)->m_maxMotorForce = 10.0f;
+    
+    m_gen6Dof->getRotationalLimitMotor(1)->m_enableMotor = true;
+    m_gen6Dof->getRotationalLimitMotor(1)->m_targetVelocity=0;
+    m_gen6Dof->getRotationalLimitMotor(1)->m_maxMotorForce = 10.0f;
+    
+    m_dynamicsWorld->addConstraint(m_gen6Dof, false);
+    m_gen6Dof->setDbgDrawSize(btScalar(5.f));
+    
+    tr.setOrigin(btVector3(btScalar(0.f),btScalar(SLINGSHOT_HEIGHT),btScalar(0.)));
+    //tr.getBasis().setEulerZYX(0, 0, 0);
+    m_pocket = localCreateRigidBody(1.0, tr, shape);
+    m_pocket->setActivationState(DISABLE_DEACTIVATION);
+    
+    btTransform localA,localB;
+    localA.setIdentity();
+    //        localA.getBasis().setEulerZYX(0,SIMD_HALF_PI, 0);
+    localB.setIdentity();
+    //localA.getBasis().setEulerZYX(0, SIMD_HALF_PI, 0);
+    m_slider = new btGeneric6DofConstraint(*pBodyA,*m_pocket,localA,localB,true);
+    m_slider->setAngularLowerLimit(btVector3(0.,0.,0.));
+    m_slider->setAngularUpperLimit(btVector3(0.,0.,0.));
+    m_slider->setLinearLowerLimit(btVector3(0.,0.,0.));
+    m_slider->setLinearUpperLimit(btVector3(0.,0.,0.));
+    m_slider->getTranslationalLimitMotor()->m_enableMotor[2]=true;
+    m_slider->getTranslationalLimitMotor()->m_targetVelocity[2]=0;
+    m_slider->getTranslationalLimitMotor()->m_maxMotorForce[2] = 10.0f;
+    m_dynamicsWorld->addConstraint(m_slider,true);
+    m_slider->setDbgDrawSize(5.f);
+    
+     ofRectangle rect;
+    rect.setFromCenter(ofVec3f(0,SLINGSHOT_HEIGHT,0)+ofVec3f(-BOX_WIDTH/2-BAND_WIDTH/2,0,0), BAND_WIDTH, BOX_HEIGHT);
     btSoftBody *left_band;
-    left_band = createPatch(rect, 10);
-    left_band->setMass(0, 0);
-    left_band->setMass(1, 0);
-    left_band->appendAnchor(left_band->m_nodes.size()-1, center_box);
-    left_band->appendAnchor(left_band->m_nodes.size()-2, center_box);
+    left_band = createPatch(rect, .1);
+//    left_band->setMass(0, 0);
+//    left_band->setMass(1, 0);
+    left_band->appendAnchor(0, pBodyA);
+    left_band->appendAnchor(1, pBodyA);
+    left_band->appendAnchor(left_band->m_nodes.size()-1, m_pocket);
+    left_band->appendAnchor(left_band->m_nodes.size()-2, m_pocket);
     
-    
-    rect.setFromCenter(center_pos+ofVec3f(box_width/2+band_width/2,0,0), band_width, height);
+    rect.setFromCenter(ofVec3f(0,SLINGSHOT_HEIGHT,0)+ofVec3f(BOX_WIDTH/2+BAND_WIDTH/2,0,0), BAND_WIDTH, BOX_HEIGHT);
+   
     btSoftBody *right_band;
-    right_band = createPatch(rect, 10);
-    right_band->setMass(left_band->m_nodes.size()-1, 0);
-    right_band->setMass(left_band->m_nodes.size()-2, 0);
-    right_band->appendAnchor(0, center_box);
-    right_band->appendAnchor(1, center_box);
+    right_band = createPatch(rect, .1);
+//    right_band->setMass(left_band->m_nodes.size()-1, 0);
+//    right_band->setMass(left_band->m_nodes.size()-2, 0);
+    right_band->appendAnchor(right_band->m_nodes.size()-1, pBodyA);
+    right_band->appendAnchor(right_band->m_nodes.size()-2, pBodyA);
+    right_band->appendAnchor(0, m_pocket);
+    right_band->appendAnchor(1, m_pocket);
     
     
-    
+
     btCylinderShape *can_shape = new btCylinderShape(toBt(ofVec3f(20,30,0)));
     for (int i=0;i<5;i++) {
-        cans.push_back(addRigidBody(can_shape, ofVec3f(-50+40*i,0,-250-75*i), ofVec3f(ofRandom(360),0,0), 10));
+        btTransform tr;
+        tr.setIdentity();
+        tr.setOrigin(btVector3(-50+40*i,0,-250-75*i));
+        tr.getBasis().setEulerZYX(0, ofRandom(SIMD_2_PI), 0);
+        cans.push_back(localCreateRigidBody(10, tr, can_shape));
     }
+
+}
+
+void Slingshot::setup(){
+    initPhysics();
  
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(0,0,-250), ofVec3f(ofRandom(360),0,0), 10));
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(40,0,-250), ofVec3f(ofRandom(360),0,0), 10));
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(-40,0,-250), ofVec3f(ofRandom(360),0,0), 10));
-//    
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(0,0,-1000), ofVec3f(ofRandom(360),0,0), 10));
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(40,0,-1000), ofVec3f(ofRandom(360),0,0), 10));
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(-40,0,-1000), ofVec3f(ofRandom(360),0,0), 10));
-//    
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(0,0,-350), ofVec3f(ofRandom(360),0,0), 10));
-//    cans.push_back(addRigidBody(can_shape, ofVec3f(0,0,-450), ofVec3f(ofRandom(360),0,0), 10));
-    
-    
-    bGrab = false;
-    sling = 0;
-    
     can.loadModel("can.dae");
-//    pebble.loadModel("pebble.dae");
     ball.loadModel("tenbal.dae");
     
     
@@ -206,12 +251,14 @@ void Slingshot::setup(){
     cam.setPosition(0, 100, 250);
     cam.lookAt(ofVec3f(0,100,-200));
     
-    retinaScale = 1.0f;
+   
 }
 
 //--------------------------------------------------------------
-void Slingshot::update(){
-    m_world->stepSimulation(1.f/30,20,1./120.);
+void Slingshot::update(float timeStep,int maxSubSteps, float fixedTimeStep){
+    
+    m_dynamicsWorld->stepSimulation(btScalar(timeStep),maxSubSteps,btScalar(fixedTimeStep));
+    
     
 }
 
@@ -220,7 +267,7 @@ void Slingshot::draw(){
     
     cam.begin();
        
-    m_world->debugDrawWorld();
+    m_dynamicsWorld->debugDrawWorld();
     
 //    cam.end();
     
@@ -253,10 +300,10 @@ void Slingshot::draw(){
     }
     
     ofSetColor(100,100,0);
-    if (sling) {
+    for (vector<btRigidBody*>::iterator iter=slings.begin();iter!=slings.end();iter++) {
         ofPushMatrix();
         //ofTranslate(toOF((*iter)->getWorldTransform().getOrigin()));
-        ofMultMatrix(toOF(sling->getWorldTransform()));
+        ofMultMatrix(toOF((*iter)->getWorldTransform()));
         ofScale(0.073,0.073,0.073);
         ofScale(retinaScale, retinaScale,retinaScale);
         ball.draw(OF_MESH_FILL);
@@ -264,223 +311,160 @@ void Slingshot::draw(){
 
     }
     
-    
-    
-//    const btScalar	scl=(btScalar)0.8;
-//    const btScalar	alp=(btScalar)1;
-//    const btVector3	col(0,(btScalar)0.7,0);
-//    const ofVec3f color(toOF(col));
-//    ofSetColor(255*color.x, 255*color.y, 255*color.z);
-//    
-//    for (vector<btSoftBody*>::iterator iter=softBodies.begin(); iter!=softBodies.end(); iter++) {
-//        btSoftBody *psb = *iter;
-//        
-//        for(int i=0;i<psb->m_faces.size();++i)
-//        {
-//            const btSoftBody::Face&	f=psb->m_faces[i];
-//            if(0==(f.m_material->m_flags&btSoftBody::fMaterial::DebugDraw)) continue;
-//            const btVector3			x[]={f.m_n[0]->m_x,f.m_n[1]->m_x,f.m_n[2]->m_x};
-//            const btVector3			c=(x[0]+x[1]+x[2])/3;
-//            ofBeginShape();
-//            for (int i=0;i<3;i++) {
-//                ofVec3f v(toOF((x[i]-c)*scl+c));
-//                ofVertex(v);
-//            }
-//           ofEndShape();
-//            
-//            
-//        }
-//        
-//    }
-    
+        
     cam.end();
 
 }
 
 void Slingshot::exit() {
-    for (vector<btRigidBody*>::iterator iter=rigidBodies.begin();iter!=rigidBodies.end();iter++) {
-        if ((*iter)->getCollisionShape())
-        {
-            delete (*iter)->getCollisionShape();
-            (*iter)->setCollisionShape(NULL);
-        }
-        
-        if ((*iter)->getMotionState())
-        {
-            delete (*iter)->getMotionState();
-            (*iter)->setMotionState(NULL);
-        }
-        
-        m_world->removeRigidBody(*iter);
-        
-        delete *iter;
-    }
+    exitPhysics();
+}
+
+void Slingshot::exitPhysics(){
     
-    rigidBodies.clear();
+    cans.clear();
+    walls.clear();
+    slings.clear();
+    int i;
     
-    for (vector<btSoftBody*>::iterator iter=softBodies.begin();iter!=softBodies.end();iter++) {
-        m_world->removeSoftBody(*iter);
-        delete *iter;
-    }
+	//removed/delete constraints
+	for (i=m_dynamicsWorld->getNumConstraints()-1; i>=0 ;i--)
+	{
+		btTypedConstraint* constraint = m_dynamicsWorld->getConstraint(i);
+		m_dynamicsWorld->removeConstraint(constraint);
+		delete constraint;
+	}
+	
     
-    softBodies.clear();
+	//remove the rigidbodies from the dynamics world and delete them
+	for (i=m_dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
+	{
+		btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
+		btRigidBody* body = btRigidBody::upcast(obj);
+		if (body && body->getMotionState())
+		{
+			delete body->getMotionState();
+		}
+		m_dynamicsWorld->removeCollisionObject( obj );
+		delete obj;
+	}
     
-    delete m_world;
-    delete m_broadphase;
-    delete m_solver;
-    delete m_dispatcher;
-    delete m_collisionConfiguration;
+    
+    
+    
+	//delete collision shapes
+	for (int j=0;j<m_collisionShapes.size();j++)
+	{
+		btCollisionShape* shape = m_collisionShapes[j];
+		delete shape;
+	}
+    
+	m_collisionShapes.clear();
+    
+	//delete dynamics world
+	delete m_dynamicsWorld;
+    
+	//delete solver
+	delete m_solver;
+    
+	//delete broadphase
+	delete m_broadphase;
+    
+	//delete dispatcher
+	delete m_dispatcher;
+    
+	delete m_collisionConfiguration;
+    
+
+}
+
+void Slingshot::slingshotRoated(float x,float y) {
+//    btScalar currentDepth = m_gen6Dof->getRotationalLimitMotor(0)->m_currentPosition;
+    btScalar depth = ofMap(1-y, 0, 1, -45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG, true);
+    m_gen6Dof->setLimit(3, depth, depth);
+//    m_gen6Dof->getRotationalLimitMotor(0)->m_targetVelocity=(currentDepth>depth ? -10.0f : 10.0f);
+    
+//    currentDepth = m_gen6Dof->getRotationalLimitMotor(1)->m_currentPosition;
+    depth = ofMap(1-x, 0, 1, -45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG, true);
+    m_gen6Dof->setLimit(4, depth, depth);
+//    m_gen6Dof->getRotationalLimitMotor(1)->m_targetVelocity=(currentDepth>depth ? -10.0f : 10.0f);
+    
+}
+
+void Slingshot::slingshotStreched(float z) {
+//    btScalar currentDepth = m_gen6Dof->getTranslationalLimitMotor()->m_currentLinearDiff[2];
+    btScalar depth = ofMap(z, 0, 1, 0, 200, true);
+    m_slider->setLimit(2, depth, depth);
+//    m_slider->getTranslationalLimitMotor()->m_targetVelocity[2]=;
 }
 
 //--------------------------------------------------------------
 
 void Slingshot::load() {
-    if (!sling) {
+    if (!m_sling) {
         
-    
+        
         btSphereShape *sphere = new btSphereShape(SLING_RADIUS);
-        sling = addRigidBody(sphere, center_pos+ofVec3f(0,0,-BOX_DEPTH-SLING_RADIUS), ofVec3f(), 10);
-       
-        btTransform frameB;
-        frameB.setIdentity();
-        btGeneric6DofConstraint* pGen6Dof = new btGeneric6DofConstraint( *sling, frameB, false );
-        m_world->addConstraint(pGen6Dof);
-        pGen6Dof->setDbgDrawSize(btScalar(5.f));
-        
-        pGen6Dof->setAngularLowerLimit(btVector3(0,0,0));
-        pGen6Dof->setAngularUpperLimit(btVector3(0,0,0));
-        pGen6Dof->setLinearLowerLimit(btVector3(0, 0, -100.));
-        pGen6Dof->setLinearUpperLimit(btVector3(0, 0, 500.));
-        
-        m_slingConstraint = pGen6Dof;
-    }
-    
-    
-}
-
-void Slingshot::unload() {
-    if (sling) {
-        if (m_slingConstraint) {
-            m_world->removeConstraint(m_slingConstraint);
-            delete m_pickConstraint;
-            //printf("removed constraint %i",gPickingConstraintId);
-            m_slingConstraint = 0;
-
-        }
-        
-        if (sling->getCollisionShape())
-        {
-            delete sling->getCollisionShape();
-            sling->setCollisionShape(NULL);
-        }
-        
-        if (sling->getMotionState())
-        {
-            delete sling->getMotionState();
-            sling->setMotionState(NULL);
-        }
-        
-        m_world->removeRigidBody(sling);
-        
-        rigidBodies.erase(std::remove(rigidBodies.begin(),rigidBodies.end(),sling),rigidBodies.end());
-        
-        sling = 0;
-    }
-    
-}
-
-void Slingshot::grab() {
-    if (!bGrab && sling) {
-        if (!m_slingConstraint) {
-            unload();
-            load();
-        }
-        
-        bGrab = true;
-        
-        pickedBody = sling;
-        pickedBody->setActivationState(DISABLE_DEACTIVATION);
-        
-        
-        btVector3 pickPos = sling->getCenterOfMassPosition();
-        //printf("pickPos=%f,%f,%f\n",pickPos.getX(),pickPos.getY(),pickPos.getZ());
-        
-        
-        btVector3 localPivot = sling->getCenterOfMassTransform().inverse() * pickPos;
-        
         btTransform tr;
-        tr.setIdentity();
-        tr.setOrigin(localPivot);
-        btGeneric6DofConstraint* dof6 = new btGeneric6DofConstraint(*sling, tr,false);
-        dof6->setLinearLowerLimit(btVector3(0,0,0));
-        dof6->setLinearUpperLimit(btVector3(0,0,0));
-        dof6->setAngularLowerLimit(btVector3(0,0,0));
-        dof6->setAngularUpperLimit(btVector3(0,0,0));
+        tr = m_pocket->getCenterOfMassTransform();
+        tr.setOrigin(tr.getOrigin()+btVector3(0,0,-BOX_DEPTH-SLING_RADIUS));
+        m_sling=localCreateRigidBody(10, tr, sphere);
+        slings.push_back(m_sling);
         
-        m_world->addConstraint(dof6,true);
-        m_pickConstraint = dof6;
+        btVector3 pivotInA(0,0,-BOX_DEPTH);
+        btVector3 pivotInB(0,0,SLING_RADIUS);
         
-        dof6->setParam(BT_CONSTRAINT_STOP_CFM,0.8,0);
-        dof6->setParam(BT_CONSTRAINT_STOP_CFM,0.8,1);
-        dof6->setParam(BT_CONSTRAINT_STOP_CFM,0.8,2);
-        dof6->setParam(BT_CONSTRAINT_STOP_CFM,0.8,3);
-        dof6->setParam(BT_CONSTRAINT_STOP_CFM,0.8,4);
-        dof6->setParam(BT_CONSTRAINT_STOP_CFM,0.8,5);
+        m_slingConstraint = new btPoint2PointConstraint(*m_pocket, *m_sling, pivotInA, pivotInB);
         
-        dof6->setParam(BT_CONSTRAINT_STOP_ERP,0.1,0);
-        dof6->setParam(BT_CONSTRAINT_STOP_ERP,0.1,1);
-        dof6->setParam(BT_CONSTRAINT_STOP_ERP,0.1,2);
-        dof6->setParam(BT_CONSTRAINT_STOP_ERP,0.1,3);
-        dof6->setParam(BT_CONSTRAINT_STOP_ERP,0.1,4);
-        dof6->setParam(BT_CONSTRAINT_STOP_ERP,0.1,5);
+        m_dynamicsWorld->addConstraint(m_slingConstraint);
+//        p2p->setBreakingImpulseThreshold(1000);
+        m_slingConstraint->setDbgDrawSize(btScalar(5.f));
+        
     }
-
+    
+    
 }
 
-void Slingshot::release(){
-    
-    if (bGrab) {
-        bGrab = false;
-        if (m_pickConstraint && m_world)
-        {
-            m_world->removeConstraint(m_pickConstraint);
-            delete m_pickConstraint;
-            //printf("removed constraint %i",gPickingConstraintId);
-            m_pickConstraint = 0;
-            pickedBody->forceActivationState(ACTIVE_TAG);
-            pickedBody->setDeactivationTime( 0.f );
-            pickedBody = 0;
-            
-            m_world->removeConstraint(m_slingConstraint);
-            delete m_pickConstraint;
-            //printf("removed constraint %i",gPickingConstraintId);
+/*
+void Slingshot::unload() {
+    if (m_sling) {
+        if (m_slingConstraint) {
+            m_dynamicsWorld->removeConstraint(m_slingConstraint);
             m_slingConstraint = 0;
-            sling->forceActivationState(ACTIVE_TAG);
-            sling->setDeactivationTime( 0.f );
-            
-            
-            
-            
-        }
-    }
-}
 
-
-
-//--------------------------------------------------------------
-void Slingshot::updateScale(float scale){
-    
-    if (bGrab && m_pickConstraint->getConstraintType() == D6_CONSTRAINT_TYPE)
-    {
-        btGeneric6DofConstraint* pickCon = static_cast<btGeneric6DofConstraint*>(m_pickConstraint);
-        if (pickCon)
-        {
-            //keep it at the same picking distance
-            
-            
-            pickCon->getFrameOffsetA().setOrigin(toBt(ofVec3f(0,0,scale*500.0)));
         }
         
+        if (m_sling->getCollisionShape())
+        {
+            delete m_sling->getCollisionShape();
+            m_sling->setCollisionShape(NULL);
+        }
+        
+        if (m_sling->getMotionState())
+        {
+            delete m_sling->getMotionState();
+            m_sling->setMotionState(NULL);
+        }
+        
+        m_dynamicsWorld->removeRigidBody(m_sling);
+        
+        m_sling = 0;
     }
     
 }
+*/
+
+void Slingshot::shoot(){
+    if (m_slingConstraint) {
+        m_dynamicsWorld->removeConstraint(m_slingConstraint);
+        m_slider->setLimit(2, 0, 0);
+        delete m_slingConstraint;
+        m_slingConstraint = 0;
+        m_sling = 0;
+
+    }
+}
+
+
+
+

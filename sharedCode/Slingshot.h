@@ -13,6 +13,7 @@
 #include "BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h"
 #include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
 #include "BulletSoftBody/btSoftBodyHelpers.h"
+#include "BulletDynamics/ConstraintSolver/btGeneric6DofConstraint.h"
 #include "ofxAssimpModelLoader.h"
 
 
@@ -20,24 +21,31 @@
 class Slingshot{
 public:
     void setup();
-    void update();
+    void update(float timeStep,int maxSubSteps=1, float fixedTimeStep=1./60.);
     void draw();
     void exit();
     
-    void load();
-    void unload();
-    void grab();
-    void release();
-    void updateScale(float scale);
+    void initPhysics();
+    void exitPhysics();
     
-    btRigidBody* addRigidBody(btCollisionShape* shape, const ofVec3f& pos, const ofVec3f& rot, float mass);
+    void load();
+//    void unload();
+    void shoot();
+  
+    
+    void slingshotRoated(float x,float y); // normalized to [0,1]
+    void slingshotStreched(float z); // normalized to [0,1]
+
+    
+    btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform,btCollisionShape* shape);
+//    btRigidBody* addRigidBody(btCollisionShape* shape, const ofVec3f& pos, const ofVec3f& rot, float mass);
     btSoftBody *createPatch(ofRectangle &rect,float mass);
     
     btBroadphaseInterface *m_broadphase;
 	btCollisionConfiguration *m_collisionConfiguration;
 	btCollisionDispatcher *m_dispatcher;
 	btSequentialImpulseConstraintSolver *m_solver;
-	btSoftRigidDynamicsWorld *m_world;
+	btSoftRigidDynamicsWorld *m_dynamicsWorld;
     
     btSoftBodyWorldInfo m_softBodyWorldInfo;
     
@@ -45,19 +53,19 @@ public:
     
     ofVec3f center_pos;
     
-    btTypedConstraint *m_pickConstraint;
-    btRigidBody * pickedBody;
-    bool bGrab;
+    btRigidBody *m_pocket;
+    btGeneric6DofConstraint *m_slider;
+    btGeneric6DofConstraint *m_gen6Dof;
     
-    btRigidBody *sling;
-    btTypedConstraint *m_slingConstraint;
+    btRigidBody *m_sling;
+    btPoint2PointConstraint *m_slingConstraint;
     
-   
-    vector<btRigidBody*> rigidBodies;
-    vector<btSoftBody*> softBodies;
+    
+    vector<btCollisionShape*> m_collisionShapes;
     
     vector<btRigidBody*> cans;
     vector<btRigidBody*> walls;
+    vector<btRigidBody*> slings;
     
     ofxAssimpModelLoader can;
     ofxAssimpModelLoader ball;
@@ -67,5 +75,5 @@ public:
     ofCamera cam;
     
     float retinaScale;
-    
+       
 };

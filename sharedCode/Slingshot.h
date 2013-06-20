@@ -21,8 +21,14 @@ struct band {
     ofVboMesh mesh;
 };
 
+struct can {
+    btRigidBody *body;
+    int color;
+};
+
 class Slingshot{
 public:
+    Slingshot():retinaScale(1.) {};
     void setup();
     void update(float timeStep,int maxSubSteps=1, float fixedTimeStep=1./60.);
     void draw();
@@ -66,13 +72,13 @@ public:
     
     vector<btCollisionShape*> m_collisionShapes;
     
-    vector<btRigidBody*> cans;
+    vector<can> cans;
     vector<btRigidBody*> walls;
     vector<btRigidBody*> slings;
     
     vector<band> bands;
     
-    ofxAssimpModelLoader can;
+    ofxAssimpModelLoader canModel;
     ofxAssimpModelLoader ball;
     ofLight light;
     

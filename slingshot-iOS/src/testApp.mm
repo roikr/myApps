@@ -20,14 +20,7 @@ void testApp::setup(){
     ofxPointGrab.setup();
 //    ofxPointGrab.setPreviewRect(ofRectangle(10,10,ofGetWidth()/3,0.75*ofGetWidth()/3));
     
-    if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
-    {
-        ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,550/2,413/2));
-    }
-    else
-    {
-         ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,160,120));
-    }
+   
    
   
 //	//If you want a landscape oreintation 
@@ -43,9 +36,19 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     
     slingshot.setup();
-    if (iPhoneGetOFWindow()->isRetinaEnabled()) {
-        slingshot.retinaScale = 0.5f;
+    
+    if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
+    {
+        ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,550/2,413/2));
+        if (iPhoneGetOFWindow()->isRetinaEnabled()) {
+            slingshot.retinaScale = 0.5f;
+        }
     }
+    else
+    {
+        ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,120,90));
+    }
+    
   
    
     

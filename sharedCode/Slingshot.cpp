@@ -112,7 +112,7 @@ band Slingshot::createPatch(ofRectangle &rect,float mass) {
 void Slingshot::initPhysics() {
 
 
-    retinaScale=1;
+    
     m_sling=0;
     m_slingConstraint=0;
     
@@ -245,14 +245,18 @@ void Slingshot::initPhysics() {
     right_band.body->appendAnchor(1, m_pocket);
     bands.push_back(right_band);
     
-
+    int canColors[]={0x6464ff,0xa2a24e,0x9854b6,0x389e40,0xcc3937};
     btCylinderShape *can_shape = new btCylinderShape(toBt(ofVec3f(20,30,0)));
     for (int i=0;i<5;i++) {
         btTransform tr;
         tr.setIdentity();
         tr.setOrigin(btVector3(-50+40*i,0,-250-75*i));
         tr.getBasis().setEulerZYX(0, ofRandom(SIMD_2_PI), 0);
-        cans.push_back(localCreateRigidBody(10, tr, can_shape));
+        can c;
+        c.body = localCreateRigidBody(10, tr, can_shape);
+        c.color = canColors[i];
+        
+        cans.push_back(c);
     }
 
 }
@@ -260,13 +264,13 @@ void Slingshot::initPhysics() {
 void Slingshot::setup(){
     initPhysics();
  
-    can.loadModel("can.dae");
+    canModel.loadModel("can.dae");
     ball.loadModel("tenbal.dae");
     
     
     light.enable();
     wall.loadImage("auz09u.jpg");
-    band_material.loadImage("elastic_material_2.png");
+    band_material.loadImage("elastic_material_3.png");
     pocket_material.loadImage("pocket_material_1.png");
     wall.setAnchorPercent(0.5, 0.5);
     
@@ -331,14 +335,16 @@ void Slingshot::draw(){
 //        ofPopMatrix();
 //    }
     
-    ofSetColor(100,100,255);
-    for (vector<btRigidBody*>::iterator iter=cans.begin();iter!=cans.end();iter++) {
+    
+    
+    for (vector<can>::iterator iter=cans.begin();iter!=cans.end();iter++) {
+        ofSetHexColor(iter->color);
         ofPushMatrix();
         //ofTranslate(toOF((*iter)->getWorldTransform().getOrigin()));
-        ofMultMatrix(toOF((*iter)->getWorldTransform()));
+        ofMultMatrix(toOF(iter->body->getWorldTransform()));
         ofScale(0.2,0.2,0.2);
         ofScale(retinaScale, retinaScale,retinaScale);
-        can.draw(OF_MESH_FILL);
+        canModel.draw(OF_MESH_FILL);
         ofPopMatrix();
     }
     
@@ -396,7 +402,7 @@ void Slingshot::draw(){
              */
 	
     
-    ofSetColor(255);
+    ofSetColor(255,255,255,190);
    
     band_material.bind();
     for (vector<band>::iterator iter=bands.begin();iter!=bands.end();iter++) {
@@ -405,7 +411,7 @@ void Slingshot::draw(){
     band_material.unbind();
     
     
-//    ofSetColor(100,100,0,100);
+    
     ofPushMatrix();
     //ofTranslate(toOF((*iter)->getWorldTransform().getOrigin()));
     ofMultMatrix(toOF(m_pocket->getWorldTransform()));

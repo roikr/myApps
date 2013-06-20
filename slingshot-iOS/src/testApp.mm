@@ -19,7 +19,16 @@ void testApp::setup(){
 	ofxRegisterPointGrabNotification(this);
     ofxPointGrab.setup();
 //    ofxPointGrab.setPreviewRect(ofRectangle(10,10,ofGetWidth()/3,0.75*ofGetWidth()/3));
-    ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,550/2,413/2));
+    
+    if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
+    {
+        ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,550/2,413/2));
+    }
+    else
+    {
+         ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,160,120));
+    }
+   
   
 //	//If you want a landscape oreintation 
 	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_PORTRAIT);
@@ -45,6 +54,7 @@ void testApp::setup(){
     cout << ofGetWidth() << "\t" << ofGetHeight() << endl;
     background.loadImage("SlingShot_Backg.png");
     lastTime = ofGetElapsedTimef();
+    
     
 }
 
@@ -103,9 +113,14 @@ void testApp::draw(){
     
     slider.draw();
     
-    ofDrawBitmapString(ofToString(ofGetFrameRate(),2), ofGetWidth()-150, 30);
-    ofDrawBitmapString(ofToString(log(scaleStart/data.scale), 2)+","+ofToString(data.scale, 2), ofGetWidth()-150, 50);
-    ofDrawBitmapString(ofToString(data.camRefPoint.x)+","+ofToString(data.camRefPoint.y), ofGetWidth()-150, 70);
+    ofPushMatrix();
+    ofTranslate(ofGetWidth()-200, 30);
+    ofScale(2.0, 2.0);
+    
+    ofDrawBitmapString(ofToString(ofGetFrameRate(),2),0,0);
+    ofDrawBitmapString(ofToString(log(scaleStart/data.scale), 2)+","+ofToString(data.scale, 2), 0, 20);
+    ofDrawBitmapString(ofToString(data.camRefPoint.x)+","+ofToString(data.camRefPoint.y),0,40);
+    ofPopMatrix();
 }
 
 //--------------------------------------------------------------

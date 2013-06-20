@@ -16,7 +16,10 @@
 #include "BulletDynamics/ConstraintSolver/btGeneric6DofConstraint.h"
 #include "ofxAssimpModelLoader.h"
 
-
+struct band {
+    btSoftBody *body;
+    ofVboMesh mesh;
+};
 
 class Slingshot{
 public:
@@ -39,7 +42,7 @@ public:
     
     btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform,btCollisionShape* shape);
 //    btRigidBody* addRigidBody(btCollisionShape* shape, const ofVec3f& pos, const ofVec3f& rot, float mass);
-    btSoftBody *createPatch(ofRectangle &rect,float mass);
+    band createPatch(ofRectangle &rect,float mass);
     
     btBroadphaseInterface *m_broadphase;
 	btCollisionConfiguration *m_collisionConfiguration;
@@ -67,12 +70,17 @@ public:
     vector<btRigidBody*> walls;
     vector<btRigidBody*> slings;
     
+    vector<band> bands;
+    
     ofxAssimpModelLoader can;
     ofxAssimpModelLoader ball;
     ofLight light;
     
     ofImage wall;
+    ofImage band_material;
+    ofImage pocket_material;
     ofCamera cam;
+    
     
     float retinaScale;
        

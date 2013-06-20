@@ -22,7 +22,10 @@
 #define BOX_HEIGHT 40.0f
 #define SLING_RADIUS 20.0f
 #define BAND_WIDTH 100.0f
-#define SLINGSHOT_HEIGHT 60.f
+#define SLINGSHOT_HEIGHT 40.f
+
+#define RES_X 2
+#define RES_Y 8
 
 btRigidBody*	Slingshot::localCreateRigidBody(float mass, const btTransform& startTransform,btCollisionShape* shape)
 {
@@ -58,13 +61,18 @@ btRigidBody*	Slingshot::localCreateRigidBody(float mass, const btTransform& star
 }
 
 
-btSoftBody* Slingshot::createPatch(ofRectangle &rect,float mass) {
+band Slingshot::createPatch(ofRectangle &rect,float mass) {
     
     
-    int resx = 2;
-    int resy = 4;
     
-    btSoftBody *body = btSoftBodyHelpers::CreatePatch(m_softBodyWorldInfo, toBt(rect.getBottomLeft()),  toBt(rect.getTopLeft()), toBt(rect.getBottomRight()), toBt(rect.getTopRight()), resx,  resy,   0, true);
+    vector<float> tex_coords; 
+    tex_coords.resize((RES_X-1)*(RES_Y-1)*12);
+    
+    
+    btSoftBody *body = btSoftBodyHelpers::CreatePatchUV(m_softBodyWorldInfo, toBt(rect.getBottomLeft()),  toBt(rect.getTopLeft()), toBt(rect.getBottomRight()), toBt(rect.getTopRight()), RES_X,  RES_Y,   0, true,tex_coords.data());
+//    for (int i=0;i<b.tex_coords.size();i+=2) {
+//        cout << "(" << tex_coords[i] << "," << tex_coords[i+1] << ")" << endl;
+//    }
     
     
     m_dynamicsWorld->addSoftBody(body);
@@ -81,7 +89,21 @@ btSoftBody* Slingshot::createPatch(ofRectangle &rect,float mass) {
 	
 	//body->getCollisionShape()->setMargin(0.04 * m_worldScale * 2);
     
-    return body;
+    band b;
+    b.body = body;
+    b.mesh.setUsage(GL_DYNAMIC_DRAW);
+    b.mesh.setMode(OF_PRIMITIVE_TRIANGLES);
+    b.mesh.getVertices().resize((RES_X-1)*(RES_Y-1)*2*3);
+    b.mesh.getTexCoords().resize((RES_X-1)*(RES_Y-1)*6);
+    b.mesh.enableTextures();
+    for (int i=0;i<tex_coords.size()/2;i++) {
+        b.mesh.getTexCoords()[i] = ofVec2f(tex_coords[i*2],tex_coords[i*2+1]);
+        //        cout << "(" << tex_coords[i] << "," << tex_coords[i+1] << ")" << endl;
+        //    }
+    }
+
+    
+    return b;
 }
 
 
@@ -201,26 +223,27 @@ void Slingshot::initPhysics() {
     
      ofRectangle rect;
     rect.setFromCenter(ofVec3f(0,SLINGSHOT_HEIGHT,0)+ofVec3f(-BOX_WIDTH/2-BAND_WIDTH/2,0,0), BAND_WIDTH, BOX_HEIGHT);
-    btSoftBody *left_band;
-    left_band = createPatch(rect, .1);
+    
+    band left_band = createPatch(rect, .1);
 //    left_band->setMass(0, 0);
 //    left_band->setMass(1, 0);
-    left_band->appendAnchor(0, pBodyA);
-    left_band->appendAnchor(1, pBodyA);
-    left_band->appendAnchor(left_band->m_nodes.size()-1, m_pocket);
-    left_band->appendAnchor(left_band->m_nodes.size()-2, m_pocket);
+    left_band.body->appendAnchor(0, pBodyA);
+    left_band.body->appendAnchor(1, pBodyA);
+    left_band.body->appendAnchor(left_band.body->m_nodes.size()-1, m_pocket);
+    left_band.body->appendAnchor(left_band.body->m_nodes.size()-2, m_pocket);
+    bands.push_back(left_band);
     
     rect.setFromCenter(ofVec3f(0,SLINGSHOT_HEIGHT,0)+ofVec3f(BOX_WIDTH/2+BAND_WIDTH/2,0,0), BAND_WIDTH, BOX_HEIGHT);
    
-    btSoftBody *right_band;
+    band right_band;
     right_band = createPatch(rect, .1);
 //    right_band->setMass(left_band->m_nodes.size()-1, 0);
 //    right_band->setMass(left_band->m_nodes.size()-2, 0);
-    right_band->appendAnchor(right_band->m_nodes.size()-1, pBodyA);
-    right_band->appendAnchor(right_band->m_nodes.size()-2, pBodyA);
-    right_band->appendAnchor(0, m_pocket);
-    right_band->appendAnchor(1, m_pocket);
-    
+    right_band.body->appendAnchor(right_band.body->m_nodes.size()-1, pBodyA);
+    right_band.body->appendAnchor(right_band.body->m_nodes.size()-2, pBodyA);
+    right_band.body->appendAnchor(0, m_pocket);
+    right_band.body->appendAnchor(1, m_pocket);
+    bands.push_back(right_band);
     
 
     btCylinderShape *can_shape = new btCylinderShape(toBt(ofVec3f(20,30,0)));
@@ -243,6 +266,8 @@ void Slingshot::setup(){
     
     light.enable();
     wall.loadImage("auz09u.jpg");
+    band_material.loadImage("elastic_material_2.png");
+    pocket_material.loadImage("pocket_material_1.png");
     wall.setAnchorPercent(0.5, 0.5);
     
     //cam.disableMouseInput();
@@ -250,6 +275,12 @@ void Slingshot::setup(){
     
     cam.setPosition(0, 100, 250);
     cam.lookAt(ofVec3f(0,100,-200));
+    
+    ofEnableAlphaBlending();
+//    ofEnableArbTex();
+    ofEnableNormalizedTexCoords();
+    ofDisableArbTex();
+    ofSetSmoothLighting(true);
     
    
 }
@@ -259,6 +290,18 @@ void Slingshot::update(float timeStep,int maxSubSteps, float fixedTimeStep){
     
     m_dynamicsWorld->stepSimulation(btScalar(timeStep),maxSubSteps,btScalar(fixedTimeStep));
     
+    for (vector<band>::iterator iter=bands.begin();iter!=bands.end();iter++) {
+       
+		for(int i=0;i<iter->body->m_faces.size();++i) {
+    
+        
+            const btSoftBody::Face&	f=iter->body->m_faces[i];
+            for (int j=0;j<3;j++) {
+                iter->mesh.getVertices()[i*3+j] = toOF(f.m_n[j]->m_x);
+            }
+        }
+    }
+    
     
 }
 
@@ -267,7 +310,7 @@ void Slingshot::draw(){
     
     cam.begin();
        
-    m_dynamicsWorld->debugDrawWorld();
+//    m_dynamicsWorld->debugDrawWorld();
     
 //    cam.end();
     
@@ -311,6 +354,69 @@ void Slingshot::draw(){
 
     }
     
+    /*
+    for (vector<band>::iterator iter=bands.begin();iter!=bands.end();iter++) {
+        const btScalar	scl=(btScalar)0.8;
+		const btScalar	alp=(btScalar)1;
+		const btVector3	col(0,(btScalar)0.7,0);
+		for(int i=0;i<iter->body->m_faces.size();++i)
+		{
+			const btSoftBody::Face&	f=iter->body->m_faces[i];
+            ofTriangle(toOF(f.m_n[0]->m_x), toOF(f.m_n[1]->m_x), toOF(f.m_n[2]->m_x));
+        }
+    }
+     */
+//            ofBeginShape();
+//            ofVec3f a = toOF(f.m_n[0]->m_x);
+//            ofVec3f b = toOF(f.m_n[1]->m_x);
+//            ofVec3f c = toOF(f.m_n[2]->m_x);
+//            ofVertex(a);
+//            ofVertex(b);
+//            ofVertex(c);
+//            
+//            ofEndShape(true);
+            /*
+			if(0==(f.m_material->m_flags&btSoftBody::fMaterial::DebugDraw)) continue;
+			const btVector3			x[]={f.m_n[0]->m_x,f.m_n[1]->m_x,f.m_n[2]->m_x};
+			const btVector3			d=(x[0]+x[1]+x[2])/3;
+            
+            btVector3 a= (x[0]-d)*scl+d;
+            btVector3 b= (x[1]-d)*scl+d;
+            btVector3 c= (x[2]-d)*scl+d;
+            
+//            ofSetColor(255*col.x(), 255*col.y(), 255*col.z());
+            const btVector3	n=btCross(b-a,c-a).normalized();
+            glBegin(GL_TRIANGLES);
+            glColor4f(col.getX(), col.getY(), col.getZ(),alp);
+            glNormal3d(n.getX(),n.getY(),n.getZ());
+            glVertex3d(a.getX(),a.getY(),a.getZ());
+            glVertex3d(b.getX(),b.getY(),b.getZ());
+            glVertex3d(c.getX(),c.getY(),c.getZ());
+            glEnd();
+             */
+	
+    
+    ofSetColor(255);
+   
+    band_material.bind();
+    for (vector<band>::iterator iter=bands.begin();iter!=bands.end();iter++) {
+        iter->mesh.draw();
+    }
+    band_material.unbind();
+    
+    
+//    ofSetColor(100,100,0,100);
+    ofPushMatrix();
+    //ofTranslate(toOF((*iter)->getWorldTransform().getOrigin()));
+    ofMultMatrix(toOF(m_pocket->getWorldTransform()));
+    ofRectangle rect;
+    rect.setFromCenter(ofPoint(), BOX_WIDTH , BOX_HEIGHT);
+    pocket_material.draw(rect);
+    ofPopMatrix();
+    
+    
+    
+    
         
     cam.end();
 
@@ -325,6 +431,7 @@ void Slingshot::exitPhysics(){
     cans.clear();
     walls.clear();
     slings.clear();
+    bands.clear();
     int i;
     
 	//removed/delete constraints

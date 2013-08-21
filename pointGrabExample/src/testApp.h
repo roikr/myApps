@@ -4,6 +4,8 @@
 #include "ofxiPhone.h"
 #include "ofxiPhoneExtras.h"
 #include "ofxPointGrab.h"
+#include "ofxiPhoneVideoGrabber.h"
+
 
 class testApp : public ofxiPhoneApp{
 	
@@ -23,14 +25,19 @@ class testApp : public ofxiPhoneApp{
         void gotFocus();
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
-        void newFrame(pointGrabData &data);
-
-        pointGrabData data;
-        bool bStartTracking;
-        deque<pointGrabData> trackableEvents;
-        deque<pointGrabData> grabEvents;
     
+        ofxPointGrab pointGrab;
+        ofxiPhoneVideoGrabber grabber;
+        ofTexture tex;
+    
+        
+        pointGrabData data;
+        
         float scaleStart;
+        ofPoint pos;
+    
+    
+        
 
 };
 

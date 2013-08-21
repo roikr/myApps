@@ -2,29 +2,15 @@
 
 #define STRECH_CONSTANT 10.0f
 
-enum {
-    EVENT_LOAD,
-    EVENT_SHOOT,
-    
-};
-
 //--------------------------------------------------------------
 void testApp::setup(){
     ofSetFrameRate(30);
-    data.bIsTrackable = false;
-    data.bIsGrab = false;
-  
+      
 	// initialize the accelerometer
 	ofxAccelerometer.setup();
-	ofxRegisterPointGrabNotification(this);
-    ofxPointGrab.setup();
-//    ofxPointGrab.setPreviewRect(ofRectangle(10,10,ofGetWidth()/3,0.75*ofGetWidth()/3));
-    
-   
-   
+	   
   
-//	//If you want a landscape oreintation 
-	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_PORTRAIT);
+
     
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [UIApplication sharedApplication].idleTimerDisabled = YES;
@@ -35,20 +21,19 @@ void testApp::setup(){
 	ofBackground(64);
     ofEnableAlphaBlending();
     
+    iPhoneSetOrientation(OFXIPHONE_ORIENTATION_PORTRAIT);
+    
     slingshot.setup();
     
     if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
     {
-        ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,550/2,413/2));
         if (iPhoneGetOFWindow()->isRetinaEnabled()) {
             slingshot.retinaScale = 0.5f;
         }
     }
-    else
-    {
-        ofxPointGrab.setPreviewRect(ofRectangle(50/2,50/2,120,90));
-    }
     
+    //	//If you want a landscape oreintation
+//	iPhoneSetOrientation(OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT);
   
    
     
@@ -56,36 +41,53 @@ void testApp::setup(){
     
     cout << ofGetWidth() << "\t" << ofGetHeight() << endl;
     background.loadImage("SlingShot_Backg.png");
+    target.loadImage("Target.png");
+    target.setAnchorPercent(0.5, 0.5);
+    grab.loadImage("Target_Grab.png");
+    grab.setAnchorPercent(0.5, 0.5);
     lastTime = ofGetElapsedTimef();
     
+    data.bIsTrackable = false;
+    data.bIsGrab = false;
+    scaleStart = 1.0f;
+    pointGrab.setup();
+    
+    grabber.initGrabber(640, 480);
+    tex.allocate(640, 480, GL_LUMINANCE);
     
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
     
-   
-    while (!events.empty()) {
-         cout << "event: " << events.back().first << endl;
-        switch (events.back().first) {
-            
-            case EVENT_LOAD:
-                slingshot.load();
-                scaleStart = events.back().second.scale;
-                break;
-            case EVENT_SHOOT:
-                slingshot.shoot();
-                break;
-        }
-
+    ofPixels &pixels = pointGrab.getNextPixels();
+    if (grabber.copyPixels(pixels)) {
+        tex.loadData(pixels);
+        pointGrabData data = pointGrab.update();
         
-        data = events.back().second;
-        events.pop_back();
-                
+        if (!this->data.bIsGrab && data.bIsGrab) {
+            scaleStart = data.scale;
+            slingshot.load();
+        }
+        
+        if (this->data.bIsGrab && !data.bIsGrab) {
+            slingshot.shoot();
+        }
+        
+        this->data = data;
+        
+        if (this->data.bIsTrackable) {
+            pos+=this->data.delta;
+        } else {
+            pos = ofPoint(0,0);
+        }
+        
     }
     
+   
+       
     if (data.bIsTrackable) {
-        slingshot.slingshotRoated(data.camRefPoint.x/640,data.camRefPoint.y/480);
+        slingshot.slingshotRoated(-pos/1000); // -1 mostright, 1 - mostleft,
     }
     
     if (data.bIsGrab) {
@@ -102,17 +104,34 @@ void testApp::update(){
 void testApp::draw(){
     glDisable(GL_DEPTH_TEST);
     background.draw(0,0,ofGetWidth(),ofGetHeight());
-    glEnable(GL_DEPTH_TEST);
     
+    ofPushMatrix();
+    ofTranslate(20, 20);
+    float scale = ofGetWidth()/tex.getWidth()/4;
+    ofScale(scale, scale);
+    ofPushMatrix();
+    ofScale(-1, 1);
+    ofTranslate(-tex.getWidth(),0);
+    tex.draw(0, 0);
+    ofPopMatrix();
+    if (data.bIsTrackable) {
+        ofTranslate(data.camRefPoint);
+        ofScale(2, 2);
+        if (data.bIsGrab) {
+            grab.draw(0, 0);
+        } else {
+            target.draw(0, 0);
+        }
+    }
+    ofPopMatrix();
+    
+    glEnable(GL_DEPTH_TEST);
     slingshot.draw();
     glDisable(GL_DEPTH_TEST);
-    
+   
     ofSetColor(255);
     
-//    ofPoint pos = data.camRefPoint;
-//    pos.x = ofMap(pos.x, 0, 640.0, 0, ofGetWidth());
-//    pos.y = ofMap(pos.y, 0, 480.0, 0, ofGetHeight());
-//    ofCircle(pos, 10);
+    
     
     slider.draw();
     
@@ -121,34 +140,18 @@ void testApp::draw(){
     ofScale(2.0, 2.0);
     
     ofDrawBitmapString(ofToString(ofGetFrameRate(),2),0,0);
-    ofDrawBitmapString(ofToString(log(scaleStart/data.scale), 2)+","+ofToString(data.scale, 2), 0, 20);
-    ofDrawBitmapString(ofToString(data.camRefPoint.x)+","+ofToString(data.camRefPoint.y),0,40);
+    ofDrawBitmapString(ofToString(grabber.getFPS(),2),0,20);
+    ofDrawBitmapString(ofToString(log(scaleStart/data.scale), 2)+","+ofToString(data.scale, 2), 0, 40);
+    ofDrawBitmapString(ofToString(data.delta.x)+","+ofToString(data.delta.y),0,60);
     ofPopMatrix();
 }
 
 //--------------------------------------------------------------
 void testApp::exit(){
-    ofxPointGrab.exit();
+    pointGrab.exit();
 }
 
-void testApp::newFrame(pointGrabData &data) {
-       
-    if (!this->data.bIsGrab && data.bIsGrab) {
-        events.push_front(make_pair(EVENT_LOAD,data));
-    }
 
-    if (this->data.bIsGrab && !data.bIsGrab) {
-        events.push_front(make_pair(EVENT_SHOOT,data));
-    }
-    
-    
-
-    
-    
-    
-    this->data = data;
-    
-}
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs & touch){

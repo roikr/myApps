@@ -42,7 +42,7 @@ public:
     void shoot();
   
     
-    void slingshotRoated(float x,float y); // normalized to [0,1]
+    void slingshotRoated(ofPoint rot); // normalized to [-1,1]
     void slingshotStreched(float z); // normalized to [0,1]
 
     

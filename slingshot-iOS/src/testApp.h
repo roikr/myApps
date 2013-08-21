@@ -4,6 +4,7 @@
 #include "ofxiPhone.h"
 #include "ofxiPhoneExtras.h"
 #include "ofxPointGrab.h"
+#include "ofxiPhoneVideoGrabber.h"
 #include "Slingshot.h"
 #include "Slider.h"
 
@@ -25,23 +26,23 @@ class testApp : public ofxiPhoneApp{
         void gotFocus();
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
-        void newFrame(pointGrabData &data);
-
+        
+        ofxiPhoneVideoGrabber grabber;
+        ofTexture tex;
+    
+        ofxPointGrab pointGrab;
         pointGrabData data;
-        bool bStartTracking;
-       
+        float scaleStart;
+        ofPoint pos;
+
+        Slingshot slingshot;
+        Slider slider;
+        ofImage background;
+        float lastTime;
     
-    
-    Slingshot slingshot;
-    float scaleStart;
-    
-    Slider slider;
-    
-    deque<pair<int,pointGrabData> > events;
-    
-    ofImage background;
-    
-    float lastTime;
+    ofImage target;
+    ofImage grab;
+    ofPoint targetPos;
     
 };
 

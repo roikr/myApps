@@ -491,14 +491,14 @@ void Slingshot::exitPhysics(){
 
 }
 
-void Slingshot::slingshotRoated(float x,float y) {
+void Slingshot::slingshotRoated(ofPoint rot) {
 //    btScalar currentDepth = m_gen6Dof->getRotationalLimitMotor(0)->m_currentPosition;
-    btScalar depth = ofMap(1-y, 0, 1, -45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG, true);
+    btScalar depth = ofMap(rot.y, -1, 1, -45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG, true);
     m_gen6Dof->setLimit(3, depth, depth);
 //    m_gen6Dof->getRotationalLimitMotor(0)->m_targetVelocity=(currentDepth>depth ? -10.0f : 10.0f);
     
 //    currentDepth = m_gen6Dof->getRotationalLimitMotor(1)->m_currentPosition;
-    depth = ofMap(1-x, 0, 1, -45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG, true);
+    depth = ofMap(rot.x, -1, 1, -45*SIMD_RADS_PER_DEG, 45*SIMD_RADS_PER_DEG, true);
     m_gen6Dof->setLimit(4, depth, depth);
 //    m_gen6Dof->getRotationalLimitMotor(1)->m_targetVelocity=(currentDepth>depth ? -10.0f : 10.0f);
     

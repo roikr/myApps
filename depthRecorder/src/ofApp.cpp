@@ -21,13 +21,40 @@ void ofApp::setup(){
     cam.setup();
     cam.listDepthModes();
     cam.setDepthMode(4);
+    
+    fbo.allocate(cam.depthWidth, cam.depthHeight);//,GL_LUMINANCE);
+    
+    fileName = "testMovie";
+    fileExt = ".mov";
+    
+    recorder.setPixelFormat("gray");
+    bRecording = false;
 
     windowResized(ofGetWidth(), ofGetHeight());
 }
 
+
 //--------------------------------------------------------------
 void ofApp::update(){
     cam.update();
+    
+    if(cam.bNewDepth){
+        ofSetColor(255);
+        fbo.begin();
+        ofClear(0);
+        shader.begin();
+        cam.depthTexture.draw(ofPoint());
+        shader.end();
+        
+        fbo.end();
+        
+        if (bRecording) {
+            ofPixels pixels;
+            fbo.readToPixels(pixels);
+            pixels.setImageType(OF_IMAGE_GRAYSCALE);
+            recorder.addFrame(pixels);
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -35,11 +62,32 @@ void ofApp::draw(){
     ofBackground(0);
     ofPushMatrix();
     ofMultMatrix(mat);
-    shader.begin();
-    cam.depthTexture.draw(ofPoint());
-    shader.end();
+    fbo.draw(ofPoint());
     ofPopMatrix();
+    
+    stringstream ss;
+    ss << "video queue size: " << recorder.getVideoQueueSize() << endl
+    << "audio queue size: " << recorder.getAudioQueueSize() << endl
+    << "FPS: " << ofGetFrameRate() << endl
+    << (bRecording?"pause":"start") << " recording: r" << endl
+    << (bRecording?"close current video file: c":"") << endl;
+    
+    ofSetColor(0,0,0,100);
+    ofRect(0, 0, 260, 75);
+    ofSetColor(255, 255, 255);
+    ofDrawBitmapString(ss.str(),15,15);
+    
+    if(bRecording){
+        ofSetColor(255, 0, 0);
+        ofCircle(ofGetWidth() - 20, 20, 5);
+    }
+    
 }
+
+void ofApp::exit() {
+    recorder.close();
+}
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
@@ -50,6 +98,16 @@ void ofApp::keyPressed(int key){
         case 's':
             shader.setupShaderFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
             shader.linkProgram();
+            break;
+        case 'r':
+            bRecording = !bRecording;
+            if(bRecording && !recorder.isInitialized()) {
+                recorder.setup(fileName+ofGetTimestampString()+fileExt, cam.depthWidth, cam.depthHeight, 30);
+            }
+            break;
+        case 'c':
+            bRecording = false;
+            recorder.close();
             break;
         default:
             break;

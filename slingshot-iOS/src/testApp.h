@@ -4,7 +4,7 @@
 #include "ofxiPhone.h"
 #include "ofxiPhoneExtras.h"
 #include "ofxPointGrab.h"
-#include "ofxiPhoneVideoGrabber.h"
+#include "ofxiVideoGrabber.h"
 #include "Slingshot.h"
 #include "Slider.h"
 
@@ -27,7 +27,7 @@ class testApp : public ofxiPhoneApp{
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
         
-        ofxiPhoneVideoGrabber grabber;
+        ofxiVideoGrabber grabber;
         ofTexture tex;
     
         ofxPointGrab pointGrab;

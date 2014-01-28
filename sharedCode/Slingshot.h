@@ -41,9 +41,10 @@ public:
 //    void unload();
     void shoot();
   
-    
+    void setTrackable(bool bTrackable);
     void slingshotRoated(ofPoint rot); // normalized to [-1,1]
     void slingshotStreched(float z); // normalized to [0,1]
+    
 
     
     btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform,btCollisionShape* shape);
@@ -89,5 +90,6 @@ public:
     
     
     float retinaScale;
+    bool bTrackable;
        
 };

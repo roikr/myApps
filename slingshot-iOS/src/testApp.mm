@@ -1,4 +1,5 @@
 #include "testApp.h"
+#include "Settings.h"
 
 #define STRECH_CONSTANT 10.0f
 
@@ -9,8 +10,28 @@ void testApp::setup(){
 	// initialize the accelerometer
 	ofxAccelerometer.setup();
 	   
-  
-
+    
+    if (!ofFile(ofxiPhoneGetDocumentsDirectory() + "pg_user.ini").exists()) {
+        ofFile src(ofToDataPath("pg_user.ini"));
+        src.copyTo(ofxiPhoneGetDocumentsDirectory() + "pg_user.ini");
+        cout << "copy default pg_user.ini" << endl;
+               
+    }
+    
+    
+    if (Settings::getBool("update_preference")) {
+        
+        ofHttpResponse response = ofLoadURL(Settings::getString("url_preference")+"/pg_user.ini");
+        if (response.status==200) {
+            Settings::setBool(false,"update_preference");
+            ofFile file;
+            file.open(ofxiPhoneGetDocumentsDirectory() + "pg_user.ini", ofFile::WriteOnly);
+            file << response.data;
+            file.close();
+            
+            cout << "pg_user.ini downloaded" << endl;
+        }
+    }
     
     [UIApplication sharedApplication].idleTimerDisabled = NO;
     [UIApplication sharedApplication].idleTimerDisabled = YES;
@@ -21,13 +42,13 @@ void testApp::setup(){
 	ofBackground(64);
     ofEnableAlphaBlending();
     
-    iPhoneSetOrientation(OFXIPHONE_ORIENTATION_PORTRAIT);
+    ofSetOrientation(OF_ORIENTATION_90_LEFT);
     
     slingshot.setup();
     
     if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
     {
-        if (iPhoneGetOFWindow()->isRetinaEnabled()) {
+        if (ofxiOSGetOFWindow()->isRetinaEnabled()) {
             slingshot.retinaScale = 0.5f;
         }
     }
@@ -50,9 +71,10 @@ void testApp::setup(){
     data.bIsTrackable = false;
     data.bIsGrab = false;
     scaleStart = 1.0f;
-    pointGrab.setup();
+    pointGrab.setup(ofxiPhoneGetDocumentsDirectory(),true);
     
     grabber.initGrabber(640, 480);
+    grabber.setOrientation(OF_ORIENTATION_90_LEFT,true);
     tex.allocate(640, 480, GL_LUMINANCE);
     
 }
@@ -82,6 +104,7 @@ void testApp::update(){
             pos = ofPoint(0,0);
         }
         
+        slingshot.setTrackable(this->data.bIsTrackable);
     }
     
    
@@ -103,17 +126,19 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
     glDisable(GL_DEPTH_TEST);
+    ofSetColor(255);
     background.draw(0,0,ofGetWidth(),ofGetHeight());
     
     ofPushMatrix();
     ofTranslate(20, 20);
     float scale = ofGetWidth()/tex.getWidth()/4;
-    ofScale(scale, scale);
-    ofPushMatrix();
-    ofScale(-1, 1);
-    ofTranslate(-tex.getWidth(),0);
+    ofScale(scale, scale,1);
+//    ofPushMatrix();
+//    ofScale(-1, 1);
+//    ofTranslate(-tex.getWidth(),0);
+    ofSetColor(255);
     tex.draw(0, 0);
-    ofPopMatrix();
+//    ofPopMatrix();
     if (data.bIsTrackable) {
         ofTranslate(data.camRefPoint);
         ofScale(2, 2);

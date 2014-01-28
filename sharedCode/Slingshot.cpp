@@ -144,7 +144,7 @@ void Slingshot::initPhysics() {
     
     btCollisionShape *plane_shape = new btStaticPlaneShape(toBt(ofVec3f(0,1,0)), 0);
 	walls.push_back(localCreateRigidBody(0, tr, plane_shape));
-    tr.setOrigin(btVector3(btScalar(0), btScalar(0.), btScalar(-750.)));
+    tr.setOrigin(btVector3(btScalar(0), btScalar(0.), btScalar(-500.)));
     tr.getBasis().setEulerZYX(SIMD_HALF_PI, 0,0 );
 //    walls.push_back(addRigidBody(plane_shape, ofVec3f(0,0,-750), ofVec3f(0,90,0),0));
     walls.push_back(localCreateRigidBody(0, tr, plane_shape));
@@ -250,7 +250,7 @@ void Slingshot::initPhysics() {
     for (int i=0;i<5;i++) {
         btTransform tr;
         tr.setIdentity();
-        tr.setOrigin(btVector3(-50+40*i,0,-250-75*i));
+        tr.setOrigin(btVector3(-70+50*i,0,-200-60*i));
         tr.getBasis().setEulerZYX(0, ofRandom(SIMD_2_PI), 0);
         can c;
         c.body = localCreateRigidBody(10, tr, can_shape);
@@ -282,11 +282,10 @@ void Slingshot::setup(){
     
     ofEnableAlphaBlending();
 //    ofEnableArbTex();
-    ofEnableNormalizedTexCoords();
-    ofDisableArbTex();
+//    ofEnableNormalizedTexCoords();
+//    ofDisableArbTex();
     ofSetSmoothLighting(true);
-    
-   
+      
 }
 
 //--------------------------------------------------------------
@@ -402,7 +401,7 @@ void Slingshot::draw(){
              */
 	
     
-    ofSetColor(255,255,255,190);
+    ofSetColor(255,255,255,bTrackable ? 190 : 100);
    
     band_material.bind();
     for (vector<band>::iterator iter=bands.begin();iter!=bands.end();iter++) {
@@ -509,6 +508,10 @@ void Slingshot::slingshotStreched(float z) {
     btScalar depth = ofMap(z, 0, 1, 0, 200, true);
     m_slider->setLimit(2, depth, depth);
 //    m_slider->getTranslationalLimitMotor()->m_targetVelocity[2]=;
+}
+
+void Slingshot::setTrackable(bool bTrackable) {
+    this->bTrackable = bTrackable;
 }
 
 //--------------------------------------------------------------

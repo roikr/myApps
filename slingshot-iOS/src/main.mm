@@ -1,10 +1,13 @@
 #include "ofMain.h"
 #include "testApp.h"
+#include "ofAppiOSWindow.h"
 
 int main(){
-	ofSetupOpenGL(1024,768, OF_FULLSCREEN);			// <-------- setup the GL context
-    iPhoneGetOFWindow()->enableDepthBuffer();
-    iPhoneGetOFWindow()->enableRetina();
-    iPhoneGetOFWindow()->setOrientation(OF_ORIENTATION_90_RIGHT);
+    ofAppiOSWindow *window = new ofAppiOSWindow();
+    window->enableHardwareOrientation();
+    window->enableRetina();
+    window->enableDepthBuffer();
+    
+	ofSetupOpenGL(window,1024,768, OF_FULLSCREEN);
 	ofRunApp(new testApp);
 }

@@ -1,0 +1,977 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		5326AEA810A23A0500278DE6 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5326AEA710A23A0500278DE6 /* CoreLocation.framework */; };
+		53F323EB10A20EDB00E0DAE4 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53F323EA10A20EDB00E0DAE4 /* OpenAL.framework */; };
+		678E130817951530005B6D19 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 678E130717951530005B6D19 /* Icon@2x.png */; };
+		678E130A17951536005B6D19 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 678E130917951536005B6D19 /* Icon.png */; };
+		678E130C1795153C005B6D19 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 678E130B1795153C005B6D19 /* Default.png */; };
+		678E130E17951540005B6D19 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 678E130D17951540005B6D19 /* Default@2x.png */; };
+		678E131017951549005B6D19 /* Default-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 678E130F17951549005B6D19 /* Default-568h@2x~iphone.png */; };
+		7d93dfc7f4da90780fd92965 /* ofxPointGrab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1ee635fbd42fed000fef6e6e /* ofxPointGrab.cpp */; };
+		BB16EBD20F2B2A9500518274 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD10F2B2A9500518274 /* OpenGLES.framework */; };
+		BB16EBD90F2B2AB500518274 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD80F2B2AB500518274 /* QuartzCore.framework */; };
+		BBE5EAB80F49AD8400F28951 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBE5EAB70F49AD8400F28951 /* AudioToolbox.framework */; };
+		E400ADEF18AD209C00912161 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E400ADEE18AD209C00912161 /* Accelerate.framework */; };
+		E41D3ED713B38FB500A75A5D /* Project.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E41D3ED613B38FB500A75A5D /* Project.xcconfig */; };
+		E41D3EE613B3906D00A75A5D /* CoreOF.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E41D3EE513B3906D00A75A5D /* CoreOF.xcconfig */; };
+		E41D400B13B39D2100A75A5D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400613B39D2100A75A5D /* AVFoundation.framework */; };
+		E41D400C13B39D2100A75A5D /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400713B39D2100A75A5D /* CoreMedia.framework */; };
+		E41D400D13B39D2100A75A5D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400813B39D2100A75A5D /* CoreVideo.framework */; };
+		E41D400E13B39D2100A75A5D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400913B39D2100A75A5D /* MapKit.framework */; };
+		E41D421413B3A95300A75A5D /* libofxiOS_iphoneos_Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D410213B3A0D800A75A5D /* libofxiOS_iphoneos_Debug.a */; };
+		E4A823A412561BE3002F86A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4A823A312561BE3002F86A2 /* CoreGraphics.framework */; };
+		E4D8936E11527B74007E1F53 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4D8936B11527B74007E1F53 /* main.mm */; };
+		E4D8936F11527B74007E1F53 /* ofApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4D8936D11527B74007E1F53 /* ofApp.mm */; };
+		d3b5ca1da017963e41b74554 /* VideoGrabber.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5de24525926c77eac784f864 /* VideoGrabber.mm */; };
+		ef1541a856fe27edca7efdbd /* ofxiVideoGrabber.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9fb005678ee9361aec433ea2 /* ofxiVideoGrabber.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E41D410113B3A0D800A75A5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BB24DED610DA7A3F00E9C588;
+			remoteInfo = "iPhone+OF Static Library";
+		};
+		E41D410313B3A11300A75A5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = BB24DE5C10DA7A3F00E9C588;
+			remoteInfo = "iPhone+OF Static Library";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03bcebfb7d36a3e29fb768bd /* core.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = core.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/core.hpp; sourceTree = SOURCE_ROOT; };
+		04989aa8b7701a4f17c0da34 /* camera.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = camera.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/camera.hpp; sourceTree = SOURCE_ROOT; };
+		06b1cb3ee60ce896af7c2bfc /* deblurring.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = deblurring.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/deblurring.hpp; sourceTree = SOURCE_ROOT; };
+		0706d3926f445137af575f86 /* all_indices.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = all_indices.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/all_indices.h; sourceTree = SOURCE_ROOT; };
+		07b34ab8fcfa305de583101e /* video.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = video.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/video/video.hpp; sourceTree = SOURCE_ROOT; };
+		0a35a430d9542ae48bb5a134 /* warpers.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = warpers.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/warpers.hpp; sourceTree = SOURCE_ROOT; };
+		0d6332a0a487a8c22bc9dc20 /* stabilizer.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = stabilizer.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/stabilizer.hpp; sourceTree = SOURCE_ROOT; };
+		0e3086f9177454b7f380af13 /* any.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = any.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/any.h; sourceTree = SOURCE_ROOT; };
+		12b0344ccda2e7951b798ebf /* motion_stabilizing.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = motion_stabilizing.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/motion_stabilizing.hpp; sourceTree = SOURCE_ROOT; };
+		137611c09e31ac58ae5d2e6e /* version.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = version.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/version.hpp; sourceTree = SOURCE_ROOT; };
+		1774d05da49dc63d5178b426 /* legacy.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = legacy.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy/legacy.hpp; sourceTree = SOURCE_ROOT; };
+		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		1D6058910D05DD3D006BFB54 /* pointgrabVideo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pointgrabVideo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		1b5e237ebe1a2478fea4202d /* PG_ShortRangeResult.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PG_ShortRangeResult.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/PG_ShortRangeResult.h; sourceTree = SOURCE_ROOT; };
+		1c0cb02b9e19eeaad3bedd57 /* flann_base.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = flann_base.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/flann_base.hpp; sourceTree = SOURCE_ROOT; };
+		1d66b89dff59dcada6b7b233 /* hybridtracker.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = hybridtracker.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/contrib/hybridtracker.hpp; sourceTree = SOURCE_ROOT; };
+		1d9d8a5a7d4eb757f0ffd787 /* background_segm.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = background_segm.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/video/background_segm.hpp; sourceTree = SOURCE_ROOT; };
+		1e412fd6c3a7ec12ee7e8ed4 /* opencv_modules.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = opencv_modules.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/opencv_modules.hpp; sourceTree = SOURCE_ROOT; };
+		1ee635fbd42fed000fef6e6e /* ofxPointGrab.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPointGrab.cpp; path = ../../../addons/ofxPointGrab/src/ofxPointGrab.cpp; sourceTree = SOURCE_ROOT; };
+		2294f39c626a2d3dccac0e7a /* miniflann.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = miniflann.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/miniflann.hpp; sourceTree = SOURCE_ROOT; };
+		22f254f6bc978b226e9b354a /* optical_flow.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = optical_flow.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/optical_flow.hpp; sourceTree = SOURCE_ROOT; };
+		2441460a23ecb97fc86c85e1 /* wimage.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = wimage.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/wimage.hpp; sourceTree = SOURCE_ROOT; };
+		255ddf340870c819957d4f02 /* heap.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = heap.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/heap.h; sourceTree = SOURCE_ROOT; };
+		26b2cceb6f1cae7f96a7c0d5 /* autotuned_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = autotuned_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/autotuned_index.h; sourceTree = SOURCE_ROOT; };
+		26e4d7a8e2526fd42e921d92 /* hdf5.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = hdf5.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/hdf5.h; sourceTree = SOURCE_ROOT; };
+		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		2a459b87f8e4cb760ea06575 /* timer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = timer.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/timer.h; sourceTree = SOURCE_ROOT; };
+		2ed23e2c1869199bcb1e8b4c /* highgui_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = highgui_c.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/highgui/highgui_c.h; sourceTree = SOURCE_ROOT; };
+		2f8d47b802b812faf9be3654 /* motion_estimators.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = motion_estimators.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/motion_estimators.hpp; sourceTree = SOURCE_ROOT; };
+		30aa40bd58d769f810b6286d /* core_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = core_c.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/core_c.h; sourceTree = SOURCE_ROOT; };
+		3109c4ec56685997067ec8cf /* PG_API.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PG_API.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/PG_API.h; sourceTree = SOURCE_ROOT; };
+		311e17efe1ece1aa0eb05f39 /* random.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = random.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/random.h; sourceTree = SOURCE_ROOT; };
+		32CA4F630368D1EE00C91783 /* ofxiOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxiOS_Prefix.pch; sourceTree = "<group>"; };
+		336979a6d0c78029e710da38 /* util_inl.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = util_inl.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/util_inl.hpp; sourceTree = SOURCE_ROOT; };
+		342c9f207a0ebf179873c81d /* compat.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = compat.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy/compat.hpp; sourceTree = SOURCE_ROOT; };
+		34a9019b8b4f0f9c60e74c39 /* nonfree.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = nonfree.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/nonfree/nonfree.hpp; sourceTree = SOURCE_ROOT; };
+		3501e2a5b4ac1a3c9e0926fb /* internal.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = internal.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/internal.hpp; sourceTree = SOURCE_ROOT; };
+		3773d8a19651432474ee5473 /* kdtree_single_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = kdtree_single_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/kdtree_single_index.h; sourceTree = SOURCE_ROOT; };
+		38931ba689c9394a2d933fd2 /* PG_LicenseChecker.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PG_LicenseChecker.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/PG_LicenseChecker.h; sourceTree = SOURCE_ROOT; };
+		3b5828756db6584ad9792564 /* mat.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = mat.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/mat.hpp; sourceTree = SOURCE_ROOT; };
+		3d70a82463d4e9131402fbdd /* types_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = types_c.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/imgproc/types_c.h; sourceTree = SOURCE_ROOT; };
+		407c14f0e6d9e94ecbaac60d /* cxcore.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxcore.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cxcore.hpp; sourceTree = SOURCE_ROOT; };
+		4366c3b70dd1d9f760bd6199 /* imgproc.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = imgproc.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/imgproc/imgproc.hpp; sourceTree = SOURCE_ROOT; };
+		45307ef8d15a6033da0cff81 /* cxmisc.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxmisc.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cxmisc.h; sourceTree = SOURCE_ROOT; };
+		4551d80343b68a1f5bb7581e /* result_set.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = result_set.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/result_set.h; sourceTree = SOURCE_ROOT; };
+		49073261f48ee6497cd660d9 /* index_testing.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = index_testing.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/index_testing.h; sourceTree = SOURCE_ROOT; };
+		5326AEA710A23A0500278DE6 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		539df32af79db0020ab69034 /* PG_Engine.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PG_Engine.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/PG_Engine.h; sourceTree = SOURCE_ROOT; };
+		53F323EA10A20EDB00E0DAE4 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		53bb0cdba0f40026543425c6 /* linear_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = linear_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/linear_index.h; sourceTree = SOURCE_ROOT; };
+		57678aabe83607ff9ddfe0f6 /* fast_marching_inl.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_marching_inl.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/fast_marching_inl.hpp; sourceTree = SOURCE_ROOT; };
+		581cc297831b378eff88fb09 /* stitcher.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = stitcher.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/stitcher.hpp; sourceTree = SOURCE_ROOT; };
+		588b179e312dbf06ee4f5ac0 /* _cxcore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = _cxcore.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/_cxcore.h; sourceTree = SOURCE_ROOT; };
+		5ad450474f0727e21ebc518c /* cxeigen.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxeigen.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cxeigen.hpp; sourceTree = SOURCE_ROOT; };
+		5cefa190121a6ec25f06093e /* ground_truth.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ground_truth.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/ground_truth.h; sourceTree = SOURCE_ROOT; };
+		5de24525926c77eac784f864 /* VideoGrabber.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 30; name = VideoGrabber.mm; path = ../../../addons/ofxiVideoGrabber/src/VideoGrabber.mm; sourceTree = SOURCE_ROOT; };
+		60258c9a5578581c03c9240a /* cxcore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxcore.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cxcore.h; sourceTree = SOURCE_ROOT; };
+		6563b4d025f1fd1b9cba2872 /* kmeans_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = kmeans_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/kmeans_index.h; sourceTree = SOURCE_ROOT; };
+		678E130717951530005B6D19 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "bin/data/Icon@2x.png"; sourceTree = "<group>"; };
+		678E130917951536005B6D19 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = bin/data/Icon.png; sourceTree = "<group>"; };
+		678E130B1795153C005B6D19 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = bin/data/Default.png; sourceTree = "<group>"; };
+		678E130D17951540005B6D19 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "bin/data/Default@2x.png"; sourceTree = "<group>"; };
+		678E130F17951549005B6D19 /* Default-568h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x~iphone.png"; path = "bin/data/Default-568h@2x~iphone.png"; sourceTree = "<group>"; };
+		6c0e46f8846384a26ce15a44 /* fast_marching.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_marching.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/fast_marching.hpp; sourceTree = SOURCE_ROOT; };
+		6dfe743a007b4e8efa26b6c7 /* exposure_compensate.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = exposure_compensate.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/exposure_compensate.hpp; sourceTree = SOURCE_ROOT; };
+		709ea48d3dfb20c5e9c7a57e /* tracking.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tracking.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/video/tracking.hpp; sourceTree = SOURCE_ROOT; };
+		7252f9585b7dd39bf56d7afa /* cvaux.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cvaux.h; sourceTree = SOURCE_ROOT; };
+		73de1b4b010bf5df2b67282e /* cvwimage.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvwimage.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cvwimage.h; sourceTree = SOURCE_ROOT; };
+		779091015ab932fd15252b05 /* simplex_downhill.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = simplex_downhill.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/simplex_downhill.h; sourceTree = SOURCE_ROOT; };
+		7a2ad66cb4a847aa22a4ccc0 /* ofxiVideoGrabber.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxiVideoGrabber.h; path = ../../../addons/ofxiVideoGrabber/src/ofxiVideoGrabber.h; sourceTree = SOURCE_ROOT; };
+		7b97e6b4d8971f265cdfb696 /* objdetect.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = objdetect.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/objdetect/objdetect.hpp; sourceTree = SOURCE_ROOT; };
+		7dce4d6ac321b1c846a9a34e /* object_factory.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = object_factory.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/object_factory.h; sourceTree = SOURCE_ROOT; };
+		823d1e301ab93c496fd82f57 /* retina.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = retina.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/contrib/retina.hpp; sourceTree = SOURCE_ROOT; };
+		8396988f5eff2fb9ca2fee74 /* blenders.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = blenders.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/blenders.hpp; sourceTree = SOURCE_ROOT; };
+		848e24bcc108cb2b18df73d7 /* inpainting.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = inpainting.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/inpainting.hpp; sourceTree = SOURCE_ROOT; };
+		863b0ec9c0509c594a68318f /* ts_perf.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ts_perf.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ts/ts_perf.hpp; sourceTree = SOURCE_ROOT; };
+		9138bed4c88720ed136bc77b /* eigen.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = eigen.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/eigen.hpp; sourceTree = SOURCE_ROOT; };
+		9515af4c81e6914f6ca577e6 /* lsh_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/lsh_index.h; sourceTree = SOURCE_ROOT; };
+		9573f2bfbf52184337c4c180 /* cvaux.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvaux.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cvaux.hpp; sourceTree = SOURCE_ROOT; };
+		96c07fcc973766f75210bd80 /* cxtypes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxtypes.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cxtypes.h; sourceTree = SOURCE_ROOT; };
+		96ea55c2de50e0b6c941e0aa /* _cv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = _cv.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/_cv.h; sourceTree = SOURCE_ROOT; };
+		9e8b3cc5d3050752a1acfcd9 /* defines.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = defines.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/defines.h; sourceTree = SOURCE_ROOT; };
+		9f9768edde4d133fc6eb7fde /* autocalib.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = autocalib.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/autocalib.hpp; sourceTree = SOURCE_ROOT; };
+		9fb005678ee9361aec433ea2 /* ofxiVideoGrabber.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 30; name = ofxiVideoGrabber.mm; path = ../../../addons/ofxiVideoGrabber/src/ofxiVideoGrabber.mm; sourceTree = SOURCE_ROOT; };
+		BB16EBD10F2B2A9500518274 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		BB16EBD80F2B2AB500518274 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		BB24DDC910DA781C00E9C588 /* ofxiOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ofxiOS-Info.plist"; sourceTree = "<group>"; };
+		BBE5EAB70F49AD8400F28951 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		E400ADEE18AD209C00912161 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		E41D3ED613B38FB500A75A5D /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
+		E41D3EE513B3906D00A75A5D /* CoreOF.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = CoreOF.xcconfig; path = ../../../libs/openFrameworksCompiled/project/ios/CoreOF.xcconfig; sourceTree = SOURCE_ROOT; };
+		E41D400613B39D2100A75A5D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		E41D400713B39D2100A75A5D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		E41D400813B39D2100A75A5D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		E41D400913B39D2100A75A5D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "iOS+OFLib.xcodeproj"; path = "../../../libs/openFrameworksCompiled/project/ios/iOS+OFLib.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		E4A823A312561BE3002F86A2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		E4D8936B11527B74007E1F53 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = src/main.mm; sourceTree = SOURCE_ROOT; };
+		E4D8936C11527B74007E1F53 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
+		E4D8936D11527B74007E1F53 /* ofApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ofApp.mm; path = src/ofApp.mm; sourceTree = SOURCE_ROOT; };
+		a04a8f3fe0c15e2aee4a6d4a /* ts_gtest.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ts_gtest.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ts/ts_gtest.h; sourceTree = SOURCE_ROOT; };
+		a2a5b596f0b6b06d194deeb9 /* lsh_table.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_table.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/lsh_table.h; sourceTree = SOURCE_ROOT; };
+		a37893f595ba38d11d080f1b /* frame_source.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = frame_source.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/frame_source.hpp; sourceTree = SOURCE_ROOT; };
+		a55ccde73e5b4ec1cd52fa9c /* gpu.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = gpu.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/gpu/gpu.hpp; sourceTree = SOURCE_ROOT; };
+		a6b71ee3be9132d79c6068cb /* flann.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = flann.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/flann.hpp; sourceTree = SOURCE_ROOT; };
+		a9417095e815ac9aca72746b /* cvtypes.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvtypes.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cvtypes.h; sourceTree = SOURCE_ROOT; };
+		aa66fa8ba8c94de9215b8b81 /* seam_finders.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = seam_finders.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/seam_finders.hpp; sourceTree = SOURCE_ROOT; };
+		ac479e25597e7dcbc454d5cc /* allocator.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = allocator.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/allocator.h; sourceTree = SOURCE_ROOT; };
+		ac5a35700fa4450e359d7f1c /* opencv.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = opencv.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/opencv.hpp; sourceTree = SOURCE_ROOT; };
+		ae9c4580d9087e519115da8b /* nn_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = nn_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/nn_index.h; sourceTree = SOURCE_ROOT; };
+		afc009f8dfc2cf27845d8889 /* streams.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = streams.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy/streams.hpp; sourceTree = SOURCE_ROOT; };
+		b05677a5826f7e6b4e4df2d4 /* ml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ml.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/ml.h; sourceTree = SOURCE_ROOT; };
+		b0c9768ab2aea84b87609848 /* matrix.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/matrix.h; sourceTree = SOURCE_ROOT; };
+		b1347463e3941e33e2d90ba2 /* dist.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dist.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/dist.h; sourceTree = SOURCE_ROOT; };
+		b25aa7386fbb9aa31816b021 /* warpers.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = warpers.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/warpers.hpp; sourceTree = SOURCE_ROOT; };
+		b39ef5f0d2a5290a09ba0cd5 /* detection_based_tracker.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = detection_based_tracker.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/contrib/detection_based_tracker.hpp; sourceTree = SOURCE_ROOT; };
+		b5881d757df5df64f28c7b34 /* imgproc_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = imgproc_c.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/imgproc/imgproc_c.h; sourceTree = SOURCE_ROOT; };
+		b680656c262a30695c46dc54 /* ts.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ts.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ts/ts.hpp; sourceTree = SOURCE_ROOT; };
+		b92d19e6272beb0d52e2104d /* highgui.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = highgui.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/highgui/highgui.hpp; sourceTree = SOURCE_ROOT; };
+		b96679fcc7afaa39ff0e4e13 /* kdtree_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = kdtree_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/kdtree_index.h; sourceTree = SOURCE_ROOT; };
+		ba302e653e36a7617524c76b /* global_motion.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = global_motion.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/global_motion.hpp; sourceTree = SOURCE_ROOT; };
+		bad2ae33b1dde63e171422f5 /* general.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = general.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/general.h; sourceTree = SOURCE_ROOT; };
+		bbdf592a1472f3067c6409dd /* warpers_inl.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = warpers_inl.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/warpers_inl.hpp; sourceTree = SOURCE_ROOT; };
+		c3dfb4b0cf4c9cbe60623b21 /* cv.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cv.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cv.h; sourceTree = SOURCE_ROOT; };
+		c4cd7b58560ecdee240038a9 /* util.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = util.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/util.hpp; sourceTree = SOURCE_ROOT; };
+		c5db08043178f63c5efc9713 /* config.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = config.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/config.h; sourceTree = SOURCE_ROOT; };
+		c648199761aec7add02266b3 /* types_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = types_c.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/types_c.h; sourceTree = SOURCE_ROOT; };
+		c750271368697c359eb66e94 /* opengl_interop.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = opengl_interop.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/opengl_interop.hpp; sourceTree = SOURCE_ROOT; };
+		c7d72d7c76b3ed42d50f203d /* saving.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = saving.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/saving.h; sourceTree = SOURCE_ROOT; };
+		c89c3d2247d50e7c6f1f57d5 /* highgui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = highgui.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/highgui.h; sourceTree = SOURCE_ROOT; };
+		c8f158178c16a7468753058f /* gpumat.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = gpumat.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/gpumat.hpp; sourceTree = SOURCE_ROOT; };
+		cbe8dff051ae453578e7851f /* logger.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = logger.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/logger.h; sourceTree = SOURCE_ROOT; };
+		ce806d2424d1706d329e6d38 /* operations.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = operations.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/operations.hpp; sourceTree = SOURCE_ROOT; };
+		d27d3d2b3a5ad0f0109e09b6 /* cv.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cv.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cv.hpp; sourceTree = SOURCE_ROOT; };
+		d3c19503e18f6f80bce7ec71 /* stream_accessor.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = stream_accessor.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/gpu/stream_accessor.hpp; sourceTree = SOURCE_ROOT; };
+		d681292a9902353623afa9d8 /* world.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = world.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/world/world.hpp; sourceTree = SOURCE_ROOT; };
+		d94275f3db6d638e2dce4912 /* photo.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = photo.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/photo/photo.hpp; sourceTree = SOURCE_ROOT; };
+		d9e6442635e8d6e39abf5699 /* cvconfig.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cvconfig.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/cvconfig.h; sourceTree = SOURCE_ROOT; };
+		dd86b9940b6f4717d7ebb659 /* photo_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = photo_c.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/photo/photo_c.h; sourceTree = SOURCE_ROOT; };
+		dd8ff73ba862ffae3b696740 /* dummy.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dummy.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/dummy.h; sourceTree = SOURCE_ROOT; };
+		e00ef880291ec1fe3345788e /* videostab.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = videostab.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/videostab.hpp; sourceTree = SOURCE_ROOT; };
+		e0e8b958222f2f8191163e50 /* log.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = log.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab/log.hpp; sourceTree = SOURCE_ROOT; };
+		e115f9e3c13bdd219991dfd0 /* devmem2d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = devmem2d.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/gpu/devmem2d.hpp; sourceTree = SOURCE_ROOT; };
+		e1b3cfd7de320f19fbe97f86 /* features2d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = features2d.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/features2d/features2d.hpp; sourceTree = SOURCE_ROOT; };
+		e40d645082d3fdef06f2ec72 /* ofxPointGrab.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxPointGrab.h; path = ../../../addons/ofxPointGrab/src/ofxPointGrab.h; sourceTree = SOURCE_ROOT; };
+		e440fe4ba784d448ca507a32 /* calib3d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = calib3d.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/calib3d/calib3d.hpp; sourceTree = SOURCE_ROOT; };
+		e61d9232d3bbcb34e9b9169f /* sampling.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = sampling.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/sampling.h; sourceTree = SOURCE_ROOT; };
+		e9c0d19ffcfa3bbeb60632db /* devmem2d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = devmem2d.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/devmem2d.hpp; sourceTree = SOURCE_ROOT; };
+		ea31cd0e62116f92ad6feaf8 /* ml.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ml.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ml/ml.hpp; sourceTree = SOURCE_ROOT; };
+		ee6a1c38dbee49752872d563 /* dynamic_bitset.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dynamic_bitset.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/dynamic_bitset.h; sourceTree = SOURCE_ROOT; };
+		ee71d790a009fb1413283fde /* composite_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = composite_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/composite_index.h; sourceTree = SOURCE_ROOT; };
+		ef64fde6ecfbb498ebd4ce8b /* blobtrack.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = blobtrack.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy/blobtrack.hpp; sourceTree = SOURCE_ROOT; };
+		efa2956f328b2d30ca939352 /* contrib.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = contrib.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/contrib/contrib.hpp; sourceTree = SOURCE_ROOT; };
+		f136c954484c9cff119fe1a7 /* hierarchical_clustering_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = hierarchical_clustering_index.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/hierarchical_clustering_index.h; sourceTree = SOURCE_ROOT; };
+		f34baa3f4c77187613f7d94c /* gpumat.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = gpumat.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/gpu/gpumat.hpp; sourceTree = SOURCE_ROOT; };
+		f3a15aed8295aad98a874707 /* VideoGrabber.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = VideoGrabber.h; path = ../../../addons/ofxiVideoGrabber/src/VideoGrabber.h; sourceTree = SOURCE_ROOT; };
+		f4dfd783752fab29a5f8d011 /* params.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = params.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/params.h; sourceTree = SOURCE_ROOT; };
+		f9b824d8d905da194f64624e /* features2d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = features2d.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/nonfree/features2d.hpp; sourceTree = SOURCE_ROOT; };
+		fd39b77857ef523ed807356d /* matchers.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matchers.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail/matchers.hpp; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E400ADEF18AD209C00912161 /* Accelerate.framework in Frameworks */,
+				E41D421413B3A95300A75A5D /* libofxiOS_iphoneos_Debug.a in Frameworks */,
+				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
+				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
+				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
+				BB16EBD20F2B2A9500518274 /* OpenGLES.framework in Frameworks */,
+				BB16EBD90F2B2AB500518274 /* QuartzCore.framework in Frameworks */,
+				BBE5EAB80F49AD8400F28951 /* AudioToolbox.framework in Frameworks */,
+				53F323EB10A20EDB00E0DAE4 /* OpenAL.framework in Frameworks */,
+				5326AEA810A23A0500278DE6 /* CoreLocation.framework in Frameworks */,
+				E4A823A412561BE3002F86A2 /* CoreGraphics.framework in Frameworks */,
+				E41D400B13B39D2100A75A5D /* AVFoundation.framework in Frameworks */,
+				E41D400C13B39D2100A75A5D /* CoreMedia.framework in Frameworks */,
+				E41D400D13B39D2100A75A5D /* CoreVideo.framework in Frameworks */,
+				E41D400E13B39D2100A75A5D /* MapKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		03c8fd41ab5d248d4d337b70 /* nonfree */ = {
+			isa = PBXGroup;
+			children = (
+				f9b824d8d905da194f64624e /* features2d.hpp */,
+				34a9019b8b4f0f9c60e74c39 /* nonfree.hpp */,
+			);
+			name = nonfree;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D6058910D05DD3D006BFB54 /* pointgrabVideo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		21c6f1192b74be8d3839e7f6 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				7a2ad66cb4a847aa22a4ccc0 /* ofxiVideoGrabber.h */,
+				9fb005678ee9361aec433ea2 /* ofxiVideoGrabber.mm */,
+				f3a15aed8295aad98a874707 /* VideoGrabber.h */,
+				5de24525926c77eac784f864 /* VideoGrabber.mm */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		23a8835932436c0d89e8a346 /* videostab */ = {
+			isa = PBXGroup;
+			children = (
+				06b1cb3ee60ce896af7c2bfc /* deblurring.hpp */,
+				6c0e46f8846384a26ce15a44 /* fast_marching.hpp */,
+				57678aabe83607ff9ddfe0f6 /* fast_marching_inl.hpp */,
+				a37893f595ba38d11d080f1b /* frame_source.hpp */,
+				ba302e653e36a7617524c76b /* global_motion.hpp */,
+				848e24bcc108cb2b18df73d7 /* inpainting.hpp */,
+				e0e8b958222f2f8191163e50 /* log.hpp */,
+				12b0344ccda2e7951b798ebf /* motion_stabilizing.hpp */,
+				22f254f6bc978b226e9b354a /* optical_flow.hpp */,
+				0d6332a0a487a8c22bc9dc20 /* stabilizer.hpp */,
+				e00ef880291ec1fe3345788e /* videostab.hpp */,
+			);
+			name = videostab;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+			isa = PBXGroup;
+			children = (
+				678E130917951536005B6D19 /* Icon.png */,
+				678E130717951530005B6D19 /* Icon@2x.png */,
+				678E130B1795153C005B6D19 /* Default.png */,
+				678E130D17951540005B6D19 /* Default@2x.png */,
+				678E130F17951549005B6D19 /* Default-568h@2x~iphone.png */,
+				E4D8936A11527B74007E1F53 /* src */,
+				BB24E1F710DAA51900E9C588 /* openFrameworks */,
+				BB16F26B0F2B646B00518274 /* addons */,
+				BB16E9930F2B1E5900518274 /* libs */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* core frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E400ADEE18AD209C00912161 /* Accelerate.framework */,
+				E41D400613B39D2100A75A5D /* AVFoundation.framework */,
+				E41D400713B39D2100A75A5D /* CoreMedia.framework */,
+				E41D400813B39D2100A75A5D /* CoreVideo.framework */,
+				E41D400913B39D2100A75A5D /* MapKit.framework */,
+				53F323EA10A20EDB00E0DAE4 /* OpenAL.framework */,
+				E4A823A312561BE3002F86A2 /* CoreGraphics.framework */,
+				BBE5EAB70F49AD8400F28951 /* AudioToolbox.framework */,
+				BB16EBD80F2B2AB500518274 /* QuartzCore.framework */,
+				BB16EBD10F2B2A9500518274 /* OpenGLES.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
+				5326AEA710A23A0500278DE6 /* CoreLocation.framework */,
+			);
+			name = "core frameworks";
+			sourceTree = "<group>";
+		};
+		33f42911a147fd497127bc1c /* imgproc */ = {
+			isa = PBXGroup;
+			children = (
+				4366c3b70dd1d9f760bd6199 /* imgproc.hpp */,
+				b5881d757df5df64f28c7b34 /* imgproc_c.h */,
+				3d70a82463d4e9131402fbdd /* types_c.h */,
+			);
+			name = imgproc;
+			sourceTree = "<group>";
+		};
+		378c09cfdcdf39db10b616ac /* highgui */ = {
+			isa = PBXGroup;
+			children = (
+				b92d19e6272beb0d52e2104d /* highgui.hpp */,
+				2ed23e2c1869199bcb1e8b4c /* highgui_c.h */,
+			);
+			name = highgui;
+			sourceTree = "<group>";
+		};
+		484169bdd445f25e74556fd7 /* libPointGrab */ = {
+			isa = PBXGroup;
+			children = (
+				7a98c7cfa05f67d326409581 /* include */,
+			);
+			name = libPointGrab;
+			sourceTree = "<group>";
+		};
+		5400a0a9ceb0e0e232688b8a /* features2d */ = {
+			isa = PBXGroup;
+			children = (
+				e1b3cfd7de320f19fbe97f86 /* features2d.hpp */,
+			);
+			name = features2d;
+			sourceTree = "<group>";
+		};
+		59afcae9bbc8cc7dac921981 /* calib3d */ = {
+			isa = PBXGroup;
+			children = (
+				e440fe4ba784d448ca507a32 /* calib3d.hpp */,
+			);
+			name = calib3d;
+			sourceTree = "<group>";
+		};
+		613174c06144d1533abb9b24 /* ofxiVideoGrabber */ = {
+			isa = PBXGroup;
+			children = (
+				21c6f1192b74be8d3839e7f6 /* src */,
+			);
+			name = ofxiVideoGrabber;
+			sourceTree = "<group>";
+		};
+		632175e0cf2224d3a22cee3d /* ts */ = {
+			isa = PBXGroup;
+			children = (
+				b680656c262a30695c46dc54 /* ts.hpp */,
+				a04a8f3fe0c15e2aee4a6d4a /* ts_gtest.h */,
+				863b0ec9c0509c594a68318f /* ts_perf.hpp */,
+			);
+			name = ts;
+			sourceTree = "<group>";
+		};
+		651987ceca7d8b3664342e67 /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				efa2956f328b2d30ca939352 /* contrib.hpp */,
+				b39ef5f0d2a5290a09ba0cd5 /* detection_based_tracker.hpp */,
+				1d66b89dff59dcada6b7b233 /* hybridtracker.hpp */,
+				823d1e301ab93c496fd82f57 /* retina.hpp */,
+			);
+			name = contrib;
+			sourceTree = "<group>";
+		};
+		79c9086bf5b0f7df30813325 /* opencv2 */ = {
+			isa = PBXGroup;
+			children = (
+				59afcae9bbc8cc7dac921981 /* calib3d */,
+				651987ceca7d8b3664342e67 /* contrib */,
+				9514b7b11adbc2b9b6458619 /* core */,
+				5400a0a9ceb0e0e232688b8a /* features2d */,
+				994d238b5c3397f927aaf580 /* flann */,
+				cd9d632d19682e4a977567d7 /* gpu */,
+				378c09cfdcdf39db10b616ac /* highgui */,
+				33f42911a147fd497127bc1c /* imgproc */,
+				d5fbd267b9c6e32eee835277 /* legacy */,
+				bf381c098ee73e51467cc754 /* ml */,
+				03c8fd41ab5d248d4d337b70 /* nonfree */,
+				90619f9b018d78be5f26546a /* objdetect */,
+				ac5a35700fa4450e359d7f1c /* opencv.hpp */,
+				1e412fd6c3a7ec12ee7e8ed4 /* opencv_modules.hpp */,
+				c8aedb384cf7193d9ceef469 /* photo */,
+				de7c6726e9591d4719275ca6 /* stitching */,
+				632175e0cf2224d3a22cee3d /* ts */,
+				e865972037ce27280144d0d9 /* video */,
+				23a8835932436c0d89e8a346 /* videostab */,
+				9581558f6630115df3198aee /* world */,
+			);
+			name = opencv2;
+			sourceTree = "<group>";
+		};
+		7a98c7cfa05f67d326409581 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				96ea55c2de50e0b6c941e0aa /* _cv.h */,
+				588b179e312dbf06ee4f5ac0 /* _cxcore.h */,
+				c3dfb4b0cf4c9cbe60623b21 /* cv.h */,
+				d27d3d2b3a5ad0f0109e09b6 /* cv.hpp */,
+				7252f9585b7dd39bf56d7afa /* cvaux.h */,
+				9573f2bfbf52184337c4c180 /* cvaux.hpp */,
+				d9e6442635e8d6e39abf5699 /* cvconfig.h */,
+				a9417095e815ac9aca72746b /* cvtypes.h */,
+				73de1b4b010bf5df2b67282e /* cvwimage.h */,
+				60258c9a5578581c03c9240a /* cxcore.h */,
+				407c14f0e6d9e94ecbaac60d /* cxcore.hpp */,
+				5ad450474f0727e21ebc518c /* cxeigen.hpp */,
+				45307ef8d15a6033da0cff81 /* cxmisc.h */,
+				96c07fcc973766f75210bd80 /* cxtypes.h */,
+				c89c3d2247d50e7c6f1f57d5 /* highgui.h */,
+				b05677a5826f7e6b4e4df2d4 /* ml.h */,
+				79c9086bf5b0f7df30813325 /* opencv2 */,
+				3109c4ec56685997067ec8cf /* PG_API.h */,
+				539df32af79db0020ab69034 /* PG_Engine.h */,
+				38931ba689c9394a2d933fd2 /* PG_LicenseChecker.h */,
+				1b5e237ebe1a2478fea4202d /* PG_ShortRangeResult.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		8acee373803c2fbf4d62430c /* detail */ = {
+			isa = PBXGroup;
+			children = (
+				9f9768edde4d133fc6eb7fde /* autocalib.hpp */,
+				8396988f5eff2fb9ca2fee74 /* blenders.hpp */,
+				04989aa8b7701a4f17c0da34 /* camera.hpp */,
+				6dfe743a007b4e8efa26b6c7 /* exposure_compensate.hpp */,
+				fd39b77857ef523ed807356d /* matchers.hpp */,
+				2f8d47b802b812faf9be3654 /* motion_estimators.hpp */,
+				aa66fa8ba8c94de9215b8b81 /* seam_finders.hpp */,
+				c4cd7b58560ecdee240038a9 /* util.hpp */,
+				336979a6d0c78029e710da38 /* util_inl.hpp */,
+				0a35a430d9542ae48bb5a134 /* warpers.hpp */,
+				bbdf592a1472f3067c6409dd /* warpers_inl.hpp */,
+			);
+			name = detail;
+			sourceTree = "<group>";
+		};
+		90619f9b018d78be5f26546a /* objdetect */ = {
+			isa = PBXGroup;
+			children = (
+				7b97e6b4d8971f265cdfb696 /* objdetect.hpp */,
+			);
+			name = objdetect;
+			sourceTree = "<group>";
+		};
+		9514b7b11adbc2b9b6458619 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				03bcebfb7d36a3e29fb768bd /* core.hpp */,
+				30aa40bd58d769f810b6286d /* core_c.h */,
+				e9c0d19ffcfa3bbeb60632db /* devmem2d.hpp */,
+				9138bed4c88720ed136bc77b /* eigen.hpp */,
+				c8f158178c16a7468753058f /* gpumat.hpp */,
+				3501e2a5b4ac1a3c9e0926fb /* internal.hpp */,
+				3b5828756db6584ad9792564 /* mat.hpp */,
+				c750271368697c359eb66e94 /* opengl_interop.hpp */,
+				ce806d2424d1706d329e6d38 /* operations.hpp */,
+				c648199761aec7add02266b3 /* types_c.h */,
+				137611c09e31ac58ae5d2e6e /* version.hpp */,
+				2441460a23ecb97fc86c85e1 /* wimage.hpp */,
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		952f7ed763ddcf60f0d11c0f /* src */ = {
+			isa = PBXGroup;
+			children = (
+				1ee635fbd42fed000fef6e6e /* ofxPointGrab.cpp */,
+				e40d645082d3fdef06f2ec72 /* ofxPointGrab.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		9581558f6630115df3198aee /* world */ = {
+			isa = PBXGroup;
+			children = (
+				d681292a9902353623afa9d8 /* world.hpp */,
+			);
+			name = world;
+			sourceTree = "<group>";
+		};
+		994d238b5c3397f927aaf580 /* flann */ = {
+			isa = PBXGroup;
+			children = (
+				0706d3926f445137af575f86 /* all_indices.h */,
+				ac479e25597e7dcbc454d5cc /* allocator.h */,
+				0e3086f9177454b7f380af13 /* any.h */,
+				26b2cceb6f1cae7f96a7c0d5 /* autotuned_index.h */,
+				ee71d790a009fb1413283fde /* composite_index.h */,
+				c5db08043178f63c5efc9713 /* config.h */,
+				9e8b3cc5d3050752a1acfcd9 /* defines.h */,
+				b1347463e3941e33e2d90ba2 /* dist.h */,
+				dd8ff73ba862ffae3b696740 /* dummy.h */,
+				ee6a1c38dbee49752872d563 /* dynamic_bitset.h */,
+				a6b71ee3be9132d79c6068cb /* flann.hpp */,
+				1c0cb02b9e19eeaad3bedd57 /* flann_base.hpp */,
+				bad2ae33b1dde63e171422f5 /* general.h */,
+				5cefa190121a6ec25f06093e /* ground_truth.h */,
+				26e4d7a8e2526fd42e921d92 /* hdf5.h */,
+				255ddf340870c819957d4f02 /* heap.h */,
+				f136c954484c9cff119fe1a7 /* hierarchical_clustering_index.h */,
+				49073261f48ee6497cd660d9 /* index_testing.h */,
+				b96679fcc7afaa39ff0e4e13 /* kdtree_index.h */,
+				3773d8a19651432474ee5473 /* kdtree_single_index.h */,
+				6563b4d025f1fd1b9cba2872 /* kmeans_index.h */,
+				53bb0cdba0f40026543425c6 /* linear_index.h */,
+				cbe8dff051ae453578e7851f /* logger.h */,
+				9515af4c81e6914f6ca577e6 /* lsh_index.h */,
+				a2a5b596f0b6b06d194deeb9 /* lsh_table.h */,
+				b0c9768ab2aea84b87609848 /* matrix.h */,
+				2294f39c626a2d3dccac0e7a /* miniflann.hpp */,
+				ae9c4580d9087e519115da8b /* nn_index.h */,
+				7dce4d6ac321b1c846a9a34e /* object_factory.h */,
+				f4dfd783752fab29a5f8d011 /* params.h */,
+				311e17efe1ece1aa0eb05f39 /* random.h */,
+				4551d80343b68a1f5bb7581e /* result_set.h */,
+				e61d9232d3bbcb34e9b9169f /* sampling.h */,
+				c7d72d7c76b3ed42d50f203d /* saving.h */,
+				779091015ab932fd15252b05 /* simplex_downhill.h */,
+				2a459b87f8e4cb760ea06575 /* timer.h */,
+			);
+			name = flann;
+			sourceTree = "<group>";
+		};
+		BB16E9930F2B1E5900518274 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				BBE5E94E0F497BD800F28951 /* core */,
+			);
+			name = libs;
+			sourceTree = "<group>";
+		};
+		BB16F26B0F2B646B00518274 /* addons */ = {
+			isa = PBXGroup;
+			children = (
+				613174c06144d1533abb9b24 /* ofxiVideoGrabber */,
+				f91793647d69c05ce845f739 /* ofxPointGrab */,
+			);
+			name = addons;
+			sourceTree = "<group>";
+		};
+		BB24E1F710DAA51900E9C588 /* openFrameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */,
+				32CA4F630368D1EE00C91783 /* ofxiOS_Prefix.pch */,
+				BB24DDC910DA781C00E9C588 /* ofxiOS-Info.plist */,
+				E41D3EE513B3906D00A75A5D /* CoreOF.xcconfig */,
+				E41D3ED613B38FB500A75A5D /* Project.xcconfig */,
+			);
+			name = openFrameworks;
+			sourceTree = "<group>";
+		};
+		BBE5E94E0F497BD800F28951 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				29B97323FDCFA39411CA2CEA /* core frameworks */,
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		E41D40FE13B3A0D800A75A5D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E41D410213B3A0D800A75A5D /* libofxiOS_iphoneos_Debug.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E4D8936A11527B74007E1F53 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E4D8936B11527B74007E1F53 /* main.mm */,
+				E4D8936D11527B74007E1F53 /* ofApp.mm */,
+				E4D8936C11527B74007E1F53 /* ofApp.h */,
+			);
+			path = src;
+			sourceTree = SOURCE_ROOT;
+		};
+		bf381c098ee73e51467cc754 /* ml */ = {
+			isa = PBXGroup;
+			children = (
+				ea31cd0e62116f92ad6feaf8 /* ml.hpp */,
+			);
+			name = ml;
+			sourceTree = "<group>";
+		};
+		c8aedb384cf7193d9ceef469 /* photo */ = {
+			isa = PBXGroup;
+			children = (
+				d94275f3db6d638e2dce4912 /* photo.hpp */,
+				dd86b9940b6f4717d7ebb659 /* photo_c.h */,
+			);
+			name = photo;
+			sourceTree = "<group>";
+		};
+		cd9d632d19682e4a977567d7 /* gpu */ = {
+			isa = PBXGroup;
+			children = (
+				e115f9e3c13bdd219991dfd0 /* devmem2d.hpp */,
+				a55ccde73e5b4ec1cd52fa9c /* gpu.hpp */,
+				f34baa3f4c77187613f7d94c /* gpumat.hpp */,
+				d3c19503e18f6f80bce7ec71 /* stream_accessor.hpp */,
+			);
+			name = gpu;
+			sourceTree = "<group>";
+		};
+		d5fbd267b9c6e32eee835277 /* legacy */ = {
+			isa = PBXGroup;
+			children = (
+				ef64fde6ecfbb498ebd4ce8b /* blobtrack.hpp */,
+				342c9f207a0ebf179873c81d /* compat.hpp */,
+				1774d05da49dc63d5178b426 /* legacy.hpp */,
+				afc009f8dfc2cf27845d8889 /* streams.hpp */,
+			);
+			name = legacy;
+			sourceTree = "<group>";
+		};
+		de7c6726e9591d4719275ca6 /* stitching */ = {
+			isa = PBXGroup;
+			children = (
+				8acee373803c2fbf4d62430c /* detail */,
+				581cc297831b378eff88fb09 /* stitcher.hpp */,
+				b25aa7386fbb9aa31816b021 /* warpers.hpp */,
+			);
+			name = stitching;
+			sourceTree = "<group>";
+		};
+		e865972037ce27280144d0d9 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				1d9d8a5a7d4eb757f0ffd787 /* background_segm.hpp */,
+				709ea48d3dfb20c5e9c7a57e /* tracking.hpp */,
+				07b34ab8fcfa305de583101e /* video.hpp */,
+			);
+			name = video;
+			sourceTree = "<group>";
+		};
+		f65520c32e04251b070e317f /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				484169bdd445f25e74556fd7 /* libPointGrab */,
+			);
+			name = libs;
+			sourceTree = "<group>";
+		};
+		f91793647d69c05ce845f739 /* ofxPointGrab */ = {
+			isa = PBXGroup;
+			children = (
+				952f7ed763ddcf60f0d11c0f /* src */,
+				f65520c32e04251b070e317f /* libs */,
+			);
+			name = ofxPointGrab;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* pointgrabVideo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "pointgrabVideo" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				9255DD331112741900D6945E /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E41D410413B3A11300A75A5D /* PBXTargetDependency */,
+			);
+			name = pointgrabVideo;
+			productName = iPhone;
+			productReference = 1D6058910D05DD3D006BFB54 /* pointgrabVideo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pointgrabVideo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E41D40FE13B3A0D800A75A5D /* Products */;
+					ProjectRef = E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* pointgrabVideo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E41D410213B3A0D800A75A5D /* libofxiOS_iphoneos_Debug.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libofxiOS_iphoneos_Debug.a;
+			remoteRef = E41D410113B3A0D800A75A5D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E41D3ED713B38FB500A75A5D /* Project.xcconfig in Resources */,
+				E41D3EE613B3906D00A75A5D /* CoreOF.xcconfig in Resources */,
+				678E130817951530005B6D19 /* Icon@2x.png in Resources */,
+				678E130A17951536005B6D19 /* Icon.png in Resources */,
+				678E130C1795153C005B6D19 /* Default.png in Resources */,
+				678E130E17951540005B6D19 /* Default@2x.png in Resources */,
+				678E131017951549005B6D19 /* Default-568h@2x~iphone.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9255DD331112741900D6945E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp -rf bin/data/ \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4D8936E11527B74007E1F53 /* main.mm in Sources */,
+				E4D8936F11527B74007E1F53 /* ofApp.mm in Sources */,
+				ef1541a856fe27edca7efdbd /* ofxiVideoGrabber.mm in Sources */,
+				d3b5ca1da017963e41b74554 /* VideoGrabber.mm in Sources */,
+				7d93dfc7f4da90780fd92965 /* ofxPointGrab.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E41D410413B3A11300A75A5D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "iPhone+OF Static Library";
+			targetProxy = E41D410313B3A11300A75A5D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ofxiOS_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = PG_IOS;
+				INFOPLIST_FILE = "ofxiOS-Info.plist";
+				PRODUCT_NAME = "${TARGET_NAME}";
+				VALID_ARCHS = "armv6 armv7";
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ofxiOS_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = PG_IOS;
+				INFOPLIST_FILE = "ofxiOS-Info.plist";
+				PRODUCT_NAME = "${TARGET_NAME}";
+				VALID_ARCHS = "armv6 armv7";
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E41D3ED613B38FB500A75A5D /* Project.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_INVALID_OFFSETOF_MACRO = NO;
+				GCC_WARN_ABOUT_POINTER_SIGNEDNESS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_ALLOW_INCOMPLETE_PROTOCOL = NO;
+				GCC_WARN_PROTOTYPE_CONVERSION = NO;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxiVideoGrabber/libs,
+					../../../addons/ofxiVideoGrabber/src,
+					../../../addons/ofxPointGrab/libs,
+					../../../addons/ofxPointGrab/libs/libPointGrab,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/calib3d,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/contrib,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/features2d,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/gpu,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/highgui,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/imgproc,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ml,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/nonfree,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/objdetect,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/photo,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ts,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/video,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/world,
+					../../../addons/ofxPointGrab/libs/libPointGrab/lib,
+					../../../addons/ofxPointGrab/src,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				ONLY_ACTIVE_ARCH = NO;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				WARNING_LDFLAGS = "-no_arch_warnings";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E41D3ED613B38FB500A75A5D /* Project.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COMPRESS_PNG_FILES = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_THUMB_SUPPORT = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(OF_CORE_HEADERS)",
+					../../../addons/ofxiVideoGrabber/libs,
+					../../../addons/ofxiVideoGrabber/src,
+					../../../addons/ofxPointGrab/libs,
+					../../../addons/ofxPointGrab/libs/libPointGrab,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/calib3d,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/contrib,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/features2d,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/gpu,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/highgui,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/imgproc,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ml,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/nonfree,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/objdetect,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/photo,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/stitching/detail,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/ts,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/video,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/videostab,
+					../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/world,
+					../../../addons/ofxPointGrab/libs/libPointGrab/lib,
+					../../../addons/ofxPointGrab/src,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				WARNING_LDFLAGS = "-no_arch_warnings";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "pointgrabVideo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pointgrabVideo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

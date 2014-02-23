@@ -4,7 +4,17 @@
 #include "ofxiOS.h"
 #include "ofxiOSExtras.h"
 #include "ofxPointGrab.h"
-#include "ofxiVideoGrabber.h"
+
+
+
+struct clip {
+    string name;
+    float start;
+    float end;
+    vector<float> markers;
+    bool bMute;
+    
+};
 
 class ofApp : public ofxiOSApp {
 	
@@ -25,40 +35,35 @@ class ofApp : public ofxiOSApp {
         void gotMemoryWarning();
         void deviceOrientationChanged(int newOrientation);
     
-        void showIcon(int index);
-        void hideIcon();
+        void play(string name);
+        
     
-    ofxiVideoGrabber cam;
-    ofTexture tex;
+    ofVideoGrabber cam;
     ofMatrix4x4 camMat,camiMat;
     bool bShowCam;
-
     ofxPointGrab pointGrab;
     pointGrabData data;
-    
     ofxiOSVideoPlayer video;
-    vector<string> videos;
-    int currentVideo;
+    ofFbo fbo;
+    ofPixels pixels;
+    ofMatrix4x4 fboMat;
     
-    ofMatrix4x4 mat;
+    vector<clip> clips;
+    vector<clip>::iterator current;
     
     vector<ofTexture> icons;
     map<int,int> gesturesIndices;
+    map<int,int> palmTypeIndices;
     int iconIndex;
     float iconTime;
     ofMatrix4x4 iconMat;
-   
-    bool bPaused;
-    float volume;
-    bool bMute;
-    int step;
-    bool bScrub;
-    float speed;
-    float startTime;
-    float startPos;
-    int scrollCount;
     
-    ofTexture mute;
+    ofTexture background;
+    
+    ofMatrix4x4 mat;
+    
+    
+
 };
 
 

@@ -10,12 +10,21 @@ void ofApp::setup(){
     
     data.bIsTrackable = false;
     data.bIsGrab = false;
-    scaleStart = 1.0f;
     pointGrab.setup(ofToDataPath(""),true);
     
     cam.initGrabber(640, 480);
     cam.setOrientation(OF_ORIENTATION_90_LEFT,true);
     tex.allocate(640, 480, GL_LUMINANCE);
+   
+    float scale = (float)ofGetHeight()/(5.0*480.0);
+    camMat.scale(scale, scale, 1.0);
+    camMat.translate(ofVec3f(ofGetWidth()-scale*640.0-20.0,ofGetHeight()-scale*480.0-20,0));
+    camiMat = camMat.getInverse();
+    bShowCam = true;
+
+    ofPixels pixels;
+    ofLoadImage(pixels, "Mute.png");
+    mute.loadData(pixels);
     
     ofDirectory dir;
     dir.listDir(ofToDataPath("videos"));
@@ -32,8 +41,14 @@ void ofApp::setup(){
     bPaused = false;
     volume = 1.0;
     video.setVolume(volume);
+    bMute = false;
     step = 0;
     bScrub = false;
+    
+    scale = (float)ofGetWidth()/1920;
+    mat.scale(scale,scale,1.0);
+    mat.translate(0.5*(ofVec2f(ofGetWidth(),ofGetHeight())-scale*ofVec2f(1920,1080)));
+    
     
     ofXml xml;
     if (xml.load("pointgrab.xml")) {
@@ -48,24 +63,27 @@ void ofApp::setup(){
             }
             
             ofPixels pixels;
-            ofLoadImage(pixels, "images/"+xml.getValue());
+            ofLoadImage(pixels, xml.getValue());
             ofTexture tex;
             tex.loadData(pixels);
             icons.push_back(tex);
         } while (xml.setToSibling());
     }
 
-    iconScale = (float)ofGetHeight()/(5.0*(float)icons.front().getHeight());
+    
+    scale = (float)ofGetHeight()/(5.0*(float)icons.front().getHeight());
+    iconMat.scale(scale, scale, 1.0);
+    iconMat.translate(ofVec3f(20,ofGetHeight()-scale*icons.front().getHeight()-20,0));
+    iconTime = ofGetElapsedTimef();
     
 //    float scale = MIN((float)w/(float)STAGE_WIDTH,(float)h/(float)STAGE_HEIGHT);
     
     
     
-    float scale = (float)ofGetWidth()/1920;
-    mat = ofMatrix4x4::newTranslationMatrix(0.5*(ofVec2f(ofGetWidth(),ofGetHeight())-scale*ofVec2f(1920,1080)));
-    mat.preMult(ofMatrix4x4::newScaleMatrix(scale, scale, 1.0));
-
-    ofBackground(0);
+    
+    
+    
+    
 }
 
 
@@ -74,50 +92,94 @@ void ofApp::showIcon(int index) {
     iconTime = ofGetElapsedTimef()+1;
 }
 
+
+
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    if (video.isLoaded()) {
+        video.update();
+        
+        if (video.getIsMovieDone()) {
+            cout << "play again" << endl;
+            video.play();
+        }
+        
+    }
+    
     ofPixels &pixels = pointGrab.getNextPixels();
     if (cam.copyPixels(pixels)) {
-        tex.loadData(pixels);
+        if (bShowCam) {
+            tex.loadData(pixels);
+        }
         pointGrabData data = pointGrab.update();
         
-        if (!this->data.bIsGrab && data.bIsGrab) {
-            scaleStart = data.scale;
-            
-        }
+
         
-        if (this->data.bIsGrab != data.bIsGrab) {
-            if (data.palmType==PALM_TYPE_OPEN_HAND) {
-                if (data.bIsGrab) {
-                    bPaused=!bPaused;
-                    video.setPaused(bPaused);
-                    speed = 0;
-                    showIcon(1);
-                }
-            }
-            cout << "grab: " << data.bIsGrab << endl;
-        }
+        if (data.bIsTrackable) {
         
-        if (this->data.bIsTrackable != data.bIsTrackable) {
-            cout << "trackable: " << data.bIsTrackable << endl;
-            
-            if (data.bIsTrackable) {
-                cout << "type: " << data.palmType << endl;
-                posStart = data.camRefPoint;
-                
-                switch (data.palmType) {
-                    case PALM_TYPE_FIST_FOR_TRACK:
-                        showIcon(2);
-                        break;
-                    case PALM_TYPE_OPEN_HAND:
+            switch (data.palmType) {
+                case PALM_TYPE_FIST_FOR_TRACK:
+                    volume+=data.delta.x/1000;
+                    volume = ofClamp(volume, 0.0, 1.0);
+                    cout << "delta: " << data.delta.x << endl;
+                    
+                    video.setVolume(volume);
+                    if (data.delta.x >= 1) {
+                        bMute = false;
+                        showIcon(6);
+                    } else if (data.delta.x<=-1) {
+                        bMute = false;
+                        showIcon(5);
+                    } else {
+                        showIcon(4);
+                    }
+                    break;
+                    
+                case PALM_TYPE_OPEN_HAND:
+//                    cout << data.scroll << endl;
+                    
+                    if (!this->data.bIsTrackable) {
                         showIcon(0);
-                        break;
+                    }
+                    
+                    if (data.scroll==-1 || data.scroll==1) {
+                        startTime = ofGetElapsedTimef();
+                        speed = 5*data.scroll;
+                        scrollCount-=data.scroll;
                         
-                    default:
-                        break;
-                }
+                        if (video.isLoaded() && bPaused) {
+                            video.setPosition(startPos+5*(float)scrollCount/(float)video.getDuration());
+                            //                            if (bPaused && ofGetElapsedTimef()-startTime<2.0) {
+//                                float delta = speed*(ofGetElapsedTimef()-startTime)/video.getDuration();
+//                                video.setPosition(ofClamp(startPos+delta, 0.0, 1.0));
+//                            }
+                        }
+                        
+                        showIcon(data.scroll==1 ? 2 : 3);
+                        
+                    }
+                    
+                    
+                    if (!this->data.bIsGrab && data.bIsGrab) {
+                        
+                        bPaused=!bPaused;
+                        video.setPaused(bPaused);
+                        startPos = video.getPosition();
+                        speed = 0;
+                        scrollCount = 0;
+                        showIcon(1);
+                        
+                        cout << "grab: " << data.bIsGrab << endl;
+                    }
+                    break;
+                
+                    
+                default:
+                    break;
             }
         }
+        
         
         
         
@@ -128,22 +190,29 @@ void ofApp::update(){
                 continue;
             }
             cout << "gesture: " << *iter << endl;
+            bool bShowIcon = true;
             switch (*iter) {
                 case GESTURE_MUTE:
-                    volume = 0;
-                    video.setVolume(0);
+                    bMute=!bMute;
+                    if (bMute) {
+                        video.setVolume(0);
+                    } else {
+                        video.setVolume(volume);
+                    }
+                    break;
+                case GESTURE_LIKE:
                     break;
                 case GESTURE_SWIPE_LEFT:
-                    if (video.getDuration()*video.getPosition()>5) {
-                        video.setPaused(true);
-                        video.setPosition(0);
-                        video.setPaused(false);
-                    } else {
-                        video.close();
-                        currentVideo=(currentVideo-1+videos.size()) % videos.size();
-                        video.loadMovie(videos[currentVideo]);
-                        video.play();
-                    }
+//                    if (video.getDuration()*video.getPosition()>5) {
+//                        video.setPaused(true);
+//                        video.setPosition(0);
+//                        video.setPaused(false);
+//                    } else {
+                    video.close();
+                    currentVideo=(currentVideo-1+videos.size()) % videos.size();
+                    video.loadMovie(videos[currentVideo]);
+                    video.play();
+                    
                     break;
                 case GESTURE_SWIPE_RIGHT:
                     video.close();
@@ -152,59 +221,26 @@ void ofApp::update(){
                     video.play();
                     break;
                 
-                case GESTURE_CLOCKWISE_CIRCLE:
-                case GESTURE_ANTICLOCKWISE_CIRCLE:
-                    speed = *iter==GESTURE_CLOCKWISE_CIRCLE ? 5 : -5 ;
-                    startTime = ofGetElapsedTimef();
-                    startPos = video.getPosition();
-                    bPaused = true;
-                    video.setPaused(true);
-                    break;
-                    
                 default:
+                    bShowIcon = false;
                     break;
             }
-            showIcon(gesturesIndices[*iter]);
+            if (bShowIcon) {
+                showIcon(gesturesIndices[*iter]);
+            }
         }
             
         
         this->data = data;
         
         
-        if (this->data.bIsTrackable) {
-            switch (data.palmType) {
-                case PALM_TYPE_FIST_FOR_TRACK:
-                    volume+=this->data.delta.x/1000;
-                    volume = ofClamp(volume, 0.0, 1.0);
-                    cout << "volume: " << volume << endl;
-                    video.setVolume(volume);
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        
-    }
-    
-    
-    
-    if (video.isLoaded()) {
-        video.update();
-        
-        if (bPaused && speed!=0) {
-            float delta = speed*(ofGetElapsedTimef()-startTime)/video.getDuration();
-            video.setPosition(ofClamp(startPos+delta, 0.0, 1.0));
-        }
-        
-        if (video.getIsMovieDone()) {
-            cout << "play again" << endl;
-            video.play();
-        }
-        
         
         
     }
+    
+    
+    
+    
     
     
 }
@@ -212,15 +248,28 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofSetColor(255);
-	ofPushMatrix();
-    ofMultMatrix(mat);
-	video.getTexture()->draw(0,0);
-    ofPopMatrix();
+    
+    if (video.isPlaying() || video.isPaused()) {
+        ofPushMatrix();
+        ofMultMatrix(mat);
+        video.getTexture()->draw(0,0);
+        if (bMute) {
+            mute.draw(20, 20);
+        }
+        ofPopMatrix();
+    }
     
     if (ofGetElapsedTimef()<iconTime) {
         ofPushMatrix();
-        ofScale(iconScale, iconScale);
-        icons[iconIndex].draw(20,20);
+        ofMultMatrix(iconMat);
+        icons[iconIndex].draw(0,0);
+        ofPopMatrix();
+    }
+    
+    if (bShowCam) {
+        ofPushMatrix();
+        ofMultMatrix(camMat);
+        tex.draw(0,0);
         ofPopMatrix();
     }
 }
@@ -232,7 +281,9 @@ void ofApp::exit(){
 
 //--------------------------------------------------------------
 void ofApp::touchDown(ofTouchEventArgs & touch){
-
+    if (ofRectangle(0, 0, 480, 640).inside(camiMat.preMult(ofVec3f(touch)))) {
+        bShowCam = !bShowCam;
+    }
 }
 
 //--------------------------------------------------------------

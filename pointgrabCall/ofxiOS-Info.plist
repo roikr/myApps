@@ -16,8 +16,8 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>AppIcon_Video_114x114</string>
-				<string>AppIcon_Video_57x57</string>
+				<string>AppIcon_CallManagment_114x114</string>
+				<string>AppIcon_CallManagment_57x57</string>
 				<string>Icon.png</string>
 				<string>Icon@2x.png</string>
 			</array>
@@ -29,10 +29,10 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>AppIcon_Video_144x144</string>
-				<string>AppIcon_Video_72x72</string>
-				<string>AppIcon_Video_114x114</string>
-				<string>AppIcon_Video_57x57</string>
+				<string>AppIcon_CallManagment_144x144</string>
+				<string>AppIcon_CallManagment_72x72</string>
+				<string>AppIcon_CallManagment_114x114</string>
+				<string>AppIcon_CallManagment_57x57</string>
 				<string>Icon.png</string>
 				<string>Icon@2x.png</string>
 			</array>
@@ -51,7 +51,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>5</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationExitsOnSuspend</key>

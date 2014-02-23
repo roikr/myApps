@@ -16,7 +16,6 @@
 		BB16EBD20F2B2A9500518274 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD10F2B2A9500518274 /* OpenGLES.framework */; };
 		BB16EBD90F2B2AB500518274 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD80F2B2AB500518274 /* QuartzCore.framework */; };
 		BBE5EAB80F49AD8400F28951 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBE5EAB70F49AD8400F28951 /* AudioToolbox.framework */; };
-		E400ADEF18AD209C00912161 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E400ADEE18AD209C00912161 /* Accelerate.framework */; };
 		E41D3ED713B38FB500A75A5D /* Project.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E41D3ED613B38FB500A75A5D /* Project.xcconfig */; };
 		E41D3EE613B3906D00A75A5D /* CoreOF.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E41D3EE513B3906D00A75A5D /* CoreOF.xcconfig */; };
 		E41D400B13B39D2100A75A5D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400613B39D2100A75A5D /* AVFoundation.framework */; };
@@ -24,11 +23,12 @@
 		E41D400D13B39D2100A75A5D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400813B39D2100A75A5D /* CoreVideo.framework */; };
 		E41D400E13B39D2100A75A5D /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D400913B39D2100A75A5D /* MapKit.framework */; };
 		E41D421413B3A95300A75A5D /* libofxiOS_iphoneos_Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E41D410213B3A0D800A75A5D /* libofxiOS_iphoneos_Debug.a */; };
+		E48A89A518B3915400E5E033 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E48A89A418B3915400E5E033 /* Accelerate.framework */; };
 		E4A823A412561BE3002F86A2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4A823A312561BE3002F86A2 /* CoreGraphics.framework */; };
-		E4B8136C18B78EE700AEBEE9 /* AppIcon_Video_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136818B78EE700AEBEE9 /* AppIcon_Video_57x57.png */; };
-		E4B8136D18B78EE700AEBEE9 /* AppIcon_Video_72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136918B78EE700AEBEE9 /* AppIcon_Video_72x72.png */; };
-		E4B8136E18B78EE700AEBEE9 /* AppIcon_Video_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136A18B78EE700AEBEE9 /* AppIcon_Video_114x114.png */; };
-		E4B8136F18B78EE700AEBEE9 /* AppIcon_Video_144x144.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136B18B78EE700AEBEE9 /* AppIcon_Video_144x144.png */; };
+		E4B8136218B76F8400AEBEE9 /* AppIcon_CallManagment_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8135E18B76F8400AEBEE9 /* AppIcon_CallManagment_57x57.png */; };
+		E4B8136318B76F8400AEBEE9 /* AppIcon_CallManagment_72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8135F18B76F8400AEBEE9 /* AppIcon_CallManagment_72x72.png */; };
+		E4B8136418B76F8400AEBEE9 /* AppIcon_CallManagment_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136018B76F8400AEBEE9 /* AppIcon_CallManagment_114x114.png */; };
+		E4B8136518B76F8400AEBEE9 /* AppIcon_CallManagment_144x144.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136118B76F8400AEBEE9 /* AppIcon_CallManagment_144x144.png */; };
 		E4D8936E11527B74007E1F53 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4D8936B11527B74007E1F53 /* main.mm */; };
 		E4D8936F11527B74007E1F53 /* ofApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4D8936D11527B74007E1F53 /* ofApp.mm */; };
 		d3b5ca1da017963e41b74554 /* VideoGrabber.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5de24525926c77eac784f864 /* VideoGrabber.mm */; };
@@ -65,7 +65,7 @@
 		137611c09e31ac58ae5d2e6e /* version.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = version.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/core/version.hpp; sourceTree = SOURCE_ROOT; };
 		1774d05da49dc63d5178b426 /* legacy.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = legacy.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/legacy/legacy.hpp; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* pointgrabVideo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pointgrabVideo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* pointgrabCall.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pointgrabCall.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1b5e237ebe1a2478fea4202d /* PG_ShortRangeResult.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = PG_ShortRangeResult.h; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/PG_ShortRangeResult.h; sourceTree = SOURCE_ROOT; };
 		1c0cb02b9e19eeaad3bedd57 /* flann_base.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = flann_base.hpp; path = ../../../addons/ofxPointGrab/libs/libPointGrab/include/opencv2/flann/flann_base.hpp; sourceTree = SOURCE_ROOT; };
@@ -137,7 +137,6 @@
 		BB16EBD80F2B2AB500518274 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		BB24DDC910DA781C00E9C588 /* ofxiOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ofxiOS-Info.plist"; sourceTree = "<group>"; };
 		BBE5EAB70F49AD8400F28951 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		E400ADEE18AD209C00912161 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E41D3ED613B38FB500A75A5D /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E41D3EE513B3906D00A75A5D /* CoreOF.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = CoreOF.xcconfig; path = ../../../libs/openFrameworksCompiled/project/ios/CoreOF.xcconfig; sourceTree = SOURCE_ROOT; };
 		E41D400613B39D2100A75A5D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -145,11 +144,12 @@
 		E41D400813B39D2100A75A5D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		E41D400913B39D2100A75A5D /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "iOS+OFLib.xcodeproj"; path = "../../../libs/openFrameworksCompiled/project/ios/iOS+OFLib.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		E48A89A418B3915400E5E033 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		E4A823A312561BE3002F86A2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		E4B8136818B78EE700AEBEE9 /* AppIcon_Video_57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_57x57.png; path = bin/data/AppIcon_Video_57x57.png; sourceTree = "<group>"; };
-		E4B8136918B78EE700AEBEE9 /* AppIcon_Video_72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_72x72.png; path = bin/data/AppIcon_Video_72x72.png; sourceTree = "<group>"; };
-		E4B8136A18B78EE700AEBEE9 /* AppIcon_Video_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_114x114.png; path = bin/data/AppIcon_Video_114x114.png; sourceTree = "<group>"; };
-		E4B8136B18B78EE700AEBEE9 /* AppIcon_Video_144x144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_144x144.png; path = bin/data/AppIcon_Video_144x144.png; sourceTree = "<group>"; };
+		E4B8135E18B76F8400AEBEE9 /* AppIcon_CallManagment_57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_CallManagment_57x57.png; path = bin/data/AppIcon_CallManagment_57x57.png; sourceTree = "<group>"; };
+		E4B8135F18B76F8400AEBEE9 /* AppIcon_CallManagment_72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_CallManagment_72x72.png; path = bin/data/AppIcon_CallManagment_72x72.png; sourceTree = "<group>"; };
+		E4B8136018B76F8400AEBEE9 /* AppIcon_CallManagment_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_CallManagment_114x114.png; path = bin/data/AppIcon_CallManagment_114x114.png; sourceTree = "<group>"; };
+		E4B8136118B76F8400AEBEE9 /* AppIcon_CallManagment_144x144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_CallManagment_144x144.png; path = bin/data/AppIcon_CallManagment_144x144.png; sourceTree = "<group>"; };
 		E4D8936B11527B74007E1F53 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = src/main.mm; sourceTree = SOURCE_ROOT; };
 		E4D8936C11527B74007E1F53 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
 		E4D8936D11527B74007E1F53 /* ofApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ofApp.mm; path = src/ofApp.mm; sourceTree = SOURCE_ROOT; };
@@ -219,7 +219,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E400ADEF18AD209C00912161 /* Accelerate.framework in Frameworks */,
+				E48A89A518B3915400E5E033 /* Accelerate.framework in Frameworks */,
 				E41D421413B3A95300A75A5D /* libofxiOS_iphoneos_Debug.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -252,7 +252,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* pointgrabVideo.app */,
+				1D6058910D05DD3D006BFB54 /* pointgrabCall.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -289,10 +289,10 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				E4B8136818B78EE700AEBEE9 /* AppIcon_Video_57x57.png */,
-				E4B8136918B78EE700AEBEE9 /* AppIcon_Video_72x72.png */,
-				E4B8136A18B78EE700AEBEE9 /* AppIcon_Video_114x114.png */,
-				E4B8136B18B78EE700AEBEE9 /* AppIcon_Video_144x144.png */,
+				E4B8135E18B76F8400AEBEE9 /* AppIcon_CallManagment_57x57.png */,
+				E4B8135F18B76F8400AEBEE9 /* AppIcon_CallManagment_72x72.png */,
+				E4B8136018B76F8400AEBEE9 /* AppIcon_CallManagment_114x114.png */,
+				E4B8136118B76F8400AEBEE9 /* AppIcon_CallManagment_144x144.png */,
 				E4D8936A11527B74007E1F53 /* src */,
 				BB24E1F710DAA51900E9C588 /* openFrameworks */,
 				BB16F26B0F2B646B00518274 /* addons */,
@@ -305,7 +305,7 @@
 		29B97323FDCFA39411CA2CEA /* core frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E400ADEE18AD209C00912161 /* Accelerate.framework */,
+				E48A89A418B3915400E5E033 /* Accelerate.framework */,
 				E41D400613B39D2100A75A5D /* AVFoundation.framework */,
 				E41D400713B39D2100A75A5D /* CoreMedia.framework */,
 				E41D400813B39D2100A75A5D /* CoreVideo.framework */,
@@ -689,9 +689,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* pointgrabVideo */ = {
+		1D6058900D05DD3D006BFB54 /* pointgrabCall */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "pointgrabVideo" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "pointgrabCall" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -703,9 +703,9 @@
 			dependencies = (
 				E41D410413B3A11300A75A5D /* PBXTargetDependency */,
 			);
-			name = pointgrabVideo;
+			name = pointgrabCall;
 			productName = iPhone;
-			productReference = 1D6058910D05DD3D006BFB54 /* pointgrabVideo.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* pointgrabCall.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -721,7 +721,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pointgrabVideo" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pointgrabCall" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -741,7 +741,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* pointgrabVideo */,
+				1D6058900D05DD3D006BFB54 /* pointgrabCall */,
 			);
 		};
 /* End PBXProject section */
@@ -761,12 +761,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4B8136318B76F8400AEBEE9 /* AppIcon_CallManagment_72x72.png in Resources */,
+				E4B8136418B76F8400AEBEE9 /* AppIcon_CallManagment_114x114.png in Resources */,
+				E4B8136518B76F8400AEBEE9 /* AppIcon_CallManagment_144x144.png in Resources */,
 				E41D3ED713B38FB500A75A5D /* Project.xcconfig in Resources */,
-				E4B8136E18B78EE700AEBEE9 /* AppIcon_Video_114x114.png in Resources */,
-				E4B8136C18B78EE700AEBEE9 /* AppIcon_Video_57x57.png in Resources */,
-				E4B8136F18B78EE700AEBEE9 /* AppIcon_Video_144x144.png in Resources */,
+				E4B8136218B76F8400AEBEE9 /* AppIcon_CallManagment_57x57.png in Resources */,
 				E41D3EE613B3906D00A75A5D /* CoreOF.xcconfig in Resources */,
-				E4B8136D18B78EE700AEBEE9 /* AppIcon_Video_72x72.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -817,12 +817,14 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ofxiOS_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = PG_IOS;
 				INFOPLIST_FILE = "ofxiOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -832,12 +834,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ofxiOS_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = PG_IOS;
 				INFOPLIST_FILE = "ofxiOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = "${TARGET_NAME}";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -850,8 +854,6 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -894,7 +896,6 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				ONLY_ACTIVE_ARCH = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 				WARNING_LDFLAGS = "-no_arch_warnings";
@@ -908,8 +909,6 @@
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LIBRARY = "libstdc++";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = YES;
@@ -957,7 +956,7 @@
 			};
 			name = Release;
 		};
-		E436696418B4C1B700D62D4A /* Ad Hoc */ = {
+		E4AA070718B4BF1A006DE618 /* Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E41D3ED613B38FB500A75A5D /* Project.xcconfig */;
 			buildSettings = {
@@ -1011,10 +1010,10 @@
 			};
 			name = "Ad Hoc";
 		};
-		E436696518B4C1B700D62D4A /* Ad Hoc */ = {
+		E4AA070818B4BF1A006DE618 /* Ad Hoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: PointGrab LTD (HS4QS47YSQ)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ofxiOS_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = PG_IOS;
@@ -1030,22 +1029,22 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "pointgrabVideo" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "pointgrabCall" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
-				E436696518B4C1B700D62D4A /* Ad Hoc */,
+				E4AA070818B4BF1A006DE618 /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pointgrabVideo" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pointgrabCall" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
 				C01FCF5008A954540054247B /* Release */,
-				E436696418B4C1B700D62D4A /* Ad Hoc */,
+				E4AA070718B4BF1A006DE618 /* Ad Hoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

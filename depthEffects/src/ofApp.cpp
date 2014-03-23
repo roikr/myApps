@@ -5,13 +5,45 @@
 
 #define STRINGIFY(A) #A
 
+#define OFFLINE 1
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 //    const char* version = (const char*)glGetString(GL_VERSION);
 //    cout << version << endl;
-//    shader.load("shaders/shader.vert", "shaders/shader.frag");
-//    ofEnableAlphaBlending();
     ofDisableArbTex();
+    
+#ifdef OFFLINE
+    video.loadMovie("test-782.mov");
+    video.setLoopState(OF_LOOP_NORMAL);
+    video.play();
+    fbo.allocate(video.getHeight(),video.getWidth());
+#else
+    cam.setup();
+    cam.listDepthModes();
+    cam.setDepthMode(4);
+    fbo.allocate(cam.depthWidth, cam.depthHeight);
+    
+#endif
+    
+    ofSetWindowShape(fbo.getWidth(), fbo.getHeight());
+//    ofSetWindowPosition(1680, 100);
+    
+    fbo.begin();
+    ofClear(0);
+    fbo.end();
+    
+    
+    ping.allocate(fbo.getWidth(),fbo.getHeight());
+    pong.allocate(fbo.getWidth(),fbo.getHeight());
+    echo.allocate(fbo.getWidth(),fbo.getHeight());
+
+    
+    echo.begin();
+    ofClear(0,0,0,255);
+    echo.end();
+    
+    
     
     string vertex = STRINGIFY(
                               \n#version 150\n
@@ -70,23 +102,8 @@ void ofApp::setup(){
 //    shader.setupShaderFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
     shader.bindDefaults();
     shader.linkProgram();
-    minEdge = 0.010625;
-    maxEdge = 0.014688;
-    shader.begin();
-    shader.setUniform1f("minEdge",minEdge);
-    shader.setUniform1f("maxEdge",maxEdge);
-    shader.end();
     
     
-    cam.setup();
-    cam.listDepthModes();
-    cam.setDepthMode(4);
-    
-    fbo.allocate(cam.depthWidth, cam.depthHeight);
-    ping.allocate(cam.depthWidth, cam.depthHeight);
-    pong.allocate(cam.depthWidth, cam.depthHeight);
-    
-    blur = 3;
     
     string blurX = STRINGIFY(
                              \n#version 150\n
@@ -94,6 +111,7 @@ void ofApp::setup(){
                              uniform sampler2D tex0;
                              uniform sampler2D distTex;
                              uniform float blur;
+                             uniform float blurOffset;
                              
                              in vec2 texCoordVarying;
                              out vec4 fragColor;
@@ -103,7 +121,8 @@ void ofApp::setup(){
                              void main(void)
                              {
                                  
-                                 float blurAmnt =blur*(1.0-texture(distTex,texCoordVarying).r)/textureSize(tex0,0).x;
+                                 float dist = 1.0-texture(distTex,texCoordVarying).r;
+                                 float blurAmnt =step(blurOffset,dist)*(dist-blurOffset)*blur/textureSize(tex0,0).x;
                                  
                                  vec4 color=vec4(0);
                                  
@@ -132,7 +151,6 @@ void ofApp::setup(){
     shaderBlurX.linkProgram();
     shaderBlurX.begin();
     shaderBlurX.setUniformTexture("distTex", fbo.getTextureReference(), 1);
-    shaderBlurX.setUniform1f("blur", blur);
     shaderBlurX.end();
     
     
@@ -142,6 +160,7 @@ void ofApp::setup(){
                              uniform sampler2D tex0;
                              uniform sampler2D distTex;
                              uniform float blur;
+                             uniform float blurOffset;
                              
                              in vec2 texCoordVarying;
                              out vec4 fragColor;
@@ -151,7 +170,8 @@ void ofApp::setup(){
                              void main(void)
                              {
                                  
-                                 float blurAmnt =blur*(1.0-texture(distTex,texCoordVarying).r)/textureSize(tex0,0).y;
+                                 float dist = 1.0-texture(distTex,texCoordVarying).r;
+                                 float blurAmnt =step(blurOffset,dist)*(dist-blurOffset)*blur/textureSize(tex0,0).x;
                                  
                                  vec4 color=vec4(0);
                                  
@@ -180,7 +200,6 @@ void ofApp::setup(){
     shaderBlurY.linkProgram();
     shaderBlurY.begin();
     shaderBlurY.setUniformTexture("distTex", fbo.getTextureReference(), 1);
-    shaderBlurY.setUniform1f("blur", blur);
     shaderBlurY.end();
     
     
@@ -189,7 +208,8 @@ void ofApp::setup(){
                              
                              uniform sampler2D tex0;
 //                             uniform sampler2D distTex;
-                            
+                                uniform float hue;
+                                uniform float satOffset;
                              
                              in vec2 texCoordVarying;
                              out vec4 fragColor;
@@ -206,8 +226,9 @@ void ofApp::setup(){
                              {
                                  
                                  vec3 c;
-                                 c.x = 0.3;
-                                 c.y = 1-texture(tex0,texCoordVarying).r;
+                                 float sat = 1-texture(tex0,texCoordVarying).r;
+                                 c.x = hue;
+                                 c.y = step(satOffset,sat)*(sat-satOffset);
                                  c.z = texture(tex0,texCoordVarying).r;
 //                                 float c = blur*(1.0-)/textureSize(tex0,0).y;;
                                  
@@ -220,95 +241,178 @@ void ofApp::setup(){
     shaderCool.setupShaderFromSource(GL_FRAGMENT_SHADER, coolFrag);
     shaderCool.bindDefaults();
     shaderCool.linkProgram();
-//    shaderCool.begin();
-//    shaderCool.setUniformTexture("distTex", fbo.getTextureReference(), 1);
-//    shaderCool.setUniform1f("blur", blur);
-//    shaderCool.end();
 
+
+    string echoFrag = STRINGIFY(
+                                \n#version 150\n
+                                
+                                uniform sampler2D tex0;
+                                uniform sampler2D tex1;
+                                uniform float opacityIn;
+                                uniform float feedback;
+                                
+                                in vec2 texCoordVarying;
+                                out vec4 fragColor;
+                                
+                                
+                                void main(void)
+                                {
+                                    
+                                    vec4 c0=texture(tex0, texCoordVarying);
+                                    vec4 c1=texture(tex1, texCoordVarying);
+                                    vec3 c;
+                                    for (int i=0;i<3;i++) {
+                                        c[i]=max(opacityIn*c0[i],feedback*c1[i]);
+                                    }
+                                    fragColor = vec4(c,1.0);
+                                    
+                                    
+                                }
+                                );
     
+   
+    
+    shaderEcho.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
+    shaderEcho.setupShaderFromSource(GL_FRAGMENT_SHADER, echoFrag);
+    shaderEcho.bindDefaults();
+    shaderEcho.linkProgram();
+    shaderEcho.begin();
+    shaderEcho.setUniformTexture("tex1", echo.getTextureReference(), 1);
+    shaderEcho.end();
     
     fileName = "testMovie";
     fileExt = ".mov";
     
     recorder.setPixelFormat("gray");
     bRecording = false;
-
-    windowResized(ofGetWidth(), ofGetHeight());
-    ofSetWindowPosition(1680, 100);
+    
+    
+    bHide = false;
+    gui.setup("panel");
+    gui.add(minEdge.set("minEdge",0.010625,0,1));
+    gui.add(maxEdge.set("maxEdge",0.014688,0,1));
+    gui.add(blur.set("blur",3,0,10));
+    gui.add(blurOffset.set("blurOffset",0,0,1));
+    gui.add(hue.set("hue",0.5,0,1));
+    gui.add(satOffset.set("satOffset",0,0,1));
+    gui.add(opacityIn.set("opacityIn",1.0,0,1));
+    gui.add(feedback.set("feedback", 0.95, 0, 1));
+    gui.loadFromFile("settings.xml");
 }
 
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    cam.update();
     
+#ifdef OFFLINE
+    video.update();
+    if (video.isFrameNew()) {
+        fbo.begin();
+        ofPushMatrix();
+        ofTranslate(video.getHeight(),0);
+        ofRotate(90);
+        //        ofTranslate(0, -video.getHeight());
+        video.draw(0, 0);
+        ofPopMatrix();
+        fbo.end();
+    }
+#else
+    
+    cam.update();
     if(cam.bNewDepth){
         ofSetColor(255);
         fbo.begin();
         ofClear(0);
         shader.begin();
+        shader.setUniform1f("minEdge",minEdge);
+        shader.setUniform1f("maxEdge",maxEdge);
         cam.depthTexture.draw(ofPoint());
         shader.end();
-        
         fbo.end();
-        
-        
-        ping.begin();
-        ofClear(0);
-        shaderCool.begin();
-        fbo.draw(ofPoint());
-        shaderCool.end();
-        ping.end();
-        
-        pong.begin();
-        ofClear(0);
-        shaderBlurY.begin();
-        ping.draw(ofPoint());
-        shaderBlurY.end();
-        pong.end();
-        
-        ping.begin();
-        ofClear(0);
-        shaderBlurX.begin();
-        pong.draw(ofPoint());
-        shaderBlurX.end();
-        ping.end();
-        
-        if (bRecording) {
-            ofPixels pixels;
-            fbo.readToPixels(pixels);
-            pixels.setImageType(OF_IMAGE_GRAYSCALE);
-            recorder.addFrame(pixels);
-        }
     }
+#endif
+    
+        
+    ping.begin();
+    ofClear(0);
+    shaderCool.begin();
+    shaderCool.setUniform1f("hue", hue);
+    shaderCool.setUniform1f("satOffset", satOffset);
+    fbo.draw(ofPoint());
+    shaderCool.end();
+    ping.end();
+    
+    pong.begin();
+    ofClear(0);
+    shaderBlurY.begin();
+    shaderBlurY.setUniform1f("blur", blur);
+    shaderBlurY.setUniform1f("blurOffset", blurOffset);
+    ping.draw(ofPoint());
+    shaderBlurY.end();
+    pong.end();
+    
+    ping.begin();
+    ofClear(0);
+    shaderBlurX.begin();
+    shaderBlurX.setUniform1f("blur", blur);
+    shaderBlurX.setUniform1f("blurOffset", blurOffset);
+    pong.draw(ofPoint());
+    shaderBlurX.end();
+    ping.end();
+    
+    pong.begin();
+    shaderEcho.begin();
+    shaderEcho.setUniform1f("opacityIn", opacityIn);
+    shaderEcho.setUniform1f("feedback", feedback);
+    ping.draw(0, 0);
+    shaderEcho.end();
+    pong.end();
+  
+    echo.begin();
+    pong.draw(0, 0);
+    echo.end();
+    
+    
+    if (bRecording) {
+        ofPixels pixels;
+        fbo.readToPixels(pixels);
+        pixels.setImageType(OF_IMAGE_GRAYSCALE);
+        recorder.addFrame(pixels);
+    }
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0);
+    ofSetColor(255);
     ofPushMatrix();
     ofMultMatrix(mat);
-    ping.draw(ofPoint());
+    pong.draw(ofPoint());
     ofPopMatrix();
     
-    stringstream ss;
-    ss << fixed << "range: " << minEdge << " - " << maxEdge << endl
-    << "blur: " << blur << endl
-    << "video queue size: " << recorder.getVideoQueueSize() << endl
-    << "audio queue size: " << recorder.getAudioQueueSize() << endl
-    << "FPS: " << ofGetFrameRate() << endl
-    << (bRecording?"pause":"start") << " recording: r" << endl
-    << (bRecording?"close current video file: c":"") << endl;
-    
-    ofSetColor(0,0,0,100);
-    ofRect(0, 0, 260, 75);
-    ofSetColor(255, 255, 255);
-    ofDrawBitmapString(ss.str(),15,15);
-    
-    if(bRecording){
-        ofSetColor(255, 0, 0);
-        ofCircle(ofGetWidth() - 20, 20, 5);
+    if (!bHide) {
+        gui.draw();
     }
+    
+//    stringstream ss;
+//    ss << fixed << "range: " << minEdge << " - " << maxEdge << endl
+//    << "blur: " << blur << endl
+//    << "video queue size: " << recorder.getVideoQueueSize() << endl
+//    << "audio queue size: " << recorder.getAudioQueueSize() << endl
+//    << "FPS: " << ofGetFrameRate() << endl
+//    << (bRecording?"pause":"start") << " recording: r" << endl
+//    << (bRecording?"close current video file: c":"") << endl;
+//    
+//    ofSetColor(0,0,0,100);
+//    ofRect(0, 0, 260, 75);
+//    ofSetColor(255, 255, 255);
+//    ofDrawBitmapString(ss.str(),15,15);
+//    
+//    if(bRecording){
+//        ofSetColor(255, 0, 0);
+//        ofCircle(ofGetWidth() - 20, 20, 5);
+//    }
     
 }
 
@@ -320,6 +424,9 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
+        case 'h':
+            bHide = !bHide;
+            break;
         case 't':
             ofToggleFullscreen();
             break;
@@ -355,72 +462,72 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    ofVec2f pos = imat.preMult(ofVec3f(x,y));
-    ofVec2f dim = imat.preMult(ofVec3f(ofGetWidth(),ofGetHeight()));
-    float diff = ((pos-downPos)/dim.x).x;
-    
-    shader.begin();
-    switch (button) {
-        case 0:
-             shader.setUniform1f("minEdge",ofClamp(minEdge+0.2*diff, 0.0,maxEdge));
-            break;
-        case 2:
-            shader.setUniform1f("maxEdge",ofClamp(maxEdge+0.2*diff, minEdge,1.0));
-            break;
-            
-        default:
-            break;
-    }
-    shader.end();
-    
-    
-    if (button == 1) {
-        shaderBlurX.begin();
-        shaderBlurX.setUniform1f("blur", blur+diff);
-        shaderBlurX.end();
-        shaderBlurY.begin();
-        shaderBlurY.setUniform1f("blur", blur+diff);
-        shaderBlurY.end();
-        
-    }
+//    ofVec2f pos = imat.preMult(ofVec3f(x,y));
+//    ofVec2f dim = imat.preMult(ofVec3f(ofGetWidth(),ofGetHeight()));
+//    float diff = ((pos-downPos)/dim.x).x;
+//    
+//    shader.begin();
+//    switch (button) {
+//        case 0:
+//             shader.setUniform1f("minEdge",ofClamp(minEdge+0.2*diff, 0.0,maxEdge));
+//            break;
+//        case 2:
+//            shader.setUniform1f("maxEdge",ofClamp(maxEdge+0.2*diff, minEdge,1.0));
+//            break;
+//            
+//        default:
+//            break;
+//    }
+//    shader.end();
+//    
+//    
+//    if (button == 1) {
+//        shaderBlurX.begin();
+//        shaderBlurX.setUniform1f("blur", blur+diff);
+//        shaderBlurX.end();
+//        shaderBlurY.begin();
+//        shaderBlurY.setUniform1f("blur", blur+diff);
+//        shaderBlurY.end();
+//        
+//    }
     
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    downPos = imat.preMult(ofVec3f(x,y));
+    //downPos = imat.preMult(ofVec3f(x,y));
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    ofVec2f pos = imat.preMult(ofVec3f(x,y));
-    ofVec2f dim = imat.preMult(ofVec3f(ofGetWidth(),ofGetHeight()));
-    float diff = ((pos-downPos)/dim.x).x;
-    
-    switch (button) {
-        case 0:
-            minEdge = ofClamp(minEdge+0.2*diff, 0.0,maxEdge);
-            break;
-        case 2:
-            maxEdge = ofClamp(maxEdge+0.2*diff, minEdge,1.0);
-            break;
-            
-        default:
-            break;
-    }
-   
-    if (button == 1) {
-        blur+=diff;
-    }
+//    ofVec2f pos = imat.preMult(ofVec3f(x,y));
+//    ofVec2f dim = imat.preMult(ofVec3f(ofGetWidth(),ofGetHeight()));
+//    float diff = ((pos-downPos)/dim.x).x;
+//    
+//    switch (button) {
+//        case 0:
+//            minEdge = ofClamp(minEdge+0.2*diff, 0.0,maxEdge);
+//            break;
+//        case 2:
+//            maxEdge = ofClamp(maxEdge+0.2*diff, minEdge,1.0);
+//            break;
+//            
+//        default:
+//            break;
+//    }
+//   
+//    if (button == 1) {
+//        blur+=diff;
+//    }
 
     //cout << minEdge << '\t' << maxEdge << endl;
 }
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-    float scale = MIN((float)w/(float)CAM_WIDTH,(float)h/(float)CAM_HEIGHT);
+    float scale = MIN((float)w/(float)fbo.getWidth(),(float)h/(float)fbo.getHeight());
     
-    mat = ofMatrix4x4::newTranslationMatrix(0.5*(ofVec2f(w,h)-scale*ofVec2f(CAM_WIDTH,CAM_HEIGHT)));
+    mat = ofMatrix4x4::newTranslationMatrix(0.5*(ofVec2f(w,h)-scale*ofVec2f(fbo.getWidth(),fbo.getHeight())));
     mat.preMult(ofMatrix4x4::newScaleMatrix(scale, scale, 1.0));
     imat = mat.getInverse();
 }

@@ -3,9 +3,11 @@
 #include "ofMain.h"
 #include "ofxOpenNI2.h"
 #include "ofxVideoRecorder.h"
+#include "ofxGui.h"
 
 #define CAM_WIDTH 640
 #define CAM_HEIGHT 480
+
 
 
 class ofApp : public ofBaseApp{
@@ -27,17 +29,17 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     ofxOpenNI2 cam;
+    ofVideoPlayer video;
+    
     ofShader shader;
     ofShader shaderBlurX,shaderBlurY;
-    ofShader shaderCool;
+    ofShader shaderCool,shaderEcho;
     
     ofImage image;
     
     ofMatrix4x4 mat,imat;
     
-    ofVec2f downPos;
-    float minEdge;
-    float maxEdge;
+    
     
     ofxVideoRecorder recorder;
     bool bRecording;
@@ -47,6 +49,11 @@ class ofApp : public ofBaseApp{
     ofFbo fbo;
     ofFbo ping;
     ofFbo pong;
-    float blur;
+    ofFbo echo;
+    
+    
+    ofParameter<float> minEdge,maxEdge,blur,blurOffset,hue,satOffset,opacityIn,feedback;
+    ofxPanel gui;
+    bool bHide;
     
 };

@@ -4,6 +4,13 @@
 #include "ofxOpenNI2.h"
 #include "ofxOpenCv.h"
 #include "ofxGui.h"
+#include "ofxVideoRecorder.h"
+
+
+struct memory {
+    ofVec2f pos;
+    string filename;
+};
 
 class ofApp : public ofBaseApp{
 
@@ -11,6 +18,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -31,16 +39,22 @@ class ofApp : public ofBaseApp{
     
     ofFbo fbo,thresh;
     
-    ofParameter<float> minEdge,maxEdge,minArea,maxArea;
-    ofParameter<string> queueSize,fps;
+    ofParameter<float> minEdge,maxEdge,minArea,maxArea,startArea,stopArea;
+    ofParameter<string> queueSize;
     
     ofxPanel gui;
     
-    ofxCvColorImage colorImg;
     ofxCvGrayscaleImage grayImg;
     ofxCvContourFinder contour;
     
     deque<ofPixels> frames;
     
     bool bRecording;
+    ofxVideoRecorder recorder;
+    float startTime,stopTime;
+    bool bReset; // wait for blob to disappear after last recording
+    memory currentMemory;
+    
+    vector<memory> memories;
+    
 };

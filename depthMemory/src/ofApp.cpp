@@ -1,6 +1,10 @@
 #include "ofApp.h"
 
 #define QUEUE_LENGTH 30
+#define MIN_DURATION 5
+#define MAX_DURATION 30
+#define HIDE_DURATION 5
+
 
 #define STRINGIFY(A) #A
 
@@ -15,9 +19,13 @@ void ofApp::setup(){
     depthTexture.allocate(cam.depthWidth, cam.depthHeight, GL_R16 );
     
     
-    fbo.allocate(cam.depthWidth, cam.depthHeight);
-    thresh.allocate(cam.depthWidth, cam.depthHeight,GL_RGB);
-    colorImg.allocate(cam.depthWidth, cam.depthHeight);
+    // request single channel fbo (no depth no stencil)
+    ofFbo::Settings settings;
+    settings.width = cam.depthWidth;
+    settings.height = cam.depthHeight;
+    settings.internalformat = GL_R16; // GL_R8 is not used in ofGetImageTypeFromGLType()
+    fbo.allocate(settings);
+    thresh.allocate(settings);
     grayImg.allocate(cam.depthWidth, cam.depthHeight);
     
     ofSetWindowShape(fbo.getWidth(), fbo.getHeight());
@@ -88,23 +96,43 @@ void ofApp::setup(){
     threshold.linkProgram();
     
     gui.setup("panel");
-    gui.add(fps.set("fps",""));
     gui.add(queueSize.set("queueSize",""));
     
     gui.add(minEdge.set("minEdge", 0.003, 0.0, 0.01));
     gui.add(maxEdge.set("maxEdge", 0.007, 0.0, 0.02));
     gui.add(minArea.set("minArea",0.1,0,1));
     gui.add(maxArea.set("maxArea", 0.5, 0, 1));
+    gui.add(startArea.set("startArea",0.1,0,1));
+    gui.add(stopArea.set("stopArea",0.05,0,1));
     
     gui.loadFromFile("settings.xml");
     
     
     bRecording = false;
+    recorder.setPixelFormat("gray");
+    
+    bReset = false;
+    
+    ofFile file("memories.csv");
+    ofBuffer buffer(file);
+    while(!buffer.isLastLine()) {
+        string line = buffer.getNextLine();
+        vector<string> strs = ofSplitString(line, ",");
+        
+        memory m;
+        m.pos = ofVec2f(ofToFloat(strs[0]),ofToFloat(strs[1]));
+        m.filename = strs[2];
+        
+        memories.push_back(m);
+        
+        cout << m.pos << ',' << m.filename << endl;
+    }
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    fps = ofToString(ofGetFrameRate());
+    
     cam.update();
     
     if (cam.bNewDepth) {
@@ -122,6 +150,8 @@ void ofApp::update(){
         shader.end();
         fbo.end();
         
+        ofPixels pixels;
+        fbo.readToPixels(pixels);
     
         thresh.begin();
         ofClear(0);
@@ -131,34 +161,81 @@ void ofApp::update(){
         depthTexture.draw(0,0);
         threshold.end();
         thresh.end();
+    
+        ofPixels threshPixels;
+        thresh.readToPixels(threshPixels);
+        grayImg.setFromPixels(threshPixels);
         
-        
-        ofPixels pixels;
-        thresh.readToPixels(pixels);
-        colorImg.setFromPixels(pixels);
-        grayImg = colorImg;
-        
+        float size = grayImg.getWidth()*grayImg.getHeight();
+        contour.findContours(grayImg, minArea*size, maxArea*size, 10, false);
         
         if (!bRecording) {
+            
             frames.push_front(pixels);
             while (frames.size()>QUEUE_LENGTH) {
                 frames.pop_back();
             }
-            queueSize=ofToString(frames.size());
+            
+            
+            if (bReset && !contour.nBlobs) {
+                bReset = false;
+            }
+        
+            if (!bReset && contour.nBlobs && contour.blobs[0].area>=startArea*size) {
+                
+                if(!recorder.isInitialized()) {
+                    bRecording = true;
+                    startTime = ofGetElapsedTimef();
+                    stopTime = startTime + HIDE_DURATION; // safty margin
+                    currentMemory.pos = contour.blobs[0].centroid;
+                    currentMemory.filename = "testMovie"+ofGetTimestampString()+".mov";
+                    recorder.setup(currentMemory.filename, cam.depthWidth, cam.depthHeight, 30);
+                    
+                    for (deque<ofPixels>::reverse_iterator riter=frames.rbegin();riter!=frames.rend();riter++) {
+                        
+                        recorder.addFrame(*riter);
+                    }
+                    frames.clear();
+                } else {
+                    recorder.close();
+                }
+            }
+            
+        } else {
+            recorder.addFrame(pixels);
+            
+            
+            if (contour.nBlobs && contour.blobs[0].area>=stopArea*size) {
+                stopTime = ofGetElapsedTimef() + HIDE_DURATION;
+            }
+            
+            
+            
+            if (ofGetElapsedTimef()-startTime >= MAX_DURATION || ofGetElapsedTimef() > stopTime ) {
+                bRecording = false;
+                recorder.close();
+                bReset = ofGetElapsedTimef()-startTime >= MAX_DURATION ;
+                
+                if (ofGetElapsedTimef()-startTime > MIN_DURATION) {
+                    memories.push_back(currentMemory);
+                    
+                    ofFile file("memories.csv",ofFile::Append);
+                    stringstream ss;
+                    
+                    ss << currentMemory.pos << ',' << currentMemory.filename <<  endl;
+                    file << ss.str() ;
+                    file.close();
+                    
+                }
+            }
+            
         }
         
-        
-        
-        /*
-        ofPixels pixels;
-        thresh.readToPixels(pixels);
-        pixels.setImageType(OF_IMAGE_GRAYSCALE);
-        grayImg.setFromPixels(pixels);
-        */
-        float size = grayImg.getWidth()*grayImg.getHeight();
-        contour.findContours(grayImg, minArea*size, maxArea*size, 10, false);
+        queueSize=ofToString(frames.size());
         
     }
+    
+    
     
 }
 
@@ -184,11 +261,45 @@ void ofApp::draw(){
     ofPopMatrix();
     
     gui.draw();
+    
+    
+    float area = contour.nBlobs ? contour.blobs[0].area / (contour.getWidth()*contour.getHeight()): 0;
+    
+    stringstream ss;
+    
+    ss << "detected area: " << area << endl
+    << "video queue size: " << recorder.getVideoQueueSize() << endl
+    << "audio queue size: " << recorder.getAudioQueueSize() << endl
+    << "FPS: " << ofGetFrameRate() << endl;
+    
+    if (bRecording) {
+        ss << "video length: " << ofGetElapsedTimef() - startTime << endl
+        << "hide duration: " << stopTime - ofGetElapsedTimef() << endl;
+    }
+    
+    ofSetColor(255);
+    ofPushMatrix();
+    ofTranslate(ofGetWidth()-260, 0);
+    //ofRect(0, 0, 260, 75);
+    //ofSetColor(255, 255, 255);
+    ofDrawBitmapString(ss.str(),15,15);
+    ofPopMatrix();
+    
+    if(bRecording){
+        ofSetColor(255, 0, 0);
+        ofFill();
+        ofCircle(ofGetWidth() - 20, 20, 5);
+        ofNoFill();
+    }
+}
+
+void ofApp::exit() {
+    recorder.close();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    
 }
 
 //--------------------------------------------------------------

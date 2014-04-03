@@ -35,9 +35,9 @@ class ofApp : public ofBaseApp{
     
     
     ofShader shader;
-    ofShader threshold;
+    ofShader thresholdShader;
     
-    ofFbo fbo,thresh;
+    ofFbo fbo,thresholdFbo;
     
     ofParameter<float> minEdge,maxEdge,minArea,maxArea,startArea,stopArea;
     ofParameter<string> queueSize;

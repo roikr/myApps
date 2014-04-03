@@ -15,7 +15,7 @@ void ofApp::setup(){
     
     cam.setup();
     cam.listDepthModes();
-    cam.setDepthMode(4);
+    cam.setDepthMode(9);
     depthTexture.allocate(cam.depthWidth, cam.depthHeight, GL_R16 );
     
     
@@ -25,7 +25,7 @@ void ofApp::setup(){
     settings.height = cam.depthHeight;
     settings.internalformat = GL_R16; // GL_R8 is not used in ofGetImageTypeFromGLType()
     fbo.allocate(settings);
-    thresh.allocate(settings);
+    thresholdFbo.allocate(settings);
     grayImg.allocate(cam.depthWidth, cam.depthHeight);
     
     ofSetWindowShape(fbo.getWidth(), fbo.getHeight());
@@ -90,16 +90,16 @@ void ofApp::setup(){
                                 
                                 );
     
-    threshold.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
-    threshold.setupShaderFromSource(GL_FRAGMENT_SHADER, thresholdFrag);
-    threshold.bindDefaults();
-    threshold.linkProgram();
+    thresholdShader.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
+    thresholdShader.setupShaderFromSource(GL_FRAGMENT_SHADER, thresholdFrag);
+    thresholdShader.bindDefaults();
+    thresholdShader.linkProgram();
     
     gui.setup("panel");
     gui.add(queueSize.set("queueSize",""));
     
-    gui.add(minEdge.set("minEdge", 0.003, 0.0, 0.01));
-    gui.add(maxEdge.set("maxEdge", 0.007, 0.0, 0.02));
+    gui.add(minEdge.set("minEdge", 0.0, 0.0, 1.0));
+    gui.add(maxEdge.set("maxEdge", 0.0, 0.0, 1.0));
     gui.add(minArea.set("minArea",0.1,0,1));
     gui.add(maxArea.set("maxArea", 0.5, 0, 1));
     gui.add(startArea.set("startArea",0.1,0,1));
@@ -153,17 +153,17 @@ void ofApp::update(){
         ofPixels pixels;
         fbo.readToPixels(pixels);
     
-        thresh.begin();
+        thresholdFbo.begin();
         ofClear(0);
-        threshold.begin();
-        threshold.setUniform1f("minEdge", minEdge);
-        threshold.setUniform1f("maxEdge",maxEdge);
+        thresholdShader.begin();
+        thresholdShader.setUniform1f("minEdge", minEdge);
+        thresholdShader.setUniform1f("maxEdge",maxEdge);
         depthTexture.draw(0,0);
-        threshold.end();
-        thresh.end();
+        thresholdShader.end();
+        thresholdFbo.end();
     
         ofPixels threshPixels;
-        thresh.readToPixels(threshPixels);
+        thresholdFbo.readToPixels(threshPixels);
         grayImg.setFromPixels(threshPixels);
         
         float size = grayImg.getWidth()*grayImg.getHeight();
@@ -249,7 +249,7 @@ void ofApp::draw(){
     
     ofSetColor(255);
     fbo.draw(0, 0);
-    thresh.draw(cam.depthWidth,0);
+    thresholdFbo.draw(cam.depthWidth,0);
     
     
     
@@ -291,6 +291,7 @@ void ofApp::draw(){
         ofCircle(ofGetWidth() - 20, 20, 5);
         ofNoFill();
     }
+    
 }
 
 void ofApp::exit() {

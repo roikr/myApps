@@ -29,6 +29,7 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     ofxOpenNI2 cam;
+    ofTexture depthTexture;
     ofVideoPlayer video;
     
     ofShader shader;
@@ -52,7 +53,7 @@ class ofApp : public ofBaseApp{
     ofFbo echo;
     
     
-    ofParameter<float> minEdge,maxEdge,blur,blurOffset,hue,satOffset,opacityIn,feedback;
+    ofParameter<float> minEdge,maxEdge,blur,blurOffset,hue,satOffset,opacityIn,feedback,feedbackOffset;
     ofxPanel gui;
     bool bHide;
     

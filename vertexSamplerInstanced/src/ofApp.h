@@ -1,12 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxOpenNI2.h"
-#include "ofxVideoRecorder.h"
-
-#define CAM_WIDTH 640
-#define CAM_HEIGHT 480
-
 
 class ofApp : public ofBaseApp{
 
@@ -14,7 +8,6 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -26,23 +19,11 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    ofxOpenNI2 cam;
-    ofTexture depthTexture;
+    ofVideoGrabber cam;
     ofShader shader;
-    
-    ofImage image;
-    
-    ofMatrix4x4 mat,imat;
-    
-    ofVec2f downPos;
-    float minEdge;
-    float maxEdge;
-    
-    ofxVideoRecorder recorder;
-    bool bRecording;
-    string fileName;
-    string fileExt;
-		
     ofFbo fbo;
+    ofPixels pixels;
     
+    ofVboMesh point;
+		
 };

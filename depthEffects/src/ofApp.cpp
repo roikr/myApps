@@ -5,7 +5,7 @@
 
 #define STRINGIFY(A) #A
 
-#define OFFLINE 1
+//#define OFFLINE 1
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -14,15 +14,16 @@ void ofApp::setup(){
     ofDisableArbTex();
     
 #ifdef OFFLINE
-    video.loadMovie("test-782.mov");
+    video.loadMovie("maya0.mov");
     video.setLoopState(OF_LOOP_NORMAL);
     video.play();
     fbo.allocate(video.getHeight(),video.getWidth());
 #else
     cam.setup();
     cam.listDepthModes();
-    cam.setDepthMode(4);
+    cam.setDepthMode(9);
     fbo.allocate(cam.depthWidth, cam.depthHeight);
+    depthTexture.allocate(cam.depthWidth, cam.depthHeight, GL_R16);//, GL_RED, OF_PIXELS_MONO);
     
 #endif
     
@@ -248,8 +249,10 @@ void ofApp::setup(){
                                 
                                 uniform sampler2D tex0;
                                 uniform sampler2D tex1;
+                                uniform sampler2D distTex;
                                 uniform float opacityIn;
                                 uniform float feedback;
+                                uniform float feedbackOffset;
                                 
                                 in vec2 texCoordVarying;
                                 out vec4 fragColor;
@@ -260,9 +263,13 @@ void ofApp::setup(){
                                     
                                     vec4 c0=texture(tex0, texCoordVarying);
                                     vec4 c1=texture(tex1, texCoordVarying);
+                                    
+                                    float dist = 0.5;//1.0-texture(distTex,texCoordVarying).r;
+                                    float feedbackAmnt = feedback ;//* step(feedbackOffset,dist);
                                     vec3 c;
+                                    
                                     for (int i=0;i<3;i++) {
-                                        c[i]=max(opacityIn*c0[i],feedback*c1[i]);
+                                        c[i]=max(opacityIn*c0[i],feedbackAmnt*c1[i]);
                                     }
                                     fragColor = vec4(c,1.0);
                                     
@@ -278,6 +285,7 @@ void ofApp::setup(){
     shaderEcho.linkProgram();
     shaderEcho.begin();
     shaderEcho.setUniformTexture("tex1", echo.getTextureReference(), 1);
+    shaderEcho.setUniformTexture("distTex", fbo.getTextureReference(), 2);
     shaderEcho.end();
     
     fileName = "testMovie";
@@ -289,14 +297,15 @@ void ofApp::setup(){
     
     bHide = false;
     gui.setup("panel");
-    gui.add(minEdge.set("minEdge",0.010625,0,1));
-    gui.add(maxEdge.set("maxEdge",0.014688,0,1));
-    gui.add(blur.set("blur",3,0,10));
+    gui.add(minEdge.set("minEdge",0.010625,0.5,0.75));
+    gui.add(maxEdge.set("maxEdge",0.014688,0.5,0.75));
+    gui.add(blur.set("blur",1.5,0,3));
     gui.add(blurOffset.set("blurOffset",0,0,1));
     gui.add(hue.set("hue",0.5,0,1));
     gui.add(satOffset.set("satOffset",0,0,1));
     gui.add(opacityIn.set("opacityIn",1.0,0,1));
-    gui.add(feedback.set("feedback", 0.95, 0, 1));
+    gui.add(feedback.set("feedback", 0.5, 0.5, 1));
+    gui.add(feedbackOffset.set("feedbackOffset", 0, 0, 1));
     gui.loadFromFile("settings.xml");
 }
 
@@ -321,12 +330,13 @@ void ofApp::update(){
     cam.update();
     if(cam.bNewDepth){
         ofSetColor(255);
+        depthTexture.loadData(cam.getDepth(), cam.depthWidth, cam.depthHeight, GL_RED);
         fbo.begin();
         ofClear(0);
         shader.begin();
         shader.setUniform1f("minEdge",minEdge);
         shader.setUniform1f("maxEdge",maxEdge);
-        cam.depthTexture.draw(ofPoint());
+        depthTexture.draw(0,0);
         shader.end();
         fbo.end();
     }
@@ -364,6 +374,7 @@ void ofApp::update(){
     shaderEcho.begin();
     shaderEcho.setUniform1f("opacityIn", opacityIn);
     shaderEcho.setUniform1f("feedback", feedback);
+    shaderEcho.setUniform1f("feedbackOffset", feedbackOffset);
     ping.draw(0, 0);
     shaderEcho.end();
     pong.end();

@@ -9,3 +9,9 @@ Release*/
 *.app/
 *.pyc
 .svn/
+
+Makefile
+addons.make
+config.make
+*.xcodeproj
+openFrameworks-Info.plist

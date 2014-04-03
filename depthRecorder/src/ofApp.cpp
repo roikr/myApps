@@ -3,26 +3,85 @@
 #define CAM_WIDTH 640
 #define CAM_HEIGHT 480
 
+#define STRINGIFY(A) #A
 
 //--------------------------------------------------------------
 void ofApp::setup(){
 //    const char* version = (const char*)glGetString(GL_VERSION);
 //    cout << version << endl;
 //    shader.load("shaders/shader.vert", "shaders/shader.frag");
-    ofEnableAlphaBlending();
-    shader.setupShaderFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+    ofDisableArbTex();
+    
+    string vertex = STRINGIFY(
+                              \n#version 150\n
+                              uniform mat4 modelViewProjectionMatrix;
+                              
+                              in vec4  position;
+                              in vec2  texcoord;
+                              
+                              out vec2 texCoordVarying;
+                              
+                              void main()
+                              {
+                                  texCoordVarying = texcoord;
+                                  gl_Position = modelViewProjectionMatrix * position;
+                              }
+                              );
+    
+    string fragment = STRINGIFY(
+                                \n#version 150\n
+                                
+                                uniform sampler2D tex0;
+                                //uniform sampler2D maskTex;
+                                uniform float minEdge;
+                                uniform float maxEdge;
+                                
+                                
+                                in vec2 texCoordVarying;
+                                out vec4 fragColor;
+                                
+                                
+                                void main(void)
+                                {
+                                    
+                                    float dist = texture(tex0, texCoordVarying).r;
+                                    if (dist>0) {
+                                        vec3 color = vec3(1.0-(dist-minEdge)/(maxEdge-minEdge));
+                                        fragColor = vec4(color,1.0);
+                                    } else {
+                                        discard;
+                                    }
+                                    
+                                    
+                                    
+                                    
+                                    //float mask = step(minEdge,color)-step(maxEdge,color);
+                                    //fragColor = vec4( vec3(1.0-c) , mask);
+                                    //fragColor =  vec4(vec3(texture(tex0,pos).r),1.0);
+                                    
+                                }
+                                );
+    
+    shader.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+    
+    
+    //    shader.setupShaderFromFile(GL_FRAGMENT_SHADER, "shaders/shader.frag");
+    shader.bindDefaults();
     shader.linkProgram();
-    minEdge = 0;
-    maxEdge = 1;
+    
+    minEdge = 0.5;
+    maxEdge = 0.6;
     shader.begin();
     shader.setUniform1f("minEdge",minEdge);
     shader.setUniform1f("maxEdge",maxEdge);
     shader.end();
     cam.setup();
     cam.listDepthModes();
-    cam.setDepthMode(4);
+    cam.setDepthMode(9);
+    depthTexture.allocate(cam.depthWidth, cam.depthHeight, GL_R16);
     
-    fbo.allocate(cam.depthWidth, cam.depthHeight);//,GL_LUMINANCE);
+    fbo.allocate(cam.depthWidth, cam.depthHeight);
     
     fileName = "testMovie";
     fileExt = ".mov";
@@ -40,10 +99,12 @@ void ofApp::update(){
     
     if(cam.bNewDepth){
         ofSetColor(255);
+        depthTexture.loadData(cam.getDepth(), cam.depthWidth, cam.depthHeight, GL_RED);
+        
         fbo.begin();
         ofClear(0);
         shader.begin();
-        cam.depthTexture.draw(ofPoint());
+        depthTexture.draw(ofPoint());
         shader.end();
         
         fbo.end();
@@ -66,17 +127,18 @@ void ofApp::draw(){
     ofPopMatrix();
     
     stringstream ss;
-    ss << "video queue size: " << recorder.getVideoQueueSize() << endl
+    ss << fixed << "range: " << minEdge << " - " << maxEdge << endl
+    << "video queue size: " << recorder.getVideoQueueSize() << endl
     << "audio queue size: " << recorder.getAudioQueueSize() << endl
     << "FPS: " << ofGetFrameRate() << endl
     << (bRecording?"pause":"start") << " recording: r" << endl
     << (bRecording?"close current video file: c":"") << endl;
-    
+
     ofSetColor(0,0,0,100);
     ofRect(0, 0, 260, 75);
     ofSetColor(255, 255, 255);
     ofDrawBitmapString(ss.str(),15,15);
-    
+
     if(bRecording){
         ofSetColor(255, 0, 0);
         ofCircle(ofGetWidth() - 20, 20, 5);
@@ -134,10 +196,10 @@ void ofApp::mouseDragged(int x, int y, int button){
     shader.begin();
     switch (button) {
         case 0:
-             shader.setUniform1f("minEdge",ofClamp(minEdge+diff, 0.0,1.0));
+             shader.setUniform1f("minEdge",ofClamp(minEdge+diff, 0.0,maxEdge));
             break;
         case 2:
-            shader.setUniform1f("maxEdge",ofClamp(maxEdge+diff, 0.0,1.0));
+            shader.setUniform1f("maxEdge",ofClamp(maxEdge+diff, minEdge,1.0));
             break;
             
         default:
@@ -163,10 +225,10 @@ void ofApp::mouseReleased(int x, int y, int button){
     
     switch (button) {
         case 0:
-            minEdge = ofClamp(minEdge+diff, 0.0,1.0);
+            minEdge = ofClamp(minEdge+diff, 0.0,maxEdge);
             break;
         case 2:
-            maxEdge = ofClamp(maxEdge+diff, 0.0,1.0);
+            maxEdge = ofClamp(maxEdge+diff, minEdge,1.0);
             break;
             
         default:

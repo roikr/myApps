@@ -4,7 +4,7 @@
 #include "ofxiOS.h"
 #include "ofxiOSExtras.h"
 #include "ofxPointGrab.h"
-
+#include "ofxiVideoGrabber.h"
 
 
 struct clip {
@@ -38,15 +38,17 @@ class ofApp : public ofxiOSApp {
         void play(string name);
         
     
-    ofVideoGrabber cam;
+    ofxiVideoGrabber cam;
+    ofTexture tex;
+//    ofMatrix4x4 texMat;
     ofMatrix4x4 camMat,camiMat;
     bool bShowCam;
     ofxPointGrab pointGrab;
     pointGrabData data;
     ofxiOSVideoPlayer video;
-    ofFbo fbo;
+//    ofFbo fbo;
     ofPixels pixels;
-    ofMatrix4x4 fboMat;
+//    ofMatrix4x4 fboMat;
     
     vector<clip> clips;
     vector<clip>::iterator current;

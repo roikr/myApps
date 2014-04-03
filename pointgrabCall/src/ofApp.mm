@@ -19,24 +19,29 @@ void ofApp::setup(){
     data.bIsGrab = false;
     pointGrab.setup(ofToDataPath(""),true);
     
-    cam.setDeviceID(1);
-    cam.initGrabber(640, 480,OF_PIXELS_BGRA);
-//    cam.setOrientation(OF_ORIENTATION_90_LEFT,true);
+//    cam.setDeviceID(1);
+//    cam.initGrabber(640, 480,OF_PIXELS_BGRA);
+
+    //
     
-    float scale = (float)ofGetWidth()/(5.0*480.0);
+    cam.initGrabber(640, 480);
+    cam.setOrientation(OF_ORIENTATION_90_LEFT,true);
+    tex.allocate(640,480,GL_LUMINANCE);
+    
+    float scale = (float)ofGetWidth()/(5.0*640.0);
     camMat.scale(scale, scale, 1.0);
-    camMat.translate(ofVec3f(ofGetWidth()-scale*480.0-20.0,ofGetHeight()-scale*640.0-20,0));
+    camMat.translate(ofVec3f(ofGetWidth()-scale*640.0-20.0,ofGetHeight()-scale*480.0-20,0));
     camiMat = camMat.getInverse();
     bShowCam = true;
     
-    fbo.allocate(640, 480);
+//    fbo.allocate(640, 480);
     
     pixels.allocate(640,480,OF_IMAGE_COLOR_ALPHA);
     
     
-    scale = 480.0/640.0;
-    fboMat.scale(scale, scale, 1.0);
-    fboMat.translate(ofVec3f(0.5*(640.0-480.0*scale),0,0));
+//    scale = 480.0/640.0;
+//    fboMat.scale(scale, scale, 1.0);
+//    fboMat.translate(ofVec3f(0.5*(640.0-480.0*scale),0,0));
     
     ofPixels pixels;
     ofLoadImage(pixels, "Background.png");
@@ -112,6 +117,7 @@ void ofApp::setup(){
     iconTime = ofGetElapsedTimef();
 }
 
+/*
 static void neon_asm_convert(uint8_t * __restrict dest, uint8_t * __restrict src, int numPixels)
 {
 	__asm__ volatile("lsr          %2, %2, #3      \n"
@@ -139,7 +145,7 @@ static void neon_asm_convert(uint8_t * __restrict dest, uint8_t * __restrict src
 					 : "r4", "r5", "r6"
 					 );
 }
-
+*/
 void ofApp::play(string name) {
     cout << "play: " << name << endl;
     vector<clip>::iterator iter = clips.begin();
@@ -158,14 +164,14 @@ void ofApp::play(string name) {
 //--------------------------------------------------------------
 void ofApp::update(){
 //    long time=ofGetElapsedTimeMillis();
-    cam.update();
+//    cam.update();
 //    cout << ofGetElapsedTimeMillis()-time << endl;
     ofSetColor(255);
     ofFill();
     
     
     
-    
+    /*
     if (cam.isFrameNew()) {
         fbo.begin();
         ofClear(0,0,0,255);
@@ -184,6 +190,14 @@ void ofApp::update(){
         fbo.unbind();
         
         neon_asm_convert(pointGrab.getNextPixels().getPixels(), pixels.getPixels(), pixels.getWidth()*pixels.getHeight());
+     */
+    ofPixels &pixels = pointGrab.getNextPixels();
+//    long time=ofGetElapsedTimeMillis();
+    if (cam.copyPixels(pixels)) {
+//        cout << ofGetElapsedTimeMillis()-time << endl;
+        if (bShowCam) {
+            tex.loadData(pixels);
+        }
         
         pointGrabData data = pointGrab.update();
         
@@ -315,9 +329,9 @@ void ofApp::draw(){
     if (bShowCam) {
         ofPushMatrix();
         ofMultMatrix(camMat);
-        ofScale(-1, 1);
-        ofTranslate(-cam.getWidth(), 0);
-        cam.draw(0,0);
+//        ofScale(-1, 1);
+//        ofTranslate(-cam.getWidth(), 0);
+        tex.draw(0,0);
         ofPopMatrix();
     }
 }

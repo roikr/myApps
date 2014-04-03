@@ -29,6 +29,7 @@
 		E4B8136D18B78EE700AEBEE9 /* AppIcon_Video_72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136918B78EE700AEBEE9 /* AppIcon_Video_72x72.png */; };
 		E4B8136E18B78EE700AEBEE9 /* AppIcon_Video_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136A18B78EE700AEBEE9 /* AppIcon_Video_114x114.png */; };
 		E4B8136F18B78EE700AEBEE9 /* AppIcon_Video_144x144.png in Resources */ = {isa = PBXBuildFile; fileRef = E4B8136B18B78EE700AEBEE9 /* AppIcon_Video_144x144.png */; };
+		E4C002BE18BA315700A44F37 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E4C002BD18BA315700A44F37 /* Default-568h@2x.png */; };
 		E4D8936E11527B74007E1F53 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4D8936B11527B74007E1F53 /* main.mm */; };
 		E4D8936F11527B74007E1F53 /* ofApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = E4D8936D11527B74007E1F53 /* ofApp.mm */; };
 		d3b5ca1da017963e41b74554 /* VideoGrabber.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5de24525926c77eac784f864 /* VideoGrabber.mm */; };
@@ -43,7 +44,7 @@
 			remoteGlobalIDString = BB24DED610DA7A3F00E9C588;
 			remoteInfo = "iPhone+OF Static Library";
 		};
-		E41D410313B3A11300A75A5D /* PBXContainerItemProxy */ = {
+		E4C002BF18BA316F00A44F37 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E41D40FD13B3A0D800A75A5D /* iOS+OFLib.xcodeproj */;
 			proxyType = 1;
@@ -150,6 +151,7 @@
 		E4B8136918B78EE700AEBEE9 /* AppIcon_Video_72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_72x72.png; path = bin/data/AppIcon_Video_72x72.png; sourceTree = "<group>"; };
 		E4B8136A18B78EE700AEBEE9 /* AppIcon_Video_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_114x114.png; path = bin/data/AppIcon_Video_114x114.png; sourceTree = "<group>"; };
 		E4B8136B18B78EE700AEBEE9 /* AppIcon_Video_144x144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon_Video_144x144.png; path = bin/data/AppIcon_Video_144x144.png; sourceTree = "<group>"; };
+		E4C002BD18BA315700A44F37 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "bin/data/Default-568h@2x.png"; sourceTree = "<group>"; };
 		E4D8936B11527B74007E1F53 /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = src/main.mm; sourceTree = SOURCE_ROOT; };
 		E4D8936C11527B74007E1F53 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
 		E4D8936D11527B74007E1F53 /* ofApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = ofApp.mm; path = src/ofApp.mm; sourceTree = SOURCE_ROOT; };
@@ -289,6 +291,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				E4C002BD18BA315700A44F37 /* Default-568h@2x.png */,
 				E4B8136818B78EE700AEBEE9 /* AppIcon_Video_57x57.png */,
 				E4B8136918B78EE700AEBEE9 /* AppIcon_Video_72x72.png */,
 				E4B8136A18B78EE700AEBEE9 /* AppIcon_Video_114x114.png */,
@@ -701,7 +704,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				E41D410413B3A11300A75A5D /* PBXTargetDependency */,
+				E4C002C018BA316F00A44F37 /* PBXTargetDependency */,
 			);
 			name = pointgrabVideo;
 			productName = iPhone;
@@ -766,6 +769,7 @@
 				E4B8136C18B78EE700AEBEE9 /* AppIcon_Video_57x57.png in Resources */,
 				E4B8136F18B78EE700AEBEE9 /* AppIcon_Video_144x144.png in Resources */,
 				E41D3EE613B3906D00A75A5D /* CoreOF.xcconfig in Resources */,
+				E4C002BE18BA315700A44F37 /* Default-568h@2x.png in Resources */,
 				E4B8136D18B78EE700AEBEE9 /* AppIcon_Video_72x72.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -804,10 +808,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E41D410413B3A11300A75A5D /* PBXTargetDependency */ = {
+		E4C002C018BA316F00A44F37 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "iPhone+OF Static Library";
-			targetProxy = E41D410313B3A11300A75A5D /* PBXContainerItemProxy */;
+			targetProxy = E4C002BF18BA316F00A44F37 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

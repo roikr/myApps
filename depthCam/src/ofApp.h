@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ofMain.h"
-#include "ofxOpenNI2.h"
 
+#include "ofxOpenNI2.h"
+#include "ofMain.h"
 
 class ofApp : public ofBaseApp{
 

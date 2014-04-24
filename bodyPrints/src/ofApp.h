@@ -11,6 +11,7 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
+        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -42,6 +43,7 @@ class ofApp : public ofBaseApp{
     ofParameter<float> minEdge,maxEdge,edge0,edge1,alpha,variance1,variance2,scale,hue1,hue2,sat,offset;
     ofParameter<int> radius1,radius2;
     
-    ofMatrix4x4 mat,imat;
+    ofMatrix4x4 mat;
+    ofMatrix4x4 depthMat;
 		
 };

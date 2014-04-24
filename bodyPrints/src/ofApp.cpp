@@ -37,15 +37,18 @@ void ofApp::setup(){
     cam.setDepthMode(9);
     depthTex.allocate(cam.depthWidth, cam.depthHeight, GL_R16 );
     
+    float scale = MIN(STAGE_WIDTH/depthTex.getWidth(),STAGE_HEIGHT/depthTex.getHeight());
+    depthMat.scale(scale, scale, 1.0);
+    depthMat.translate(0.5*(ofVec2f(STAGE_WIDTH,STAGE_HEIGHT)-scale*ofVec2f(depthTex.getWidth(),depthTex.getHeight())));
+    
     video.loadMovie("maya.mov");
-    video.setLoopState(OF_LOOP_NORMAL);
-    video.play();
+    video.setLoopState(OF_LOOP_NONE);
     
     
     
     ofFbo::Settings s;
-    s.width = video.getWidth();
-    s.height = video.getHeight();
+    s.width = STAGE_WIDTH;
+    s.height = STAGE_HEIGHT;
     s.internalformat = GL_R16; // GL_R8 is enough but GL_R8 is not supported in ofGetImageTypeFromGLType()
     depthFbo.allocate(s);
     layer1.allocate(s);
@@ -157,14 +160,14 @@ void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
     
     ping.begin();
     blur1Shader.begin();
-    blur1Shader.setUniform2f("dir", 1.0/video.getWidth(), 0);
+    blur1Shader.setUniform2f("dir", 1.0/STAGE_WIDTH, 0);
     echo.draw(0,0);
     blur1Shader.end();
     ping.end();
     
     layer2.begin();
     blur1Shader.begin();
-    blur1Shader.setUniform2f("dir", 0, 1.0/video.getHeight());
+    blur1Shader.setUniform2f("dir", 0, 1.0/STAGE_HEIGHT);
     ping.draw(0,0);
     blur1Shader.end();
     layer2.end();
@@ -172,28 +175,28 @@ void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
     
     ping.begin();
     blur2Shader.begin();
-    blur2Shader.setUniform2f("dir", scale/video.getWidth(), 0);
+    blur2Shader.setUniform2f("dir", scale/STAGE_WIDTH, 0);
     depthFbo.draw(0,0);
     blur2Shader.end();
     ping.end();
     
     layer3.begin();
     blur2Shader.begin();
-    blur2Shader.setUniform2f("dir", 0, scale/video.getHeight());
+    blur2Shader.setUniform2f("dir", 0, scale/STAGE_HEIGHT);
     ping.draw(0,0);
     blur2Shader.end();
     layer3.end();
     
     ping.begin();
     blur2Shader.begin();
-    blur2Shader.setUniform2f("dir", scale/video.getWidth()*cos(HALF_PI/2), scale/video.getHeight()*sin(HALF_PI/2));
+    blur2Shader.setUniform2f("dir", scale/STAGE_WIDTH*cos(HALF_PI/2), scale/STAGE_HEIGHT*sin(HALF_PI/2));
     layer3.draw(0,0);
     blur2Shader.end();
     ping.end();
     
     layer3.begin();
     blur2Shader.begin();
-    blur2Shader.setUniform2f("dir", scale/video.getWidth()*cos(3*HALF_PI/2), scale/video.getHeight()*sin(3*HALF_PI/2));
+    blur2Shader.setUniform2f("dir", scale/STAGE_WIDTH*cos(3*HALF_PI/2), scale/STAGE_HEIGHT*sin(3*HALF_PI/2));
     ping.draw(0,0);
     blur2Shader.end();
     layer3.end();
@@ -217,18 +220,26 @@ void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
 //--------------------------------------------------------------
 void ofApp::update(){
     fps = ofToString(ofGetFrameRate());
+    
     video.update();
-    if (video.isFrameNew()) {
-        depthFbo.begin();
-        videoShader.begin();
-        video.draw(0, 0);
-        videoShader.end();
-        depthFbo.end();
-        
-        updateSource(src1, echo1);
-        
-        
+    if (video.isPlaying()) {
+        if (video.isFrameNew()) {
+            depthFbo.begin();
+            videoShader.begin();
+            video.draw(0, 0);
+            videoShader.end();
+            depthFbo.end();
+            
+            updateSource(src1, echo1);
+            
+            
+        }
+    } else {
+        src1.begin();
+        ofClear(0);
+        src1.end();
     }
+    
     
     
     cam.update();
@@ -246,7 +257,7 @@ void ofApp::update(){
         
         
     }
-
+    
 }
 
 //--------------------------------------------------------------
@@ -272,6 +283,11 @@ void ofApp::draw(){
     }
 }
 
+void ofApp::exit() {
+    video.close();
+    cam.exit();
+}
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
@@ -283,6 +299,9 @@ void ofApp::keyPressed(int key){
             break;
         case 't':
             ofToggleFullscreen();
+            break;
+        case 'm':
+            video.play();
             break;
         case ' ':
             createDepthBlurShader(blur1Shader, radius1, variance1);
@@ -324,10 +343,11 @@ void ofApp::mouseReleased(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
     float scale = MIN((float)w/STAGE_WIDTH,(float)h/STAGE_HEIGHT);
+    mat.makeIdentityMatrix();
+    mat.scale(scale, scale, 1.0);
+    mat.translate(0.5*(ofVec2f(w,h)-scale*ofVec2f(STAGE_WIDTH,STAGE_HEIGHT)));
     
-    mat = ofMatrix4x4::newTranslationMatrix(0.5*(ofVec2f(w,h)-scale*ofVec2f(STAGE_WIDTH,STAGE_HEIGHT)));
-    mat.preMult(ofMatrix4x4::newScaleMatrix(scale, scale, 1.0));
-    imat = mat.getInverse();
+    //    imat = mat.getInverse();
 }
 
 //--------------------------------------------------------------

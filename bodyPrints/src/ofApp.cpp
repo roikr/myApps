@@ -3,6 +3,9 @@
 
 #define STRINGIFY(A) #A
 
+#define STAGE_WIDTH 640.0
+#define STAGE_HEIGHT 480.0
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     gui.setup("panel");
@@ -27,12 +30,14 @@ void ofApp::setup(){
     
     ofDisableArbTex();
     
+    ofSetWindowShape(STAGE_WIDTH, STAGE_HEIGHT);
+    
     cam.setup();
     cam.listDepthModes();
     cam.setDepthMode(9);
     depthTex.allocate(cam.depthWidth, cam.depthHeight, GL_R16 );
     
-    video.loadMovie("yoav.mov");
+    video.loadMovie("maya.mov");
     video.setLoopState(OF_LOOP_NORMAL);
     video.play();
     
@@ -248,7 +253,8 @@ void ofApp::update(){
 void ofApp::draw(){
     ofClear(0);
     ofSetColor(255);
-    
+    ofPushMatrix();
+    ofMultMatrix(mat);
     shader.begin();
     shader.setUniformTexture("tex0", src1.getTextureReference(), 4);
     shader.setUniform1f("hue1", hue1);
@@ -257,7 +263,7 @@ void ofApp::draw(){
     shader.setUniform1f("offset", offset);
     src2.draw(0, 0);
     shader.end();
-
+    ofPopMatrix();
     
     
     
@@ -270,8 +276,23 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 //    bShowGui=!bShowGui;
-    createDepthBlurShader(blur1Shader, radius1, variance1);
-    createDepthBlurShader(blur2Shader, radius2, variance2);
+    
+    switch (key) {
+        case 'g':
+            bShowGui = !bShowGui;
+            break;
+        case 't':
+            ofToggleFullscreen();
+            break;
+        case ' ':
+            createDepthBlurShader(blur1Shader, radius1, variance1);
+            createDepthBlurShader(blur2Shader, radius2, variance2);
+            break;
+        default:
+            break;
+    }
+    
+    
     
 }
 
@@ -302,7 +323,11 @@ void ofApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    float scale = MIN((float)w/STAGE_WIDTH,(float)h/STAGE_HEIGHT);
+    
+    mat = ofMatrix4x4::newTranslationMatrix(0.5*(ofVec2f(w,h)-scale*ofVec2f(STAGE_WIDTH,STAGE_HEIGHT)));
+    mat.preMult(ofMatrix4x4::newScaleMatrix(scale, scale, 1.0));
+    imat = mat.getInverse();
 }
 
 //--------------------------------------------------------------

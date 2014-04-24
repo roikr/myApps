@@ -41,5 +41,7 @@ class ofApp : public ofBaseApp{
     
     ofParameter<float> minEdge,maxEdge,edge0,edge1,alpha,variance1,variance2,scale,hue1,hue2,sat,offset;
     ofParameter<int> radius1,radius2;
+    
+    ofMatrix4x4 mat,imat;
 		
 };

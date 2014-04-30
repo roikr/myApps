@@ -24,3 +24,4 @@ void createHSLShader(ofShader &shader);
 void createEchoShader(ofShader &shader);
 void createStrobeShader(ofShader &shader);
 void createDepthBackgroundSubtractionShader(ofShader &shader);
+void createCloudShader(ofShader &shader);

@@ -12,12 +12,21 @@ struct layer {
     float hueOffset;
 };
 
+struct camera {
+    ofxOpenNI2 sensor;
+    ofParameter<float>minEdge0,maxEdge0,minEdge1,maxEdge1;
+    ofParameter<ofVec3f> sceneRotation,position,cameraRotation;
+    ofVboMesh mesh;
+    ofParameterGroup params;
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
 		void update();
 		void draw();
+        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -29,19 +38,21 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
+        void updateMesh(camera &cam);
+        void renderCam(camera &cam);
         void updateLayer(layer &l,ofFbo &depth,float decay);
-        void renderDepth();
     
     
-    ofxOpenNI2 cam0;
-    ofxOpenNI2 cam1;
-    ofTexture depthTex0;
-    ofTexture depthTex1;
-    ofShader depthShader;
+    
+    
+    camera cam[2];
+    ofParameter<int> pointSize;
+    
+    ofShader cloudShader;
+    ofFbo depthFbo;
     ofShader subtractShader;
-    ofFbo depthFbo,blobFbo,backgroundFbo;
-    
-    ofParameter<float>minEdge0,maxEdge0,minEdge1,maxEdge1,tolerance;
+    ofFbo blobFbo,backgroundFbo;
+    ofParameter<float> tolerance;
     
     ofFbo recordFbo; // duplicate depthFbo for freeze and fade
     
@@ -95,4 +106,6 @@ class ofApp : public ofBaseApp{
     
     ofSoundPlayer recSound;
     float fadeTime;
+    
+    bool bShowGui;
 };

@@ -565,3 +565,49 @@ void createStrobeShader(ofShader &shader) {
     shader.linkProgram();
 }
 
+void createCloudShader(ofShader &shader) {
+    string vertex = STRINGIFY(
+                              \n#version 150\n
+                              uniform mat4 modelViewProjectionMatrix;
+                              in vec4 position;
+                              out float depth;
+                              
+                              void main() {
+                                  
+                                  gl_Position = modelViewProjectionMatrix * position;
+                                  depth = gl_Position.z;
+                              }
+                              );
+
+
+    string fragment = STRINGIFY(
+                                \n#version 150\n
+                                
+                                uniform float minEdge;
+                                uniform float maxEdge;
+                                
+                                
+                                in vec4 pos;
+                                in float depth;
+                                
+                                out vec4 fragColor;
+                                
+                                void main(void) {
+                                    
+                                    float sample = depth/10000;
+                                    float dist = (sample-minEdge)/(maxEdge-minEdge);
+                                    float color = (1-dist)*(step(minEdge,sample)-step(maxEdge,sample));
+                                    fragColor = vec4(vec3(color),1.0);
+                                    
+                                }
+                                
+                                );
+
+
+
+
+    shader.setupShaderFromSource(GL_VERTEX_SHADER, vertex);
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+    shader.bindDefaults();
+    shader.linkProgram();
+}

@@ -1,19 +1,26 @@
 #include "ofApp.h"
 #include "Shaders.h"
 
-#define STAGE_WIDTH 960.0
-#define STAGE_HEIGHT 640.0
+#define STAGE_WIDTH 1024
+#define STAGE_HEIGHT 768
 
 #define LAYERS_NUMBER 3
+
+#define MAX_POSITION 5000.0
+#define MIN_POSITION -5000.0
+
 #define STRINGIFY(A) #A
 
 enum {
+    STATE_ORIENTATION,
     STATE_CALIB,
     STATE_BACKGROUND,
     STATE_IDLE,
     STATE_RECORD,
     
 };
+
+
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -31,12 +38,22 @@ void ofApp::setup(){
     
     ofDisableArbTex();
     
+    for (int i=0;i<2;i++) {
+        cam[i].params.setName("cam"+ofToString(i));
+        cam[i].params.add(cam[i].minEdge0.set("minEdge0", 0.0, 0.0, 1.0));
+        cam[i].params.add(cam[i].maxEdge0.set("maxEdge0", 1.0, 0.0, 1.0));
+        cam[i].params.add(cam[i].minEdge1.set("minEdge1", 0.0, 0.0, 2.0));
+        cam[i].params.add(cam[i].maxEdge1.set("maxEdge1", 2.0, 0.0, 2.0));
+        cam[i].params.add(cam[i].position.set("position", ofVec3f(0), ofVec3f(MIN_POSITION), ofVec3f(MAX_POSITION)));
+        cam[i].params.add(cam[i].cameraRotation.set("cameraRotation", ofVec3f(0), ofVec3f(-180), ofVec3f(180)));
+        cam[i].params.add(cam[i].sceneRotation.set("sceneRotation", ofVec3f(0), ofVec3f(-180), ofVec3f(180)));
+    }
+    
     gui.setup("panel");
     gui.add(fps.set("fps",""));
-    gui.add(minEdge0.set("minEdge0", 0.0, 0.0, 1.0));
-    gui.add(maxEdge0.set("maxEdge0", 1.0, 0.0, 1.0));
-    gui.add(minEdge1.set("minEdge1", 0.0, 0.0, 1.0));
-    gui.add(maxEdge1.set("maxEdge1", 1.0, 0.0, 1.0));
+    gui.add(pointSize.set("pointSize",3,1,10));
+    gui.add(cam[0].params);
+    gui.add(cam[1].params);
     gui.add(tolerance.set("tolerance", 0.1, 0.0, 1.0));
     gui.add(decay0.set("decay0", 0.9, 0.9, 1.0));
     gui.add(decay1.set("decay1", 0.9, 0.9, 1.0));
@@ -84,18 +101,18 @@ void ofApp::setup(){
         std:exit();
     }
     
-    cam0.setup(devices[0]);
-    cam0.setDepthMode(5);
-    cam1.setup(devices[1]);
-    cam1.setDepthMode(5);
+    for (int i=0;i<2;i++) {
+        cam[i].sensor.setup(devices[i]);
+        cam[i].sensor.setDepthMode(5);
+    }
     
-    depthTex0.allocate(cam0.depthWidth, cam0.depthHeight, GL_R16 );
-    depthTex1.allocate(cam0.depthWidth, cam0.depthHeight, GL_R16 );
+    createCloudShader(cloudShader);
     
     ofFbo::Settings s;
-    s.width = depthTex0.getHeight()*2;
-    s.height = depthTex0.getWidth();
+    s.width = STAGE_WIDTH;
+    s.height = STAGE_HEIGHT;
     s.internalformat = GL_R16; // GL_R8 is not used in ofGetImageTypeFromGLType()
+    
     depthFbo.allocate(s);
     recordFbo.allocate(s);
     backgroundFbo.allocate(s);
@@ -105,7 +122,7 @@ void ofApp::setup(){
     ofClear(0);
     recordFbo.end();
     
-    createDepthShader(depthShader);
+
     createDepthBackgroundSubtractionShader(subtractShader);
     subtractShader.begin();
     subtractShader.setUniformTexture("bgTex", backgroundFbo.getTextureReference(), 1);
@@ -234,11 +251,38 @@ void ofApp::setup(){
     
     ofSetColor(255);
     
-    state = STATE_BACKGROUND;
+    state = STATE_ORIENTATION;
     
     
    
     bFirstIdle = false;
+}
+
+
+void ofApp::updateMesh(camera &cam) {
+    
+    cam.mesh.clear();
+    cam.mesh.setMode(OF_PRIMITIVE_POINTS);
+    
+    int rows=cam.sensor.depthHeight;
+    int columns=cam.sensor.depthWidth;
+    
+    int minE = cam.minEdge0*USHRT_MAX;
+    int maxE = cam.maxEdge0*USHRT_MAX;
+    
+    for(int iy = 0; iy < rows; iy++) {
+        for(int ix = 0; ix < columns; ix++) {
+            short unsigned int depth = cam.sensor.getDepth()[iy*columns+ix];
+            if (depth && depth> minE && depth<maxE) {
+                cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(ix, iy, depth));
+                cam.mesh.addVertex(ofVec3f(ix,iy,depth));
+            }
+            
+            
+        }
+    }
+    
+    
 }
 
 void ofApp::updateLayer(layer &l,ofFbo &depth,float decay) {
@@ -277,63 +321,56 @@ void ofApp::updateLayer(layer &l,ofFbo &depth,float decay) {
     }
 }
 
-void ofApp::renderDepth() {
-    
-    int width = depthTex0.getWidth();
-    int height = depthTex0.getHeight();
-    
-    depthShader.begin();
-    
-    depthShader.setUniform1f("minEdge", minEdge0);
-    depthShader.setUniform1f("maxEdge",maxEdge0);
+
+void ofApp::renderCam(camera &cam) {
     ofPushMatrix();
-    ofTranslate(3*height/2, width/2);
-    ofRotate(90);
-    ofTranslate(-width/2, -height/2);
-    depthTex0.draw(0,0);
+    
+    
+    ofRotateX(cam.sceneRotation->x);
+	ofRotateY(cam.sceneRotation->y);
+	ofRotateZ(cam.sceneRotation->z);
+	ofTranslate(cam.position->x, cam.position->y, cam.position->z);
+	ofRotateX(cam.cameraRotation->x);
+	ofRotateY(cam.cameraRotation->y);
+	ofRotateZ(cam.cameraRotation->z);
+    //    /    ofLoadMatrix(mat);
+    glPointSize(pointSize);
+    ofEnableDepthTest();
+    ofScale(0.3,0.3, 0.3); // make y point down
+    
+    cam.mesh.drawVertices();
     ofPopMatrix();
     
-    depthShader.setUniform1f("minEdge", minEdge1);
-    depthShader.setUniform1f("maxEdge",maxEdge1);
-    ofPushMatrix();
-    ofTranslate(height/2, width/2);
-    ofRotate(90);
-    ofTranslate(-width/2, -height/2);
-    depthTex1.draw(0,0);
-    ofPopMatrix();
-    
-    depthShader.end();
-    
-    /*ofPushMatrix();
-    ofTranslate(3*height/2, width/2);
-    ofRotate(90);
-    ofTranslate(-width/2, -height/2);
-    depthTex0.draw(0,0);
-    ofPopMatrix();
-    ofPushMatrix();
-    ofTranslate(height/2, width/2);
-    ofRotate(90);
-    ofTranslate(-width/2, -height/2);
-    depthTex1.draw(0,0);
-    ofPopMatrix();
-     */
+    ofDisableDepthTest();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
     fps = ofToString(ofGetFrameRate());
-    int width = depthTex0.getWidth();
-    int height = depthTex0.getHeight();
     
-    cam0.update();
-    cam1.update();
-    if (cam0.bNewDepth && cam1.bNewDepth) {
-        depthTex0.loadData(cam0.getDepth(), cam0.depthWidth, cam0.depthHeight,GL_RED);
-        depthTex1.loadData(cam1.getDepth(), cam1.depthWidth, cam1.depthHeight,GL_RED);
+    
+    cam[0].sensor.update();
+    cam[1].sensor.update();
+    
+    
+    if (cam[0].sensor.bNewDepth && cam[1].sensor.bNewDepth) {
+       
+        
+        
         
         depthFbo.begin();
-        renderDepth();
+        ofClear(0);
+        cloudShader.begin();
+        for (int i=0; i<2; i++) {
+            
+            cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
+            cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
+            updateMesh(cam[i]);
+            renderCam(cam[i]);
+            
+        }
+        cloudShader.end();
         depthFbo.end();
         
         blobFbo.begin();
@@ -359,10 +396,6 @@ void ofApp::update(){
         recordTime ="";
         waitTime="";
 
-        
-        
-        
-        
         
         switch (state) {
             case STATE_IDLE:
@@ -531,19 +564,17 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(0);
     
-    ofPushMatrix();
-    ofMultMatrix(mat);
+//    ofPushMatrix();
+//    ofMultMatrix(mat);
     
     switch (state) {
-        case STATE_BACKGROUND:
-            
-            
-            blobFbo.draw(0, 0);
-            for (int i = 0; i < contour.nBlobs; i++){
-                contour.blobs[i].draw(0,0);
+        case STATE_ORIENTATION:
+            for (int i=0; i<2; i++) {
+                renderCam(cam[i]);
             }
-            ofSetColor(255);
-           break;
+            
+            
+            break;
         case STATE_CALIB:
             depthFbo.draw(0, 0);
             for (int i = 0; i < contour.nBlobs; i++){
@@ -551,6 +582,15 @@ void ofApp::draw(){
             }
             ofSetColor(255);
             break;
+        case STATE_BACKGROUND:
+            
+            blobFbo.draw(0, 0);
+            for (int i = 0; i < contour.nBlobs; i++){
+                contour.blobs[i].draw(0,0);
+            }
+            ofSetColor(255);
+            break;
+        
             
         default:
             compFbo.draw(0, 0);
@@ -559,20 +599,33 @@ void ofApp::draw(){
     
     
     
-    ofPopMatrix();
+//    ofPopMatrix();
     
     gui.draw();
+    
+}
+
+void ofApp::exit() {
+    cam[0].sensor.exit();
+    cam[1].sensor.exit();
+    
+    for (vector<ofVideoPlayer>::iterator iter=players.begin();iter!=players.end();iter++) {
+        iter->close();
+    }
     
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
-        case 'c':
+        case '1':
+            state = STATE_ORIENTATION;
+            break;
+        case '2':
             state = STATE_CALIB;
             
             break;
-        case 'b':
+        case '3':
             state = STATE_BACKGROUND;
             break;
         
@@ -591,18 +644,27 @@ void ofApp::keyPressed(int key){
             break;
             
         case 'g':
-            
             backgroundFbo.begin();
-            renderDepth();
+            ofClear(0);
+            cloudShader.begin();
+            for (int i=0; i<2; i++) {
+                
+                cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
+                cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
+                renderCam(cam[i]);
+                
+            }
+            cloudShader.end();
             backgroundFbo.end();
+           
             break;
         case 'p':
             recSound.play();
             break;
-        case 's':
-            fadeTime = ofGetElapsedTimef();
-            
-            break;
+//        case 's':
+//            fadeTime = ofGetElapsedTimef();
+//            
+//            break;
         default:
             break;
     }
@@ -650,3 +712,36 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
+
+
+/*
+ void ofApp::renderDepth() {
+ 
+ int width = depthTex0.getWidth();
+ int height = depthTex0.getHeight();
+ 
+ depthShader.begin();
+ 
+ depthShader.setUniform1f("minEdge", minEdge0);
+ depthShader.setUniform1f("maxEdge",maxEdge0);
+ ofPushMatrix();
+ ofTranslate(3*height/2, width/2);
+ ofRotate(90);
+ ofTranslate(-width/2, -height/2);
+ depthTex0.draw(0,0);
+ ofPopMatrix();
+ 
+ depthShader.setUniform1f("minEdge", minEdge1);
+ depthShader.setUniform1f("maxEdge",maxEdge1);
+ ofPushMatrix();
+ ofTranslate(height/2, width/2);
+ ofRotate(90);
+ ofTranslate(-width/2, -height/2);
+ depthTex1.draw(0,0);
+ ofPopMatrix();
+ 
+ depthShader.end();
+ 
+ }
+ */

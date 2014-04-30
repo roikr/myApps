@@ -1,10 +1,11 @@
 #pragma once
 
+#include "ofxOpenNI2.h"
 #include "ofMain.h"
 #include "ofxGui.h"
 #include "ofxVideoRecorder.h"
 #include "ofxOpenCv.h"
-#include "ofxOpenNI2.h"
+
 
 struct layer {
     ofFbo fbo;

@@ -24,7 +24,7 @@ enum {
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofDisableSetupScreen();
-    
+    ofHideCursor();
 //    ofDirectory dir;
 //    dir.allowExt("mov");
 //    dir.listDir(ofToDataPath("."));
@@ -668,6 +668,12 @@ void ofApp::keyPressed(int key){
             break;
         case 'p':
             recSound.play();
+            break;
+        case 'c':
+            ofShowCursor();
+            break;
+        case 'h':
+            ofHideCursor();
             break;
 //        case 's':
 //            fadeTime = ofGetElapsedTimef();

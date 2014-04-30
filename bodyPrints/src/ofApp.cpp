@@ -10,11 +10,11 @@
 void ofApp::setup(){
     gui.setup("panel");
     gui.add(fps.set("fps",""));
-    gui.add(minEdge.set("minEdge", 0.0, 0.0, 0.5));
-    gui.add(maxEdge.set("maxEdge", 0.5, 0.0, 0.5));
+    gui.add(minEdge.set("minEdge", 0.4, 0.35, 0.7));
+    gui.add(maxEdge.set("maxEdge", 0.6, 0.35, 0.7));
     gui.add(edge0.set("edge0", 0.0,0.0,1.0));
     gui.add(edge1.set("edge1", 0.0,0.0,1.0));
-    gui.add(alpha.set("alpha", 1.0,0.0,1.0));
+    gui.add(alpha.set("alpha", 0.0,0.0,0.25));
     gui.add(variance1.set("variance1", 1.5,0,10));
     gui.add(radius1.set("radius1", 20,0,50)); // fps drop above 14
     gui.add(variance2.set("variance2", 3,0,10));
@@ -42,9 +42,10 @@ void ofApp::setup(){
     depthMat.translate(0.5*(ofVec2f(STAGE_WIDTH,STAGE_HEIGHT)-scale*ofVec2f(depthTex.getWidth(),depthTex.getHeight())));
     
     video.loadMovie("maya.mov");
-    video.setLoopState(OF_LOOP_NONE);
+    video.setLoopState(OF_LOOP_NORMAL);
+    video.play();
     
-    
+    bShowVideo = false;
     
     ofFbo::Settings s;
     s.width = STAGE_WIDTH;
@@ -132,6 +133,7 @@ void ofApp::setup(){
     shader.bindDefaults();
     shader.linkProgram();
 
+
 }
 
 void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
@@ -145,6 +147,7 @@ void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
     threshShader.end();
     layer1.end();
     
+    
     ping.begin();
     echoShader.begin();
     echoShader.setUniformTexture("tex0", echo.getTextureReference(), 1);
@@ -156,8 +159,12 @@ void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
     echo.begin();
     ping.draw(0, 0);
     echo.end();
+
+    layer2.begin();
+    echo.draw(0,0);
+    layer2.end();
     
-    
+    /*
     ping.begin();
     blur1Shader.begin();
     blur1Shader.setUniform2f("dir", 1.0/STAGE_WIDTH, 0);
@@ -171,7 +178,7 @@ void ofApp::updateSource(ofFbo &src,ofFbo &echo) {
     ping.draw(0,0);
     blur1Shader.end();
     layer2.end();
-    
+    */
     
     ping.begin();
     blur2Shader.begin();
@@ -222,7 +229,7 @@ void ofApp::update(){
     fps = ofToString(ofGetFrameRate());
     
     video.update();
-    if (video.isPlaying()) {
+    if (bShowVideo) {
         if (video.isFrameNew()) {
             depthFbo.begin();
             videoShader.begin();
@@ -301,7 +308,7 @@ void ofApp::keyPressed(int key){
             ofToggleFullscreen();
             break;
         case 'm':
-            video.play();
+            bShowVideo =!bShowVideo;
             break;
         case ' ':
             createDepthBlurShader(blur1Shader, radius1, variance1);

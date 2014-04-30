@@ -45,5 +45,7 @@ class ofApp : public ofBaseApp{
     
     ofMatrix4x4 mat;
     ofMatrix4x4 depthMat;
+
+    bool bShowVideo;
 		
 };

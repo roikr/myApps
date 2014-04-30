@@ -56,6 +56,37 @@ void createDepthShader(ofShader &shader) {
     shader.linkProgram();
 }
 
+void createDepthBackgroundSubtractionShader(ofShader &shader) {
+    string fragment = STRINGIFY(
+                                \n#version 150\n
+                                uniform sampler2D tex0;
+                                uniform sampler2D bgTex;
+                                uniform float tolerance;
+                                
+                                in vec2 texCoordVarying;
+                                out vec4 fragColor;
+                                
+                                void main(void) {
+                                    float c = texture(tex0,texCoordVarying).r;
+                                    float bg = texture(bgTex,texCoordVarying).r;
+                                    bool mask = abs(c-bg)>tolerance;
+                                
+                                    fragColor = vec4(vec3(mix(0,c,mask)),1.0);
+                                    //fragColor = vec4(vec3(c-texture(bgTex,texCoordVarying).r),1.0);
+                                    //fragColor = vec4(vec3(bg),1.0);
+                                }
+                                
+                                );
+    
+    
+    
+    shader.setupShaderFromSource(GL_VERTEX_SHADER, getSimpleVertex());
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+    shader.bindDefaults();
+    shader.linkProgram();
+
+}
+
 void createColor2GrayShader(ofShader &shader) {
     
     string fragment = STRINGIFY(
@@ -171,15 +202,12 @@ void createFastBlurShader(ofShader &shader,int radius,double variance) {
     
 }
 
-
-
-void createDepthBlurShader(ofShader &shader,int radius,double variance) {
+void createCoefficients(int radius,double variance,vector<double> &coefs) {
     
-    vector<double> coefs;
     double sum =0;
     
     for (int i=0; i<radius*2+1; i++) {
-        double x = ofMap(i, 0, radius - 1, -1, 1);
+        double x = ofMap(i, 0, 2*radius , -1, 1);
         double y = (1. / sqrt(TWO_PI * variance)) * exp(-(x * x) / (2 * variance));
         sum+=y;
         coefs.push_back(y);
@@ -189,7 +217,12 @@ void createDepthBlurShader(ofShader &shader,int radius,double variance) {
         *iter/=sum;
         
     }
+}
+
+void createDepthBlurShader(ofShader &shader,int radius,double variance) {
     
+    vector<double> coefs;
+    createCoefficients(radius,variance,coefs);
     
     
     stringstream blurFrag;
@@ -220,6 +253,8 @@ void createDepthBlurShader(ofShader &shader,int radius,double variance) {
     
     blurFrag << "fragColor=vec4(vec3(color),1.0);}";
     
+    cout << blurFrag.str() << endl;
+    
     shader.setupShaderFromSource(GL_VERTEX_SHADER, getSimpleVertex());
     shader.setupShaderFromSource(GL_FRAGMENT_SHADER, blurFrag.str());
     shader.bindDefaults();
@@ -227,6 +262,42 @@ void createDepthBlurShader(ofShader &shader,int radius,double variance) {
     
     
 }
+
+void createBlurShader(ofShader &shader,int radius,double variance) {
+    
+    vector<double> coefs;
+    createCoefficients(radius,variance,coefs);
+    
+    
+    stringstream blurFrag;
+    blurFrag << STRINGIFY(
+                          \n#version 150\n
+                          uniform sampler2D tex0;
+                          in vec2 texCoordVarying;
+                          uniform vec2 dir;
+                        
+                          out vec4 fragColor;
+                           
+                           
+                           void main(void)
+                           );
+    
+    blurFrag << "{ fragColor = vec4(vec3(0.0),1.0);";
+    
+    for (int i=0; i<radius*2+1; i++) {
+        blurFrag << "fragColor += vec4(texture(tex0,texCoordVarying + " << i-radius << " * dir).rgb*" << coefs[i] << ",1.0);";
+    }
+    blurFrag << "}";
+    
+    
+    shader.setupShaderFromSource(GL_VERTEX_SHADER, getSimpleVertex());
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, blurFrag.str());
+    shader.bindDefaults();
+    shader.linkProgram();
+    
+    
+}
+
 
 void createVarDepthBlurShader(ofShader &shader,int radius,double variance) {
     
@@ -349,6 +420,43 @@ void createScreenShader(ofShader &shader) {
 
 }
 
+void createScreenMultipleShader(ofShader &shader) {
+    string fragment = STRINGIFY(
+                                \n#version 150\n
+                                uniform sampler2D tex0;
+                                uniform sampler2D tex1;
+                                uniform sampler2D tex2;
+                                uniform sampler2D tex3;
+                                uniform sampler2D tex4;
+                                //uniform sampler2D depthTex;
+                                uniform int mask;
+                                
+                                
+                                in vec2 texCoordVarying;
+                                out vec4 fragColor;
+                                
+                                void main(void) {
+                                    vec3 col0 = mix(vec3(0),texture(tex0,texCoordVarying).rgb,bvec3(mask & 1));
+                                    vec3 col1 = mix(vec3(0),texture(tex1,texCoordVarying).rgb,bvec3(mask & 1<<1));
+                                    vec3 col2 = mix(vec3(0),texture(tex2,texCoordVarying).rgb,bvec3(mask & 1<<2));
+                                    vec3 col3 = mix(vec3(0),texture(tex3,texCoordVarying).rgb,bvec3(mask & 1<<3));
+                                    vec3 col4 = mix(vec3(0),texture(tex4,texCoordVarying).rgb,bvec3(mask & 1<<4));
+                                    //float gray = texture(depthTex,texCoordVarying).r;
+                                    vec3 color = 1-(1-col0)*(1-col1)*(1-col2)*(1-col3)*(1-col4);
+                                    //fragColor = vec4(mix(color,vec3(gray),bvec3(gray>0)),1.0);
+                                    fragColor = vec4(color,1.0);
+                                }
+                                
+                                );
+    
+    
+    
+    shader.setupShaderFromSource(GL_VERTEX_SHADER, getSimpleVertex());
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+    shader.bindDefaults();
+    shader.linkProgram();
+}
+
 void createHSLShader(ofShader &shader) {
     
     
@@ -402,6 +510,48 @@ void createEchoShader(ofShader &shader) {
                                 
                                 void main(void) {
                                     fragColor = vec4(mix(texture(tex0,texCoordVarying).rgb,texture(tex1,texCoordVarying).rgb,alpha),1.0);
+                                    
+                                }
+                                
+                                );
+    
+    
+    
+    shader.setupShaderFromSource(GL_VERTEX_SHADER, getSimpleVertex());
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, fragment);
+    shader.bindDefaults();
+    shader.linkProgram();
+}
+
+void createStrobeShader(ofShader &shader) {
+    string fragment = STRINGIFY(
+                                \n#version 150\n
+                                \n#extension GL_ARB_explicit_attrib_location : enable\n
+                                uniform sampler2D tex0;
+                                uniform sampler2D tex1;
+                                uniform sampler2D tex2;
+                                
+                                uniform int frameNum;
+                                uniform int strobeRate;
+                                uniform float decay;
+                                
+                                in vec2 texCoordVarying;
+                                layout (location = 1) out float fragColor;
+                                layout (location = 0) out float fragHue;
+                                
+                                
+                                
+                                void main(void) {
+                                    float c = texture(tex0,texCoordVarying).r;
+                                    float s1 = texture(tex1,texCoordVarying).r;
+                                    float s2 = texture(tex2,texCoordVarying).r;
+                                    bool f = (frameNum % strobeRate) == 0;
+                                    
+                                    
+                                    
+                                    fragColor = mix(s1*decay,float(f)*c,f && c>0);
+                                    fragHue = mix(s2,float(frameNum/10 % 256)/255.0,f && c>0);
+                                    ;
                                     
                                 }
                                 

@@ -36,7 +36,6 @@ void ofApp::setup(){
     
     ofSetWindowShape(STAGE_WIDTH, STAGE_HEIGHT);
     
-    
     ofDisableArbTex();
     
     for (int i=0;i<2;i++) {
@@ -349,6 +348,7 @@ void ofApp::renderCam(camera &cam) {
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    ofSetupScreenPerspective(1024,768,60,3,-3);
     fps = ofToString(ofGetFrameRate());
     
     
@@ -564,7 +564,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofSetupScreenPerspective(1024,768,60,3,-3);
+    
     ofBackground(0);
     
 //    ofPushMatrix();

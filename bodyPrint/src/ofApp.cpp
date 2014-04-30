@@ -24,7 +24,7 @@ enum {
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofDisableSetupScreen();
-    ofHideCursor();
+//    ofHideCursor();
 //    ofDirectory dir;
 //    dir.allowExt("mov");
 //    dir.listDir(ofToDataPath("."));
@@ -101,10 +101,10 @@ void ofApp::setup(){
         std:exit();
     }
     
-    for (int i=0;i<2;i++) {
-        cam[i].sensor.setup(devices[i]);
-        cam[i].sensor.setDepthMode(5);
-    }
+    cam[0].sensor.setup(devices[1]);
+    cam[0].sensor.setDepthMode(5);
+    cam[1].sensor.setup(devices[0]);
+    cam[1].sensor.setDepthMode(5);
     
     createCloudShader(cloudShader);
     
@@ -251,8 +251,8 @@ void ofApp::setup(){
     
     ofSetColor(255);
     
-    state = STATE_IDLE;
-    bShowGui = false;
+    state = STATE_ORIENTATION;
+    bShowGui = true;
     
     
    

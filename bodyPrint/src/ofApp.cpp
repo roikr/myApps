@@ -23,13 +23,14 @@ enum {
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofDisableSetupScreen();
     
-    ofDirectory dir;
-    dir.allowExt("mov");
-    dir.listDir(ofToDataPath("."));
-    for (int i=0;i<dir.numFiles();i++) {
-        memories.push_back(dir.getName(i));        
-    }
+//    ofDirectory dir;
+//    dir.allowExt("mov");
+//    dir.listDir(ofToDataPath("."));
+//    for (int i=0;i<dir.numFiles();i++) {
+//        memories.push_back(dir.getName(i));        
+//    }
     
     recSound.loadSound("camera memory sound 10 sec 48.wav");
     
@@ -251,7 +252,8 @@ void ofApp::setup(){
     
     ofSetColor(255);
     
-    state = STATE_ORIENTATION;
+    state = STATE_IDLE;
+    bShowGui = false;
     
     
    
@@ -413,7 +415,7 @@ void ofApp::update(){
                         
                         filename = "testMovie"+ofGetTimestampString()+".mov";
                         recorder.setup(filename, depthFbo.getWidth(), depthFbo.getHeight(), 30);
-                        
+                        recSound.play();
                         recordTimer = ofGetElapsedTimef()+recordDuration;
                         
                         state = STATE_RECORD;
@@ -562,6 +564,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    ofSetupScreenPerspective(1024,768,60,3,-3);
     ofBackground(0);
     
 //    ofPushMatrix();
@@ -600,8 +603,10 @@ void ofApp::draw(){
     
     
 //    ofPopMatrix();
+    if (bShowGui) {
+        gui.draw();
+    }
     
-    gui.draw();
     
 }
 
@@ -618,6 +623,9 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
+        case ' ':
+            bShowGui=!bShowGui;
+            break;
         case '1':
             state = STATE_ORIENTATION;
             break;
@@ -630,7 +638,7 @@ void ofApp::keyPressed(int key){
             break;
         
             
-        case 'i':
+        case '4':
             state = STATE_IDLE;
             
             break;

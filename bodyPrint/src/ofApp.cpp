@@ -24,7 +24,7 @@ enum {
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-//    ofHideCursor();
+
     ofDirectory dir;
     dir.allowExt("mov");
     dir.listDir(ofToDataPath("."));
@@ -263,14 +263,33 @@ void ofApp::setup(){
     
     ofSetColor(255);
     
-    state = STATE_ORIENTATION;
-    bShowGui = true;
+    state = STATE_IDLE;
+    bShowGui = false;
+    ofHideCursor();
+    captureBackground();
     
     
    
     bFirstIdle = false;
 }
 
+void ofApp::captureBackground() {
+    for (int i=0;i<CAMERAS_NUMBER;i++) {
+        cam[i].background.setFromPixels(cam[i].sensor.getDepth(), cam[i].sensor.depthWidth, cam[i].sensor.depthHeight, 1);
+    }
+    //            backgroundFbo.begin();
+    //            ofClear(0);
+    //            cloudShader.begin();
+    //            for (int i=0; i<2; i++) {
+    //
+    //                cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
+    //                cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
+    //                renderCam(cam[i]);
+    //
+    //            }
+    //            cloudShader.end();
+    //            backgroundFbo.end();
+}
 
 void ofApp::updateMesh(camera &cam) {
     
@@ -676,6 +695,11 @@ void ofApp::keyPressed(int key){
     switch (key) {
         case ' ':
             bShowGui=!bShowGui;
+            if (bShowGui) {
+                ofShowCursor();
+            } else {
+                ofHideCursor();
+            }
             break;
         case '1':
             state = STATE_ORIENTATION;
@@ -702,41 +726,11 @@ void ofApp::keyPressed(int key){
             createBlurShader(blurShader, radius, variance);
             break;
             
-        case 'g':
-            for (int i=0;i<CAMERAS_NUMBER;i++) {
-                cam[i].background.setFromPixels(cam[i].sensor.getDepth(), cam[i].sensor.depthWidth, cam[i].sensor.depthHeight, 1);
-               
-                
-            }
-            
-//            backgroundFbo.begin();
-//            ofClear(0);
-//            cloudShader.begin();
-//            for (int i=0; i<2; i++) {
-//                
-//                cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
-//                cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
-//                renderCam(cam[i]);
-//                
-//            }
-//            cloudShader.end();
-//            backgroundFbo.end();
+        case 'c':
+            captureBackground();
            
             break;
-        case 'p':
-            recSound.play();
-            break;
-        case 'c':
-            ofShowCursor();
-            break;
-        case 'h':
-            ofHideCursor();
-            break;
         
-//        case 's':
-//            fadeTime = ofGetElapsedTimef();
-//            
-//            break;
         default:
             break;
     }

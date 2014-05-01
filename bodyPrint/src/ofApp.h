@@ -42,6 +42,7 @@ class ofApp : public ofBaseApp{
         void updateMesh(camera &cam);
         void renderCam(camera &cam);
         void updateLayer(layer &l,ofFbo &depth,float decay);
+        void captureBackground();
     
     
     

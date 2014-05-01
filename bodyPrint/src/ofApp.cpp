@@ -7,7 +7,7 @@
 #define LAYERS_NUMBER 3
 #define CAMERAS_NUMBER 2
 
-#define MAX_POSITION 1000.0
+#define MAX_POSITION 10000.0
 
 #define STRINGIFY(A) #A
 
@@ -60,7 +60,7 @@ void ofApp::setup(){
     gui.add(recLevel.set("recLevel", 0.5, 0.0, 1.0));
     gui.add(pointSize.set("pointSize",3,1,10));
     gui.add(gridScale.set("gridScale", -2.0, -5.0, 5.0)); // ( -1 for linux64)
-    gui.add(gridOffset.set("gridOffset", -1.0, -1.0, 1.0)); // ( -1 for linux64)
+    gui.add(gridOffset.set("gridOffset", -1.0, -2.0, 2.0)); // ( -1 for linux64)
     for (int i=0;i<CAMERAS_NUMBER;i++) {
         gui.add(cam[i].params);
     }

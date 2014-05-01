@@ -5,9 +5,9 @@
 #define STAGE_HEIGHT 768
 
 #define LAYERS_NUMBER 3
-#define CAMERAS_NUMBER 1
+#define CAMERAS_NUMBER 2
 
-#define MAX_POSITION 100000.0
+#define MAX_POSITION 1000.0
 
 #define STRINGIFY(A) #A
 
@@ -59,7 +59,8 @@ void ofApp::setup(){
     gui.add(ambLevel.set("ambLevel", 0.5, 0.0, 1.0));
     gui.add(recLevel.set("recLevel", 0.5, 0.0, 1.0));
     gui.add(pointSize.set("pointSize",3,1,10));
-    gui.add(gridScale.set("gridScale", 1.0, -5.0, 5.0)); // ( -1 for linux64)
+    gui.add(gridScale.set("gridScale", -2.0, -5.0, 5.0)); // ( -1 for linux64)
+    gui.add(gridOffset.set("gridOffset", -1.0, -1.0, 1.0)); // ( -1 for linux64)
     for (int i=0;i<CAMERAS_NUMBER;i++) {
         gui.add(cam[i].params);
     }
@@ -283,7 +284,7 @@ void ofApp::updateMesh(camera &cam) {
     int maxE = cam.maxEdge0*USHRT_MAX;
     int toler = tolerance*USHRT_MAX;
     
-    float scale = pow(10, gridScale);
+    
     
     switch (state) {
         case STATE_ORIENTATION:
@@ -291,7 +292,7 @@ void ofApp::updateMesh(camera &cam) {
                 for(int ix = 0; ix < columns; ix++) {
                     short unsigned int depth = cam.sensor.getDepth()[iy*columns+ix];
                     if (depth && depth> minE && depth<maxE) {
-                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(scale*ix, scale*iy, depth));
+                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(ix, iy, depth));
                         
                     }
                 }
@@ -302,7 +303,7 @@ void ofApp::updateMesh(camera &cam) {
                 for(int ix = 0; ix < columns; ix++) {
                     short unsigned int depth = cam.background.getPixels()[iy*columns+ix];
                     if (depth && depth> minE && depth<maxE) {
-                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(scale*ix, scale*iy, depth));
+                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(ix, iy, depth));
                         
                     }
                 }
@@ -314,7 +315,7 @@ void ofApp::updateMesh(camera &cam) {
                     short unsigned int ref = cam.background.getPixels()[iy*columns+ix];
                     short unsigned int depth = cam.sensor.getDepth()[iy*columns+ix];
                     if (depth && abs((int)depth-(int)ref)>toler && depth> minE && depth<maxE) {
-                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(scale*ix, scale*iy, depth));
+                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(ix, iy, depth));
                         
                     }
                 }
@@ -365,6 +366,8 @@ void ofApp::updateLayer(layer &l,ofFbo &depth,float decay) {
 
 
 void ofApp::renderCam(camera &cam) {
+    float scale = pow(10, gridScale);
+    float offset = pow(10, gridOffset);
     ofPushMatrix();
     
     
@@ -375,7 +378,7 @@ void ofApp::renderCam(camera &cam) {
 	ofRotateX(cam.cameraRotation->x);
 	ofRotateY(cam.cameraRotation->y);
 	ofRotateZ(cam.cameraRotation->z);
-    //    /    ofLoadMatrix(mat);
+     ofScale(scale,scale,scale*offset);
     glPointSize(pointSize);
     ofEnableDepthTest();
     

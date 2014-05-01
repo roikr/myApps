@@ -48,7 +48,7 @@ class ofApp : public ofBaseApp{
     
     camera cam[2];
     ofParameter<int> pointSize;
-    ofParameter<float>gridScale,depthScale;
+    ofParameter<float>gridScale,gridOffset,depthScale;
     ofShader cloudShader;
     ofFbo depthFbo;
     

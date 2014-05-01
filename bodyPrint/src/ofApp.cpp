@@ -7,7 +7,7 @@
 #define LAYERS_NUMBER 3
 #define CAMERAS_NUMBER 1
 
-#define MAX_POSITION 10000.0
+#define MAX_POSITION 100000.0
 
 #define STRINGIFY(A) #A
 
@@ -388,7 +388,7 @@ void ofApp::renderCam(camera &cam) {
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
+//    ofSetupScreenPerspective(STAGE_WIDTH,STAGE_HEIGHT,60,0,MAX_POSITION);
     
     ambientSound.setVolume(ambLevel);
     recSound.setVolume(recLevel);
@@ -486,6 +486,11 @@ void ofApp::update(){
 //                    depthFbo.draw(0,0);
 //                    recordFbo.end();
 //                }
+                
+                
+                camFbo.begin();
+                depthFbo.draw(0,0);
+                camFbo.end();
                 
                 updateLayer(camLayer,camFbo,decay0);
                 

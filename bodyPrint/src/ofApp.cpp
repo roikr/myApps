@@ -5,16 +5,16 @@
 #define STAGE_HEIGHT 768
 
 #define LAYERS_NUMBER 3
+#define CAMERAS_NUMBER 1
 
-#define MAX_POSITION 5000.0
-#define MIN_POSITION -5000.0
+#define MAX_POSITION 10000.0
 
 #define STRINGIFY(A) #A
 
 enum {
     STATE_ORIENTATION,
-    STATE_CALIB,
     STATE_BACKGROUND,
+    STATE_CALIB,
     STATE_IDLE,
     STATE_RECORD,
     
@@ -23,37 +23,49 @@ enum {
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofDisableSetupScreen();
+
 //    ofHideCursor();
-//    ofDirectory dir;
-//    dir.allowExt("mov");
-//    dir.listDir(ofToDataPath("."));
-//    for (int i=0;i<dir.numFiles();i++) {
-//        memories.push_back(dir.getName(i));        
-//    }
+    ofDirectory dir;
+    dir.allowExt("mov");
+    dir.listDir(ofToDataPath("."));
+    for (int i=0;i<dir.numFiles();i++) {
+        memories.push_back(dir.getName(i));        
+    }
     
     recSound.loadSound("camera memory sound 10 sec 48.wav");
+    ambientSound.loadSound("ambi2.wav");
+    ambientSound.setLoop(true);
+    ambientSound.play();
+    
     
     ofSetWindowShape(STAGE_WIDTH, STAGE_HEIGHT);
     
     ofDisableArbTex();
     
-    for (int i=0;i<2;i++) {
+    for (int i=0;i<CAMERAS_NUMBER;i++) {
         cam[i].params.setName("cam"+ofToString(i));
         cam[i].params.add(cam[i].minEdge0.set("minEdge0", 0.0, 0.0, 1.0));
         cam[i].params.add(cam[i].maxEdge0.set("maxEdge0", 1.0, 0.0, 1.0));
         cam[i].params.add(cam[i].minEdge1.set("minEdge1", 0.0, 0.0, 2.0));
         cam[i].params.add(cam[i].maxEdge1.set("maxEdge1", 2.0, 0.0, 2.0));
-        cam[i].params.add(cam[i].position.set("position", ofVec3f(0), ofVec3f(MIN_POSITION), ofVec3f(MAX_POSITION)));
+        cam[i].params.add(cam[i].position.set("position", ofVec3f(0), ofVec3f(-MAX_POSITION), ofVec3f(MAX_POSITION)));
         cam[i].params.add(cam[i].cameraRotation.set("cameraRotation", ofVec3f(0), ofVec3f(-180), ofVec3f(180)));
         cam[i].params.add(cam[i].sceneRotation.set("sceneRotation", ofVec3f(0), ofVec3f(-180), ofVec3f(180)));
+        
     }
     
     gui.setup("panel");
     gui.add(fps.set("fps",""));
+    gui.add(ambLevel.set("ambLevel", 0.5, 0.0, 1.0));
+    gui.add(recLevel.set("recLevel", 0.5, 0.0, 1.0));
     gui.add(pointSize.set("pointSize",3,1,10));
-    gui.add(cam[0].params);
-    gui.add(cam[1].params);
+    gui.add(gridScale.set("gridScale", 1.0, -5.0, 5.0)); // ( -1 for linux64)
+    for (int i=0;i<CAMERAS_NUMBER;i++) {
+        gui.add(cam[i].params);
+    }
+    
+    
+    gui.add(depthScale.set("depthScale", -5, -10.0, 0.0)); // 10^-5
     gui.add(tolerance.set("tolerance", 0.1, 0.0, 1.0));
     gui.add(decay0.set("decay0", 0.9, 0.9, 1.0));
     gui.add(decay1.set("decay1", 0.9, 0.9, 1.0));
@@ -71,7 +83,7 @@ void ofApp::setup(){
     gui.add(waitTime.set("waitTime",""));
     gui.add(recordDuration.set("recordDuration",10,10,30));
     gui.add(minimumDuration.set("minimumDuration",3,0,5));
-    gui.add(freezeDuration.set("freezeDuration",3,0,5));
+//    gui.add(freezeDuration.set("freezeDuration",3,0,5));
     gui.add(waitDuration.set("waitDuration",2,0,10));
     gui.add(idleInterval.set("idleInterval",5,2,10));
     
@@ -97,14 +109,16 @@ void ofApp::setup(){
     ofxOpenNI2::init();
     vector<string> devices = ofxOpenNI2::listDevices();
     
-    if (devices.size()<2) {
-        std:exit();
+//    if (devices.size()<2) {
+//        std:exit();
+//    }
+    
+    for (int i=0;i<CAMERAS_NUMBER;i++) {
+        cam[i].sensor.setup(devices[i]);
+        cam[i].sensor.setDepthMode(5);
+        cam[i].background.allocate(cam[i].sensor.depthWidth, cam[i].sensor.depthHeight, 1);
     }
     
-    cam[0].sensor.setup(devices[1]);
-    cam[0].sensor.setDepthMode(5);
-    cam[1].sensor.setup(devices[0]);
-    cam[1].sensor.setDepthMode(5);
     
     createCloudShader(cloudShader);
     
@@ -114,19 +128,16 @@ void ofApp::setup(){
     s.internalformat = GL_R16; // GL_R8 is not used in ofGetImageTypeFromGLType()
     
     depthFbo.allocate(s);
-    recordFbo.allocate(s);
-    backgroundFbo.allocate(s);
-    blobFbo.allocate(s);
-    
-    recordFbo.begin();
+    camFbo.allocate(s);
+    camFbo.begin();
     ofClear(0);
-    recordFbo.end();
+    camFbo.end();
     
 
-    createDepthBackgroundSubtractionShader(subtractShader);
-    subtractShader.begin();
-    subtractShader.setUniformTexture("bgTex", backgroundFbo.getTextureReference(), 1);
-    subtractShader.end();
+//    createDepthBackgroundSubtractionShader(subtractShader);
+//    subtractShader.begin();
+//    subtractShader.setUniformTexture("bgTex", backgroundFbo.getTextureReference(), 1);
+//    subtractShader.end();
     
     
     string fragment = STRINGIFY(
@@ -270,18 +281,48 @@ void ofApp::updateMesh(camera &cam) {
     
     int minE = cam.minEdge0*USHRT_MAX;
     int maxE = cam.maxEdge0*USHRT_MAX;
+    int toler = tolerance*USHRT_MAX;
     
-    for(int iy = 0; iy < rows; iy++) {
-        for(int ix = 0; ix < columns; ix++) {
-            short unsigned int depth = cam.sensor.getDepth()[iy*columns+ix];
-            if (depth && depth> minE && depth<maxE) {
-                cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(ix, iy, depth));
-                cam.mesh.addVertex(ofVec3f(ix,iy,depth));
+    float scale = pow(10, gridScale);
+    
+    switch (state) {
+        case STATE_ORIENTATION:
+            for(int iy = 0; iy < rows; iy++) {
+                for(int ix = 0; ix < columns; ix++) {
+                    short unsigned int depth = cam.sensor.getDepth()[iy*columns+ix];
+                    if (depth && depth> minE && depth<maxE) {
+                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(scale*ix, scale*iy, depth));
+                        
+                    }
+                }
             }
-            
-            
-        }
+            break;
+        case STATE_BACKGROUND:
+            for(int iy = 0; iy < rows; iy++) {
+                for(int ix = 0; ix < columns; ix++) {
+                    short unsigned int depth = cam.background.getPixels()[iy*columns+ix];
+                    if (depth && depth> minE && depth<maxE) {
+                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(scale*ix, scale*iy, depth));
+                        
+                    }
+                }
+            }
+            break;
+        default:
+            for(int iy = 0; iy < rows; iy++) {
+                for(int ix = 0; ix < columns; ix++) {
+                    short unsigned int ref = cam.background.getPixels()[iy*columns+ix];
+                    short unsigned int depth = cam.sensor.getDepth()[iy*columns+ix];
+                    if (depth && abs((int)depth-(int)ref)>toler && depth> minE && depth<maxE) {
+                        cam.mesh.addVertex(cam.sensor.getWorldCoordinateAt(scale*ix, scale*iy, depth));
+                        
+                    }
+                }
+            }
+            break;
     }
+
+    
     
     
 }
@@ -337,7 +378,7 @@ void ofApp::renderCam(camera &cam) {
     //    /    ofLoadMatrix(mat);
     glPointSize(pointSize);
     ofEnableDepthTest();
-    ofScale(0.3,0.3, 0.3); // make y point down
+    
     
     cam.mesh.drawVertices();
     ofPopMatrix();
@@ -348,26 +389,35 @@ void ofApp::renderCam(camera &cam) {
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofSetupScreenPerspective(1024,768,60,3,-3);
+    
+    ambientSound.setVolume(ambLevel);
+    recSound.setVolume(recLevel);
     fps = ofToString(ofGetFrameRate());
     
+    for (int i=0;i<CAMERAS_NUMBER;i++) {
+        cam[i].sensor.update();
+    }
     
-    cam[0].sensor.update();
-    cam[1].sensor.update();
+
     
     
+#if (CAMERAS_NUMBER==2)
     if (cam[0].sensor.bNewDepth && cam[1].sensor.bNewDepth) {
-       
-        
+#else
+    if (cam[0].sensor.bNewDepth) {
+#endif
         
         
         depthFbo.begin();
         ofClear(0);
         cloudShader.begin();
-        for (int i=0; i<2; i++) {
+        cloudShader.setUniform1f("scale",pow(10,depthScale));
+        
+        for (int i=0; i<CAMERAS_NUMBER; i++) {
             
             cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
             cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
+            
             updateMesh(cam[i]);
             renderCam(cam[i]);
             
@@ -375,16 +425,16 @@ void ofApp::update(){
         cloudShader.end();
         depthFbo.end();
         
-        blobFbo.begin();
-        subtractShader.begin();
-        subtractShader.setUniform1f("tolerance", tolerance);
-        depthFbo.draw(0, 0);
-        subtractShader.end();
-        blobFbo.end();
+//        blobFbo.begin();
+//        subtractShader.begin();
+//        subtractShader.setUniform1f("tolerance", tolerance);
+//        depthFbo.draw(0, 0);
+//        subtractShader.end();
+//        blobFbo.end();
         
-        ofPixels blobPixels;
-        blobFbo.readToPixels(blobPixels);
-        grayImg.setFromPixels(blobPixels);
+        ofPixels pixels;
+        depthFbo.readToPixels(pixels);
+        grayImg.setFromPixels(pixels);
         
         float size = grayImg.getWidth()*grayImg.getHeight();
         contour.findContours(grayImg, minArea*size, maxArea*size, 10, false);
@@ -402,7 +452,7 @@ void ofApp::update(){
         switch (state) {
             case STATE_IDLE:
                 
-                updateLayer(camLayer,recordFbo,decay1);
+                updateLayer(camLayer,camFbo,decay1);
                 
                 if (bFirstIdle && ofGetElapsedTimef()>idleTimer) {
                     bFirstIdle = false;
@@ -431,16 +481,15 @@ void ofApp::update(){
                 waitTime = ofToString(waitTimer-ofGetElapsedTimef());
                 
                 
-                if (recordTimer-ofGetElapsedTimef()>freezeDuration) {
-                    recordFbo.begin();
-                    depthFbo.draw(0,0);
-                    recordFbo.end();
-                }
+//                if (recordTimer-ofGetElapsedTimef()>freezeDuration) {
+//                    recordFbo.begin();
+//                    depthFbo.draw(0,0);
+//                    recordFbo.end();
+//                }
                 
-                updateLayer(camLayer,recordFbo,decay0);
+                updateLayer(camLayer,camFbo,decay0);
                 
-                ofPixels pixels;
-                recordFbo.readToPixels(pixels);
+                
                 
                 recorder.addFrame(pixels);
                 
@@ -450,9 +499,9 @@ void ofApp::update(){
                     
                     state = STATE_IDLE;
                     
-                    recordFbo.begin();
+                    camFbo.begin();
                     ofClear(0);
-                    recordFbo.end();
+                    camFbo.end();
                     
                     float duration = ofGetElapsedTimef()-(recordTimer-recordDuration);
                     if (duration > minimumDuration) {
@@ -463,15 +512,12 @@ void ofApp::update(){
                         players.front().setLoopState(OF_LOOP_NONE);
                         players.front().play();
                         
-                        idleTimer = ofGetElapsedTimef()+duration;
+                        idleTimer = ofGetElapsedTimef()+idleInterval;
                         bFirstIdle = true;
                     } else {
                         idleTimer = ofGetElapsedTimef();
                     }
-                    
-                    
-                    
-                    
+                
                 }
             }
                 break;
@@ -567,15 +613,19 @@ void ofApp::draw(){
     
     ofBackground(0);
     
-//    ofPushMatrix();
-//    ofMultMatrix(mat);
     
     switch (state) {
         case STATE_ORIENTATION:
-            for (int i=0; i<2; i++) {
+            for (int i=0; i<CAMERAS_NUMBER; i++) {
                 renderCam(cam[i]);
             }
             
+            
+            break;
+        case STATE_BACKGROUND:
+            for (int i=0; i<CAMERAS_NUMBER; i++) {
+                renderCam(cam[i]);
+            }
             
             break;
         case STATE_CALIB:
@@ -585,14 +635,7 @@ void ofApp::draw(){
             }
             ofSetColor(255);
             break;
-        case STATE_BACKGROUND:
-            
-            blobFbo.draw(0, 0);
-            for (int i = 0; i < contour.nBlobs; i++){
-                contour.blobs[i].draw(0,0);
-            }
-            ofSetColor(255);
-            break;
+        
         
             
         default:
@@ -611,9 +654,9 @@ void ofApp::draw(){
 }
 
 void ofApp::exit() {
-    cam[0].sensor.exit();
-    cam[1].sensor.exit();
-    
+    for (int i=0;i<CAMERAS_NUMBER;i++) {
+        cam[i].sensor.exit();
+    }
     for (vector<ofVideoPlayer>::iterator iter=players.begin();iter!=players.end();iter++) {
         iter->close();
     }
@@ -630,11 +673,11 @@ void ofApp::keyPressed(int key){
             state = STATE_ORIENTATION;
             break;
         case '2':
-            state = STATE_CALIB;
+            state = STATE_BACKGROUND;
             
             break;
         case '3':
-            state = STATE_BACKGROUND;
+            state = STATE_CALIB;
             break;
         
             
@@ -652,18 +695,24 @@ void ofApp::keyPressed(int key){
             break;
             
         case 'g':
-            backgroundFbo.begin();
-            ofClear(0);
-            cloudShader.begin();
-            for (int i=0; i<2; i++) {
-                
-                cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
-                cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
-                renderCam(cam[i]);
+            for (int i=0;i<CAMERAS_NUMBER;i++) {
+                cam[i].background.setFromPixels(cam[i].sensor.getDepth(), cam[i].sensor.depthWidth, cam[i].sensor.depthHeight, 1);
+               
                 
             }
-            cloudShader.end();
-            backgroundFbo.end();
+            
+//            backgroundFbo.begin();
+//            ofClear(0);
+//            cloudShader.begin();
+//            for (int i=0; i<2; i++) {
+//                
+//                cloudShader.setUniform1f("minEdge", cam[i].minEdge1);
+//                cloudShader.setUniform1f("maxEdge",cam[i].maxEdge1);
+//                renderCam(cam[i]);
+//                
+//            }
+//            cloudShader.end();
+//            backgroundFbo.end();
            
             break;
         case 'p':
@@ -675,6 +724,7 @@ void ofApp::keyPressed(int key){
         case 'h':
             ofHideCursor();
             break;
+        
 //        case 's':
 //            fadeTime = ofGetElapsedTimef();
 //            

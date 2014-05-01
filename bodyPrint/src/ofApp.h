@@ -18,6 +18,7 @@ struct camera {
     ofParameter<ofVec3f> sceneRotation,position,cameraRotation;
     ofVboMesh mesh;
     ofParameterGroup params;
+    ofShortPixels background;
 };
 
 class ofApp : public ofBaseApp{
@@ -47,14 +48,13 @@ class ofApp : public ofBaseApp{
     
     camera cam[2];
     ofParameter<int> pointSize;
-    
+    ofParameter<float>gridScale,depthScale;
     ofShader cloudShader;
     ofFbo depthFbo;
-    ofShader subtractShader;
-    ofFbo blobFbo,backgroundFbo;
-    ofParameter<float> tolerance;
     
-    ofFbo recordFbo; // duplicate depthFbo for freeze and fade
+    ofParameter<float> tolerance; // for background subtraction
+    
+    ofFbo camFbo; // duplicate depthFbo for freeze and fade
     
     
     
@@ -83,7 +83,7 @@ class ofApp : public ofBaseApp{
     
     float startTime;
     ofParameter<string> videoQueue;
-    ofParameter<float> recordDuration,waitDuration,freezeDuration,idleInterval,minimumDuration;
+    ofParameter<float> recordDuration,waitDuration,idleInterval,minimumDuration;
     float recordTimer,waitTimer,idleTimer;
     ofParameter<string> recordTime,waitTime;
     string filename;
@@ -104,8 +104,8 @@ class ofApp : public ofBaseApp{
     
     bool bFirstIdle;
     
-    ofSoundPlayer recSound;
-    float fadeTime;
+    ofSoundPlayer recSound,ambientSound;
+    ofParameter<float>recLevel,ambLevel;
     
     bool bShowGui;
 };

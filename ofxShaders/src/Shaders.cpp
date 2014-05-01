@@ -585,6 +585,7 @@ void createCloudShader(ofShader &shader) {
                                 
                                 uniform float minEdge;
                                 uniform float maxEdge;
+                                uniform float scale;   // should be 1/100000
                                 
                                 
                                 in vec4 pos;
@@ -594,7 +595,7 @@ void createCloudShader(ofShader &shader) {
                                 
                                 void main(void) {
                                     
-                                    float sample = depth/100000;
+                                    float sample = depth*scale;
                                     float dist = (sample-minEdge)/(maxEdge-minEdge);
                                     float color = (1-dist)*(step(minEdge,sample)-step(maxEdge,sample));
                                     fragColor = vec4(vec3(color),1.0);

@@ -266,11 +266,12 @@ void ofApp::setup(){
     state = STATE_IDLE;
     bShowGui = false;
     ofHideCursor();
-    captureBackground();
+    
     
     
    
     bFirstIdle = false;
+    bCaptureBg = true;
 }
 
 void ofApp::captureBackground() {
@@ -428,7 +429,10 @@ void ofApp::update(){
 #else
     if (cam[0].sensor.bNewDepth) {
 #endif
-        
+        if (bCaptureBg) {
+            captureBackground();
+            bCaptureBg = false;
+        }
         
         depthFbo.begin();
         ofClear(0);
@@ -727,7 +731,7 @@ void ofApp::keyPressed(int key){
             break;
             
         case 'c':
-            captureBackground();
+            bCaptureBg = true;
            
             break;
         

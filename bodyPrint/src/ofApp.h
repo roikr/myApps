@@ -109,4 +109,5 @@ class ofApp : public ofBaseApp{
     ofParameter<float>recLevel,ambLevel;
     
     bool bShowGui;
+    bool bCaptureBg;
 };

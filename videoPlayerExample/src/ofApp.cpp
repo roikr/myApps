@@ -8,6 +8,8 @@ void ofApp::setup(){
     gui.setup("panel");
     gui.add(volume.set("volume",0.5,0,1));
     gui.loadFromFile("settings.xml");
+    video.setVolume(volume);
+
 	
 
     volume.addListener(this, &ofApp::volumeChanged);
@@ -15,20 +17,21 @@ void ofApp::setup(){
 	// fingerMovie.setPixelFormat(OF_PIXELS_RGBA);
 
     ofDirectory dir;
+//#ifdef TARGET_OSX
     dir.listDir(ofToDataPath("movies"));
-	video.loadMovie(dir.getPath(0));
+//#else
+//    dir.listDir("/windows");
+//#endif
+	video.loadMovie(dir.getPath(rand() % dir.numFiles()));
     video.setLoopState(OF_LOOP_NORMAL);
 	video.play();
-    
-    
-    float scale = MIN((float)ofGetWidth()/video.getWidth(),(float)ofGetHeight()/video.getHeight());
-    mat.makeIdentityMatrix();
-    mat.scale(scale, scale, 1.0);
-    mat.translate(0.5*(ofVec2f(ofGetWidth(),ofGetHeight())-scale*ofVec2f(video.getWidth(),video.getHeight())));
+    video.setVolume(volume);
     
     bool bShowGui = false;
     ofHideCursor();
     timer = ofGetElapsedTimef();
+    
+    
     
 }
 
@@ -67,21 +70,7 @@ void ofApp::volumeChanged(float &volume) {
 
 //--------------------------------------------------------------
 void ofApp::keyPressed  (int key){
-//    switch(key){
-//        case 'f':
-//            frameByframe=!frameByframe;
-//            fingerMovie.setPaused(frameByframe);
-//        break;
-//        case OF_KEY_LEFT:
-//            fingerMovie.previousFrame();
-//        break;
-//        case OF_KEY_RIGHT:
-//            fingerMovie.nextFrame();
-//        break;
-//        case '0':
-//            fingerMovie.firstFrame();
-//        break;
-//    }
+
 }
 
 //--------------------------------------------------------------
@@ -113,7 +102,10 @@ void ofApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    float scale = MIN((float)w/(float)video.getWidth(),(float)h/video.getHeight());
+    mat.makeIdentityMatrix();
+    mat.scale(scale, scale, 1.0);
+    mat.translate(0.5*(ofVec2f(w,h)-scale*ofVec2f(video.getWidth(),video.getHeight())));
 }
 
 //--------------------------------------------------------------

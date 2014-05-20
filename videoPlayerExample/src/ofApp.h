@@ -32,8 +32,8 @@ class ofApp : public ofBaseApp{
     
         float timer;
         bool bShowGui;
+        ofDirectory dir;
     
-    
-		
+        bool bLoadVideo;
 };
 

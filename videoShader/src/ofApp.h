@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxGui.h"
 
-#define ECHO_SHADER
+//#define ECHO_SHADER
 
 class ofApp : public ofBaseApp{
 

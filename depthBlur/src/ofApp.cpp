@@ -33,7 +33,7 @@ void ofApp::setup(){
     bShowGui = true;
     
     
-    createBlurShader(blurShader, radius, variance);
+    createDepthBlurShader(blurShader, radius, variance);
     
     
 
@@ -89,7 +89,7 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 //    bShowGui=!bShowGui;
-    createBlurShader(blurShader, radius, variance);
+    createDepthBlurShader(blurShader, radius, variance);
     
 }
 

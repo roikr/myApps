@@ -44,13 +44,10 @@ void ofApp::setup(){
                                 void main(void)
                                 {
                                     
-                                    float dist = texture(tex0, texCoordVarying).r;
-                                    if (dist>0) {
-                                        vec3 color = vec3(1.0-(dist-minEdge)/(maxEdge-minEdge));
-                                        fragColor = vec4(color,1.0);
-                                    } else {
-                                        discard;
-                                    }
+                                    float sample = texture(tex0,texCoordVarying).r;
+                                    float dist = (sample-minEdge)/(maxEdge-minEdge);
+                                    float color = (1-dist)*(step(minEdge,sample)-step(maxEdge,sample));
+                                    fragColor = vec4(vec3(color),1.0);
                                     
                                     
                                     
@@ -70,8 +67,8 @@ void ofApp::setup(){
     shader.bindDefaults();
     shader.linkProgram();
     
-    minEdge = 0.5;
-    maxEdge = 0.6;
+    minEdge = 0.3245;
+    maxEdge = 0.4015;
     shader.begin();
     shader.setUniform1f("minEdge",minEdge);
     shader.setUniform1f("maxEdge",maxEdge);
@@ -81,7 +78,11 @@ void ofApp::setup(){
     cam.setDepthMode(9);
     depthTexture.allocate(cam.depthWidth, cam.depthHeight, GL_R16);
     
-    fbo.allocate(cam.depthWidth, cam.depthHeight);
+    ofFbo::Settings s;
+    s.width = depthTexture.getWidth();
+    s.height = depthTexture.getHeight();
+    s.internalformat = GL_R16; // GL_R8 is enough but GL_R8 is not supported in ofGetImageTypeFromGLType()
+    fbo.allocate(s);
     
     fileName = "testMovie";
     fileExt = ".mov";
@@ -112,7 +113,6 @@ void ofApp::update(){
         if (bRecording) {
             ofPixels pixels;
             fbo.readToPixels(pixels);
-            pixels.setImageType(OF_IMAGE_GRAYSCALE);
             recorder.addFrame(pixels);
         }
     }

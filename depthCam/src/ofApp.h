@@ -4,12 +4,19 @@
 #include "ofxOpenNI2.h"
 #include "ofMain.h"
 
+struct camera {
+    ofxOpenNI2 *cam;
+    ofTexture tex;
+    int rotation;
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
 		void update();
 		void draw();
+        void exit();
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -21,9 +28,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    ofxOpenNI2 cam;
-    ofTexture depthTex;
-    
+    vector<camera> cameras;
     
 
 		

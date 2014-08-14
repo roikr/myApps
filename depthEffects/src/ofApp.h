@@ -4,6 +4,7 @@
 #include "ofxOpenNI2.h"
 #include "ofxVideoRecorder.h"
 #include "ofxGui.h"
+#include "ofxOpticalFlowFarneback.h"
 
 #define CAM_WIDTH 640
 #define CAM_HEIGHT 480
@@ -32,9 +33,12 @@ class ofApp : public ofBaseApp{
     ofTexture depthTexture;
     ofVideoPlayer video;
     
+    ofxOpticalFlowFarneback flowSolver;
+    
     ofShader shader;
     ofShader shaderBlurX,shaderBlurY;
     ofShader shaderCool,shaderEcho;
+    ofShader blend;
     
     ofImage image;
     
@@ -50,11 +54,16 @@ class ofApp : public ofBaseApp{
     ofFbo fbo;
     ofFbo ping;
     ofFbo pong;
-    ofFbo echo;
+    ofFbo echo1;
+    ofFbo echo2;
     
     
-    ofParameter<float> minEdge,maxEdge,blur,blurOffset,hue,satOffset,opacityIn,feedback,feedbackOffset;
+    ofParameter<string> fps;
+    ofParameter<float> minEdge,maxEdge,hue1,hue2,satOffset,opacityIn,feedback,feedbackOffset;
+    ofParameter<ofVec2f> b0,b1;
     ofxPanel gui;
     bool bHide;
+    
+    ofVideoPlayer memory1,memory2;
     
 };

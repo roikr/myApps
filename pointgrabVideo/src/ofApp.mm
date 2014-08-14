@@ -14,6 +14,7 @@ void ofApp::setup(){
     
     cam.initGrabber(640, 480);
     cam.setOrientation(OF_ORIENTATION_90_LEFT,true);
+    cam.setRotation(0);
     tex.allocate(640, 480, GL_LUMINANCE);
    
     float scale = (float)ofGetHeight()/(5.0*480.0);
